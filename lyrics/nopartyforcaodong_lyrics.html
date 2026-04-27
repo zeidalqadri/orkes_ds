@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>草東沒有派對 — No Party For Cao Dong — Complete Lyrics &amp; Translations</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg-card: #141414;
+    --bg-card-alt: #1a1a1a;
+    --accent: #c0392b;
+    --accent-glow: #e74c3c;
+    --gold: #c9a96e;
+    --gold-light: #e0c78a;
+    --text: #ccc;
+    --text-dim: #888;
+    --text-bright: #eee;
+    --border: #2a2a2a;
+    --cn-font: 'Noto Serif TC', 'Source Han Serif TC', 'Songti TC', 'LiSong Pro', 'AR PL UMing TW', 'Apple LiSung', serif;
+    --en-font: 'Crimson Text', 'Georgia', 'Times New Roman', serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--en-font);
+    font-size: 17px;
+    line-height: 1.7;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 5%, rgba(192,57,43,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 50%, rgba(201,169,110,0.04) 0%, transparent 50%);
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    padding: 10px 24px;
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  nav a:hover { color: var(--accent-glow); }
+
+  .hero {
+    padding: 140px 24px 80px;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .hero h1 {
+    font-family: var(--cn-font);
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    color: var(--text-bright);
+    letter-spacing: 6px;
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+  .hero .subtitle {
+    font-size: 1.1rem;
+    color: var(--gold);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+  .hero .divider {
+    width: 60px;
+    height: 2px;
+    background: var(--accent);
+    margin: 0 auto 32px;
+  }
+  .hero p {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.8;
+  }
+
+  .album-section {
+    padding: 40px 24px 80px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .album-header {
+    text-align: center;
+    margin-bottom: 48px;
+    position: relative;
+  }
+  .album-header::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    z-index: -1;
+  }
+  .album-header h2 {
+    font-family: var(--cn-font);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    color: var(--text-bright);
+    letter-spacing: 4px;
+    font-weight: 400;
+    display: inline-block;
+    background: var(--bg);
+    padding: 0 32px;
+  }
+  .album-header .album-meta {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    margin-top: 8px;
+  }
+  .album-header .album-subtitle {
+    font-size: 1rem;
+    color: var(--gold);
+    letter-spacing: 3px;
+    margin-top: 4px;
+  }
+
+  .song-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 32px;
+    overflow: hidden;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .song-card:hover {
+    border-color: #3a3a3a;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+  .song-header {
+    background: var(--bg-card-alt);
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .song-title {
+    font-family: var(--cn-font);
+    font-size: 1.4rem;
+    color: var(--gold-light);
+    letter-spacing: 3px;
+    font-weight: 400;
+  }
+  .song-title-en {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    font-style: italic;
+    letter-spacing: 1px;
+  }
+  .track-number {
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+  }
+
+  .lyrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1fr;
+    gap: 0;
+    min-height: 0;
+  }
+
+  .lyric-col {
+    padding: 28px 24px;
+  }
+  .lyric-col.cn {
+    font-family: var(--cn-font);
+    font-size: 1.05rem;
+    color: var(--text-bright);
+    letter-spacing: 2px;
+    line-height: 2.2;
+  }
+  .lyric-col.cn .section-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin: 18px 0 4px;
+  }
+  .lyric-col.cn .section-tag:first-child { margin-top: 0; }
+
+  .lyric-col.en {
+    border-left: 1px solid var(--border);
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    font-style: italic;
+    line-height: 2.2;
+  }
+  .lyric-col.en .section-tag {
+    display: inline-block;
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: #7a3a32;
+    text-transform: uppercase;
+    margin: 18px 0 4px;
+  }
+  .lyric-col.en .section-tag:first-child { margin-top: 0; }
+
+  .lyric-col .line { display: block; }
+  .lyric-col .gap { display: block; height: 14px; }
+
+  .song-card.instrumental .lyrics-grid {
+    grid-template-columns: 1fr;
+  }
+  .song-card.instrumental .lyric-col {
+    text-align: center;
+    color: var(--text-dim);
+    font-style: italic;
+    padding: 48px 24px;
+  }
+
+  footer {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    border-top: 1px solid var(--border);
+  }
+  footer span { color: var(--accent); }
+
+  ::selection { background: rgba(192,57,43,0.3); color: var(--text-bright); }
+
+  .tag-intro { font-size: 0.7rem; letter-spacing: 2px; color: var(--accent); }
+  .back-to-top {
+    position: fixed; bottom: 24px; right: 24px;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--text-dim); cursor: pointer; font-size: 1.2rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s; opacity: 0.5;
+  }
+  .back-to-top:hover { opacity: 1; border-color: var(--accent); color: var(--accent); }
+
+  .lyric-col.py {
+    border-left: 1px solid var(--border);
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    font-size: 0.85rem;
+    color: #7a9a7a;
+    line-height: 2.2;
+    letter-spacing: 0;
+    padding: 28px 20px;
+  }
+  .lyric-col.py .section-tag {
+    display: inline-block;
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: #3a6a3a;
+    text-transform: uppercase;
+    margin: 18px 0 4px;
+    font-family: 'Crimson Text', 'Georgia', 'Times New Roman', serif !important;
+  }
+  .lyric-col.py .section-tag:first-child { margin-top: 0; }
+
+  @media (max-width: 900px) {
+    .lyrics-grid { grid-template-columns: 1fr 1.2fr; }
+    .lyric-col.en { display: none; }
+  }
+  @media (max-width: 700px) {
+    .lyrics-grid { grid-template-columns: 1fr; }
+    .lyrics-grid .cn { border-bottom: 1px solid var(--border); }
+    .lyric-col.py { display: none; }
+  }
+</style>
+</head>
+<body>
+<nav>
+<a href="#servile">丑奴儿 · The Servile</a>
+<a href="#clod">瓦合 · The Clod</a>
+<a href="#about">About</a>
+</nav>
+<section class="hero" id="about">
+<h1>草東沒有派對</h1>
+<div class="subtitle">No Party For Cao Dong</div>
+<div class="divider"></div>
+<p>
+    A complete bilingual collection of lyrics from both studio albums by the acclaimed
+    Taiwanese indie rock band. Original Chinese text alongside English translations
+    that preserve the raw, unflinching voice of a generation confronting alienation,
+    futility, and the quiet violence of ordinary life.
+  </p>
+</section>
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ALBUM 1: THE SERVILE (丑奴儿) -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="album-section" id="servile">
+<div class="album-header">
+<h2>醜奴兒</h2>
+<div class="album-subtitle">The Servile</div>
+<div class="album-meta">Released · April 30, 2016 · 12 tracks · 38:57</div>
+</div>
+<!-- Track 1: Intro -->
+<div class="song-card instrumental">
+<div class="song-header">
+<div><span class="track-number">Track 1</span>
+<span class="song-title" style="margin-left:12px">Intro</span>
+<span class="song-title-en" style="margin-left:8px">· Ouverture</span>
+</div>
+<span class="tag-intro">INSTRUMENTAL</span>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col" style="text-align:center;padding:48px 24px">
+<em>A slow-burning instrumental overture. Distant guitar feedback rises
+        through silence, drums enter like a heartbeat, tension coils —
+        then the grinding riff of "Grisly Me" tears through.</em>
+</div>
+</div>
+</div>
+<!-- Track 2: 醜 / Grisly Me -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 2</span>
+<span class="song-title" style="margin-left:12px">醜</span>
+<span class="song-title-en" style="margin-left:8px">Grisly Me</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="section-tag">Verse 1</span>
+<span class="line">我試過握著她的手</span>
+<span class="line">卻還是一樣寂寞</span>
+<span class="line">從沒想過</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">原來自己那麼醜陋</span>
+<span class="line">Oh-oh, oh, oh-oh, oh</span>
+<span class="line">原來自己那麼醜陋</span>
+<span class="line">Oh-oh, oh, oh-oh, oh</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">我說得像切身之痛</span>
+<span class="line">卻一直在退縮</span>
+<span class="line">從沒想過</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">原來自己那麼醜陋</span>
+<span class="line">Oh-oh, oh, oh-oh, oh</span>
+<span class="line">原來自己那麼醜陋</span>
+<span class="line">Oh-oh, oh, oh-oh, oh</span>
+</div>
+<div class="lyric-col py"><span class="section-tag">Verse 1</span><span class="line">wǒ shì guò wò zhù tā de shǒu</span><span class="line">què hái shì yī yàng jì mò</span><span class="line">cóng méi xiǎng guò</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">yuán lái zì jǐ nà me chǒu lòu</span><span class="line">Oh-oh, oh, oh-oh, oh</span><span class="line">yuán lái zì jǐ nà me chǒu lòu</span><span class="line">Oh-oh, oh, oh-oh, oh</span><span class="gap"></span><span class="section-tag">Verse 2</span><span class="line">wǒ shuō dé xiàng qiè shēn zhī tòng</span><span class="line">què yī zhí zài tuì suō</span><span class="line">cóng méi xiǎng guò</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">yuán lái zì jǐ nà me chǒu lòu</span><span class="line">Oh-oh, oh, oh-oh, oh</span><span class="line">yuán lái zì jǐ nà me chǒu lòu</span><span class="line">Oh-oh, oh, oh-oh, oh</span></div><div class="lyric-col en">
+<span class="section-tag">Verse 1</span>
+<span class="line">I tried holding her hand</span>
+<span class="line">— still, the same loneliness.</span>
+<span class="line">I never thought</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">that I could be this ugly.</span>
+<span class="line">Oh-oh, oh, oh-oh, oh</span>
+<span class="line">that I could be this ugly.</span>
+<span class="line">Oh-oh, oh, oh-oh, oh</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">I spoke as if the wound were my own</span>
+<span class="line">but I've been retreating all along.</span>
+<span class="line">I never thought</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">that I could be this ugly.</span>
+<span class="line">Oh-oh, oh, oh-oh, oh</span>
+<span class="line">that I could be this ugly.</span>
+<span class="line">Oh-oh, oh, oh-oh, oh</span>
+</div>
+</div>
+</div>
+<!-- Track 3: 爛泥 / Wimpish -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 3</span>
+<span class="song-title" style="margin-left:12px">爛泥</span>
+<span class="song-title-en" style="margin-left:8px">Wimpish</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="section-tag">Verse 1</span>
+<span class="line">Oh, 多麼美麗的一顆心</span>
+<span class="line">怎麼會、怎麼會就變成了一灘爛泥？</span>
+<span class="line">Oh, 多麼單純的一首詩</span>
+<span class="line">怎麼會、怎麼會都變成了諷刺？</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">我想要說的 前人們都說過了</span>
+<span class="line">我想要做的 有錢人都做過了</span>
+<span class="line">我想要的公平 都是不公們虛構的</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">Oh, 多麼乾淨的一幅畫</span>
+<span class="line">怎麼會、怎麼會充滿了悲傷？</span>
+<span class="line">Oh, 多麼天真的一句話</span>
+<span class="line">怎麼會、怎麼會像噩夢一樣？</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">我想要說的 前人們都說過了</span>
+<span class="line">我想要做的 有錢人都做過了</span>
+<span class="line">我想要的公平 都是不公們虛構的</span>
+</div>
+<div class="lyric-col py"><span class="section-tag">Verse 1</span><span class="line">O h ,   duō me měi lì de yī kē xīn</span><span class="line">zěn me huì 、 zěn me huì jiù biàn chéng le yī tān làn ní ？</span><span class="line">O h ,   duō me dān chún de yī shǒu shī</span><span class="line">zěn me huì 、 zěn me huì dōu biàn chéng le fěng cì ？</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">wǒ xiǎng yào shuō de   qián rén men dōu shuō guò le</span><span class="line">wǒ xiǎng yào zuò de   yǒu qián rén dōu zuò guò le</span><span class="line">wǒ xiǎng yào de gōng píng   dōu shì bù gōng men xū gòu de</span><span class="gap"></span><span class="section-tag">Verse 2</span><span class="line">O h ,   duō me qián jìng de yī fú huà</span><span class="line">zěn me huì 、 zěn me huì chōng mǎn le bēi shāng ？</span><span class="line">O h ,   duō me tiān zhēn de yī jù huà</span><span class="line">zěn me huì 、 zěn me huì xiàng è mèng yī yàng ？</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">wǒ xiǎng yào shuō de   qián rén men dōu shuō guò le</span><span class="line">wǒ xiǎng yào zuò de   yǒu qián rén dōu zuò guò le</span><span class="line">wǒ xiǎng yào de gōng píng   dōu shì bù gōng men xū gòu de</span></div><div class="lyric-col en">
+<span class="section-tag">Verse 1</span>
+<span class="line">Oh, such a beautiful heart —</span>
+<span class="line">how did it, how did it turn into a puddle of mud?</span>
+<span class="line">Oh, such an innocent poem —</span>
+<span class="line">how did it, how did it all become sarcasm?</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">Everything I want to say, the ones before have already said.</span>
+<span class="line">Everything I want to do, the rich have already done.</span>
+<span class="line">The justice I want — fabricated by the unjust.</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">Oh, such a clean painting —</span>
+<span class="line">how did it, how did it fill up with sorrow?</span>
+<span class="line">Oh, such a naive remark —</span>
+<span class="line">how did it, how did it turn into a nightmare?</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">Everything I want to say, the ones before have already said.</span>
+<span class="line">Everything I want to do, the rich have already done.</span>
+<span class="line">The justice I want — fabricated by the unjust.</span>
+</div>
+</div>
+</div>
+<!-- Track 4: 勇敢的人 / The Reluctant -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 4</span>
+<span class="song-title" style="margin-left:12px">勇敢的人</span>
+<span class="song-title-en" style="margin-left:8px">The Reluctant</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="section-tag">Verse 1</span>
+<span class="line">又忍著的 失望的 不解的 痛恨的</span>
+<span class="line">又只用空瓶把今天砸碎</span>
+<span class="line">然後又哭著對離開了自己的影子道歉</span>
+<span class="line">別氣了 沒有誰在跟你作對</span>
+<span class="line">別哭了 沒有誰會心碎</span>
+<span class="gap"></span>
+<span class="section-tag">Pre-Chorus</span>
+<span class="line">Oh, 沒有勇敢的人</span>
+<span class="line">Oh, oh, oh, oh, oh-oh, oh-oh-oh, oh-oh</span>
+<span class="line">勇敢的人</span>
+<span class="line">Oh, oh, oh, oh, oh-oh, oh-oh-oh</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">你賣光了一切 你的肝和你的肺</span>
+<span class="line">Oh, 他們扔了你的世界</span>
+<span class="line">去成為更好的人類</span>
+<span class="line">那廉價的眼淚就別掛在嘴邊</span>
+<span class="line">什麼也沒改變</span>
+<span class="line">什麼也不改變</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">請別舉起手槍</span>
+<span class="line">Oh, 這裡沒有反抗的人</span>
+<span class="line">不用再圍牆</span>
+<span class="line">Oh, 這裡沒有反抗的人</span>
+<span class="gap"></span>
+<span class="section-tag">Pre-Chorus</span>
+<span class="line">反抗的人</span>
+<span class="line">Oh, oh, oh, oh, oh-oh, oh-oh-oh, oh-oh</span>
+<span class="line">反抗的人</span>
+<span class="line">Oh, oh, oh, oh, oh-oh, oh-oh-oh</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">你賣光了一切 你的肝和你的肺（所謂的過生活）</span>
+<span class="line">Oh, 他們扔了你的世界（一輩子他都在躲）</span>
+<span class="line">去成為更好的人類</span>
+<span class="line">那廉價的眼淚就別掛在嘴邊（一直在躲 一直在躲）</span>
+<span class="line">什麼也沒改變（沒有出口 沒有出口）</span>
+<span class="line">什麼也不改變</span>
+</div>
+<div class="lyric-col py"><span class="section-tag">Verse 1</span><span class="line">yòu rěn zhù de   shī wàng de   bù jiě de   tòng hèn de</span><span class="line">yòu zhǐ yòng kōng píng bǎ jīn tiān zá suì</span><span class="line">rán hòu yòu kū zhù duì lí kāi le zì jǐ de yǐng zi dào qiàn</span><span class="line">bié qì le   méi yǒu shuí zài gēn nǐ zuò duì</span><span class="line">bié kū le   méi yǒu shuí huì xīn suì</span><span class="gap"></span><span class="section-tag">Pre-Chorus</span><span class="line">O h ,   méi yǒu yǒng gǎn de rén</span><span class="line">Oh, oh, oh, oh, oh-oh, oh-oh-oh, oh-oh</span><span class="line">yǒng gǎn de rén</span><span class="line">Oh, oh, oh, oh, oh-oh, oh-oh-oh</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">nǐ mài guāng le yī qiè   nǐ de gān hé nǐ de fèi</span><span class="line">O h ,   tā men rēng le nǐ de shì jiè</span><span class="line">qù chéng wèi gèng hǎo de rén lèi</span><span class="line">nà lián jià de yǎn lèi jiù bié guà zài zuǐ biān</span><span class="line">shén me yě méi gǎi biàn</span><span class="line">shén me yě bù gǎi biàn</span><span class="gap"></span><span class="section-tag">Verse 2</span><span class="line">qǐng bié jǔ qǐ shǒu qiāng</span><span class="line">O h ,   zhè lǐ méi yǒu fǎn kàng de rén</span><span class="line">bù yòng zài wéi qiáng</span><span class="line">O h ,   zhè lǐ méi yǒu fǎn kàng de rén</span><span class="gap"></span><span class="section-tag">Pre-Chorus</span><span class="line">fǎn kàng de rén</span><span class="line">Oh, oh, oh, oh, oh-oh, oh-oh-oh, oh-oh</span><span class="line">fǎn kàng de rén</span><span class="line">Oh, oh, oh, oh, oh-oh, oh-oh-oh</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">nǐ mài guāng le yī qiè   nǐ de gān hé nǐ de fèi （ suǒ wèi de guò shēng huó ）</span><span class="line">O h ,   tā men rēng le nǐ de shì jiè （ yī bèi zi tā dōu zài duǒ ）</span><span class="line">qù chéng wèi gèng hǎo de rén lèi</span><span class="line">nà lián jià de yǎn lèi jiù bié guà zài zuǐ biān （ yī zhí zài duǒ   yī zhí zài duǒ ）</span><span class="line">shén me yě méi gǎi biàn （ méi yǒu chū kǒu   méi yǒu chū kǒu ）</span><span class="line">shén me yě bù gǎi biàn</span></div><div class="lyric-col en">
+<span class="section-tag">Verse 1</span>
+<span class="line">Enduring again — disappointed, perplexed, full of hate —</span>
+<span class="line">shattering today with an empty bottle once more,</span>
+<span class="line">then crying, apologizing to the shadow that walked away from you.</span>
+<span class="line">Don't be angry — nobody is working against you.</span>
+<span class="line">Don't cry — nobody's heart will break.</span>
+<span class="gap"></span>
+<span class="section-tag">Pre-Chorus</span>
+<span class="line">Oh, there are no brave ones.</span>
+<span class="line">Oh, oh, oh, oh, oh-oh…</span>
+<span class="line">Brave ones —</span>
+<span class="line">Oh, oh, oh, oh, oh-oh…</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">You've sold it all — your liver and your lungs.</span>
+<span class="line">Oh, they threw away your world.</span>
+<span class="line">Go become a better human being.</span>
+<span class="line">Don't hang those cheap tears on your lips.</span>
+<span class="line">Nothing has changed.</span>
+<span class="line">Nothing will change.</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">Please don't raise the pistol.</span>
+<span class="line">Oh, there is nobody here who resists.</span>
+<span class="line">No need to build walls.</span>
+<span class="line">Oh, there is nobody here who resists.</span>
+<span class="gap"></span>
+<span class="section-tag">Pre-Chorus</span>
+<span class="line">Those who resist —</span>
+<span class="line">Oh, oh, oh, oh, oh-oh…</span>
+<span class="line">Those who resist —</span>
+<span class="line">Oh, oh, oh, oh, oh-oh…</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">You've sold it all — liver and lungs. (So-called living.)</span>
+<span class="line">Oh, they threw away your world. (A lifetime spent hiding.)</span>
+<span class="line">Go become a better human being.</span>
+<span class="line">Don't hang those cheap tears on your lips. (Hiding, always hiding.)</span>
+<span class="line">Nothing has changed. (No exit, no exit.)</span>
+<span class="line">Nothing will change.</span>
+</div>
+</div>
+</div>
+<!-- Track 5: 大風吹 / Simon Says -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 5</span>
+<span class="song-title" style="margin-left:12px">大風吹</span>
+<span class="song-title-en" style="margin-left:8px">Simon Says</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="section-tag">Verse 1</span>
+<span class="line">大風吹著誰 誰就倒楣</span>
+<span class="line">每個人都想當鬼</span>
+<span class="line">都一樣的下賤</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">哭啊，喊啊，叫你媽媽帶你去買玩具啊</span>
+<span class="line">快、快拿到學校炫耀吧 孩子交點朋友吧</span>
+<span class="line">哎呀呀，你看你手上拿的是什麼啊</span>
+<span class="line">那東西我們早就不屑啦 哈哈哈哈</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">一樣又醉了，一樣又掉眼淚</span>
+<span class="line">一樣的屈辱，一樣的感覺</span>
+<span class="line">怪罪給時間，它給了起點</span>
+<span class="line">怪罪給時間，它給了終點</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">哭啊，喊啊，叫你媽媽帶你去買玩具啊</span>
+<span class="line">快、快拿到學校炫耀吧 孩子交點朋友吧</span>
+<span class="line">哎呀呀，你看你手上拿的是什麼啊</span>
+<span class="line">那東西我們早就不屑啦 哈哈哈</span>
+<span class="line">哭啊，喊啊，叫你媽媽帶你去買玩具啊</span>
+<span class="line">快、快拿到學校炫耀吧 孩子交點朋友吧</span>
+<span class="line">哭啊，喊啊，叫你媽媽帶你去買玩具啊</span>
+<span class="line">快、快拿到學校炫耀吧 孩子交點朋友吧</span>
+<span class="line">哎呀呀，你看你手上拿的是什麼啊</span>
+<span class="line">那東西我們早就不屑啦</span>
+<span class="gap"></span>
+<span class="section-tag">Outro</span>
+<span class="line">哈哈哈</span>
+</div>
+<div class="lyric-col py"><span class="section-tag">Verse 1</span><span class="line">dà fēng chuī zhù shuí   shuí jiù dào méi</span><span class="line">měi gè rén dōu xiǎng dāng guǐ</span><span class="line">dōu yī yàng de xià jiàn</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">kū a ， hǎn a ， jiào nǐ mā mā dài nǐ qù mǎi wán jù a</span><span class="line">kuài 、 kuài ná dào xué xiào xuàn yào ba   hái zi jiāo diǎn péng yǒu ba</span><span class="line">āi ya ya ， nǐ kàn nǐ shǒu shàng ná de shì shén me a</span><span class="line">nà dōng xī wǒ men zǎo jiù bù xiè la   hā hā hā hā</span><span class="gap"></span><span class="section-tag">Verse 2</span><span class="line">yī yàng yòu zuì le ， yī yàng yòu diào yǎn lèi</span><span class="line">yī yàng de qū rǔ ， yī yàng de gǎn jué</span><span class="line">guài zuì gěi shí jiān ， tā gěi le qǐ diǎn</span><span class="line">guài zuì gěi shí jiān ， tā gěi le zhōng diǎn</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">kū a ， hǎn a ， jiào nǐ mā mā dài nǐ qù mǎi wán jù a</span><span class="line">kuài 、 kuài ná dào xué xiào xuàn yào ba   hái zi jiāo diǎn péng yǒu ba</span><span class="line">āi ya ya ， nǐ kàn nǐ shǒu shàng ná de shì shén me a</span><span class="line">nà dōng xī wǒ men zǎo jiù bù xiè la   hā hā hā</span><span class="line">kū a ， hǎn a ， jiào nǐ mā mā dài nǐ qù mǎi wán jù a</span><span class="line">kuài 、 kuài ná dào xué xiào xuàn yào ba   hái zi jiāo diǎn péng yǒu ba</span><span class="line">kū a ， hǎn a ， jiào nǐ mā mā dài nǐ qù mǎi wán jù a</span><span class="line">kuài 、 kuài ná dào xué xiào xuàn yào ba   hái zi jiāo diǎn péng yǒu ba</span><span class="line">āi ya ya ， nǐ kàn nǐ shǒu shàng ná de shì shén me a</span><span class="line">nà dōng xī wǒ men zǎo jiù bù xiè la</span><span class="gap"></span><span class="section-tag">Outro</span><span class="line">hā hā hā</span></div><div class="lyric-col en">
+<span class="section-tag">Verse 1</span>
+<span class="line">Whoever the big wind blows on — tough luck.</span>
+<span class="line">Everybody wants to be the ghost.</span>
+<span class="line">All equally cheap.</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">Cry, scream — tell your mom to buy you a toy.</span>
+<span class="line">Quick, bring it to school and show it off, kid — make some friends.</span>
+<span class="line">Aiya, look at what you're holding in your hand.</span>
+<span class="line">We stopped caring about that long ago. Hahahaha.</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">Drunk again, same as ever. Tears falling again, same as ever.</span>
+<span class="line">Same humiliation, same feeling.</span>
+<span class="line">Blame it on time — it gave a beginning.</span>
+<span class="line">Blame it on time — it gave an ending.</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">Cry, scream — tell your mom to buy you a toy.</span>
+<span class="line">Quick, bring it to school and show it off, kid — make some friends.</span>
+<span class="line">Aiya, look at what you're holding in your hand.</span>
+<span class="line">We stopped caring about that long ago. Haha.</span>
+<span class="line">Cry, scream — tell your mom to buy you a toy.</span>
+<span class="line">Quick, bring it to school and show it off, kid — make some friends.</span>
+<span class="line">Cry, scream — tell your mom to buy you a toy.</span>
+<span class="line">Quick, bring it to school and show it off, kid — make some friends.</span>
+<span class="line">Aiya, look at what you're holding.</span>
+<span class="line">We stopped caring about that long ago.</span>
+<span class="gap"></span>
+<span class="section-tag">Outro</span>
+<span class="line">Hahaha.</span>
+</div>
+</div>
+</div>
+<!-- Track 6: 艾瑪 / Emma -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 6</span>
+<span class="song-title" style="margin-left:12px">艾瑪</span>
+<span class="song-title-en" style="margin-left:8px">Emma</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="section-tag">Verse 1</span>
+<span class="line">歌唱著一種沒有深度的語言</span>
+<span class="line">試著跟著這些虛偽一起改變</span>
+<span class="line">改變</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">妳笑著說我所擁有的一切 也都是虛偽</span>
+<span class="line">妳笑著說我所有的謊言 活不過明天</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">交換著一種不負責任的畫面</span>
+<span class="line">試著跟著這些標籤一起改變</span>
+<span class="line">改變</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">妳笑著說我所擁有的一切 也都是虛偽</span>
+<span class="line">妳笑著說我所有的謊言 活不過明天</span>
+<span class="line">妳笑著說我所擁有的一切 也都是虛偽</span>
+<span class="line">妳笑著說我所有的謊言 活不過明天</span>
+</div>
+<div class="lyric-col py"><span class="section-tag">Verse 1</span><span class="line">gē chàng zhù yī zhǒng méi yǒu shēn dù de yǔ yán</span><span class="line">shì zhù gēn zhù zhè xiē xū wěi yī qǐ gǎi biàn</span><span class="line">gǎi biàn</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">nǐ xiào zhù shuō wǒ suǒ yōng yǒu de yī qiè   yě dōu shì xū wěi</span><span class="line">nǐ xiào zhù shuō wǒ suǒ yǒu de huǎng yán   huó bù guò míng tiān</span><span class="gap"></span><span class="section-tag">Verse 2</span><span class="line">jiāo huàn zhù yī zhǒng bù fù zé rèn de huà miàn</span><span class="line">shì zhù gēn zhù zhè xiē biāo qiān yī qǐ gǎi biàn</span><span class="line">gǎi biàn</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">nǐ xiào zhù shuō wǒ suǒ yōng yǒu de yī qiè   yě dōu shì xū wěi</span><span class="line">nǐ xiào zhù shuō wǒ suǒ yǒu de huǎng yán   huó bù guò míng tiān</span><span class="line">nǐ xiào zhù shuō wǒ suǒ yōng yǒu de yī qiè   yě dōu shì xū wěi</span><span class="line">nǐ xiào zhù shuō wǒ suǒ yǒu de huǎng yán   huó bù guò míng tiān</span></div><div class="lyric-col en">
+<span class="section-tag">Verse 1</span>
+<span class="line">Singing in a language without depth.</span>
+<span class="line">Trying to change along with these falsehoods.</span>
+<span class="line">Change.</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">You laugh and say that everything I possess is also false.</span>
+<span class="line">You laugh and say all my lies won't survive tomorrow.</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">Trading an image that bears no responsibility.</span>
+<span class="line">Trying to change along with these labels.</span>
+<span class="line">Change.</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">You laugh and say — everything I possess is also false.</span>
+<span class="line">You laugh and say — all my lies won't survive tomorrow.</span>
+<span class="line">You laugh and say — everything I possess is also false.</span>
+<span class="line">You laugh and say — all my lies won't survive tomorrow.</span>
+</div>
+</div>
+</div>
+<!-- Track 7: 等 / Await -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 7</span>
+<span class="song-title" style="margin-left:12px">等</span>
+<span class="song-title-en" style="margin-left:8px">Await</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="section-tag">Verse 1</span>
+<span class="line">我在等的那部車呢</span>
+<span class="line">它會不會又拋錨了？</span>
+<span class="line">我在等的那個人呢</span>
+<span class="line">他會不會又不來了？</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">I'll wait, I'll wait, I'll keep on waiting</span>
+<span class="line">I'll wait, I'll wait, I'll wait for nothing</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">你在等的那部車呢</span>
+<span class="line">它會不會也拋錨了？</span>
+<span class="line">你在等的那個人呢</span>
+<span class="line">他會不會也不來？</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">You'll wait, you'll wait, you'll keep on waiting</span>
+<span class="line">You'll wait, you'll wait, you'll wait for nothing</span>
+</div>
+<div class="lyric-col py"><span class="section-tag">Verse 1</span><span class="line">wǒ zài děng de nà bù chē ne</span><span class="line">tā huì bù huì yòu pāo máo le ？</span><span class="line">wǒ zài děng de nà gè rén ne</span><span class="line">tā huì bù huì yòu bù lái le ？</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">I'll wait, I'll wait, I'll keep on waiting</span><span class="line">I'll wait, I'll wait, I'll wait for nothing</span><span class="gap"></span><span class="section-tag">Verse 2</span><span class="line">nǐ zài děng de nà bù chē ne</span><span class="line">tā huì bù huì yě pāo máo le ？</span><span class="line">nǐ zài děng de nà gè rén ne</span><span class="line">tā huì bù huì yě bù lái ？</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">You'll wait, you'll wait, you'll keep on waiting</span><span class="line">You'll wait, you'll wait, you'll wait for nothing</span></div><div class="lyric-col en">
+<span class="section-tag">Verse 1</span>
+<span class="line">That car I'm waiting for —</span>
+<span class="line">has it broken down again?</span>
+<span class="line">That person I'm waiting for —</span>
+<span class="line">will they not show up again?</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">I'll wait, I'll wait, I'll keep on waiting</span>
+<span class="line">I'll wait, I'll wait, I'll wait for nothing</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">That car you're waiting for —</span>
+<span class="line">has it broken down too?</span>
+<span class="line">That person you're waiting for —</span>
+<span class="line">will they not come either?</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">You'll wait, you'll wait, you'll keep on waiting</span>
+<span class="line">You'll wait, you'll wait, you'll wait for nothing</span>
+</div>
+</div>
+</div>
+<!-- Track 8: 鬼 / The Specter -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 8</span>
+<span class="song-title" style="margin-left:12px">鬼</span>
+<span class="song-title-en" style="margin-left:8px">The Specter</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="section-tag">Intro</span>
+<span class="line">從沒想過要傷害誰</span>
+<span class="line">對一切也都感到抱歉</span>
+<span class="gap"></span>
+<span class="section-tag">Verse</span>
+<span class="line">可是我的自卑 勝過了一切愛我的</span>
+<span class="line">於是我把愛人們都殺死了</span>
+<span class="line">可是你的傷悲 勝過了一切愛你的</span>
+<span class="line">於是你把我給殺死了</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">為了什麼而流著血？</span>
+<span class="line">是為了誰而流眼淚？</span>
+<span class="line">我躲在夜裡取笑著黑</span>
+<span class="line">因為沒有人能殺死鬼</span>
+<span class="line">為了什麼而流著血？</span>
+<span class="line">是為了誰而流眼淚？</span>
+<span class="line">我躲在夜裡取笑著黑</span>
+<span class="line">因為沒有人能殺死鬼</span>
+</div>
+<div class="lyric-col py"><span class="section-tag">Intro</span><span class="line">cóng méi xiǎng guò yào shāng hài shuí</span><span class="line">duì yī qiè yě dōu gǎn dào bào qiàn</span><span class="gap"></span><span class="section-tag">Verse</span><span class="line">kě shì wǒ de zì bēi   shèng guò le yī qiè ài wǒ de</span><span class="line">yú shì wǒ bǎ ài rén men dōu shā sǐ le</span><span class="line">kě shì nǐ de shāng bēi   shèng guò le yī qiè ài nǐ de</span><span class="line">yú shì nǐ bǎ wǒ gěi shā sǐ le</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">wèi le shén me ér liú zhù xuè ？</span><span class="line">shì wèi le shuí ér liú yǎn lèi ？</span><span class="line">wǒ duǒ zài yè lǐ qǔ xiào zhù hēi</span><span class="line">yīn wèi méi yǒu rén néng shā sǐ guǐ</span><span class="line">wèi le shén me ér liú zhù xuè ？</span><span class="line">shì wèi le shuí ér liú yǎn lèi ？</span><span class="line">wǒ duǒ zài yè lǐ qǔ xiào zhù hēi</span><span class="line">yīn wèi méi yǒu rén néng shā sǐ guǐ</span></div><div class="lyric-col en">
+<span class="section-tag">Intro</span>
+<span class="line">I never meant to hurt anyone.</span>
+<span class="line">I feel sorry about everything.</span>
+<span class="gap"></span>
+<span class="section-tag">Verse</span>
+<span class="line">But my self-loathing outweighed all those who loved me —</span>
+<span class="line">so I killed every lover I had.</span>
+<span class="line">But your sorrow outweighed all those who loved you —</span>
+<span class="line">so you killed me.</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">For what am I bleeding?</span>
+<span class="line">For whom do tears fall?</span>
+<span class="line">I hide in the night, laughing at the darkness —</span>
+<span class="line">because nobody can kill a ghost.</span>
+<span class="line">For what am I bleeding?</span>
+<span class="line">For whom do tears fall?</span>
+<span class="line">I hide in the night, laughing at the darkness —</span>
+<span class="line">because nobody can kill a ghost.</span>
+</div>
+</div>
+</div>
+<!-- Track 9: 在 / Am For You -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 9</span>
+<span class="song-title" style="margin-left:12px">在</span>
+<span class="song-title-en" style="margin-left:8px">Am For You</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="section-tag">Verse 1</span>
+<span class="line">一樣的天空，卻還是只有錯過</span>
+<span class="line">一樣的歌，還是唱著他多愛她</span>
+<span class="line">一樣快死心，一樣爛的劇情</span>
+<span class="line">卻還是期待著她嘴裡那句「我愛你」</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">她說：「去你媽的花海」</span>
+<span class="line">我說：「妳這麼說好帥」</span>
+<span class="line">她說要把它們都打敗</span>
+<span class="line">我說：「我會一直都在」</span>
+<span class="line">我會一直都</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">在路燈下遇見了很像妳的她</span>
+<span class="line">我沒有說話，就算說了也是謊</span>
+<span class="line">沒差，我想都一樣吧</span>
+<span class="line">至少她嘴裡那句「我愛你」</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">她說：「去你媽的花海」</span>
+<span class="line">我說：「妳這麼說好帥」</span>
+<span class="line">她說要把它們都打敗</span>
+<span class="line">我說：「我會一直都在」</span>
+<span class="line">我會一直都</span>
+</div>
+<div class="lyric-col py"><span class="section-tag">Verse 1</span><span class="line">yī yàng de tiān kōng ， què hái shì zhǐ yǒu cuò guò</span><span class="line">yī yàng de gē ， hái shì chàng zhù tā duō ài tā</span><span class="line">yī yàng kuài sǐ xīn ， yī yàng làn de jù qíng</span><span class="line">què hái shì qī dài zhù tā zuǐ lǐ nà jù 「 wǒ ài nǐ 」</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">tā shuō ： 「 qù nǐ mā de huā hǎi 」</span><span class="line">wǒ shuō ： 「 nǐ zhè me shuō hǎo shuài 」</span><span class="line">tā shuō yào bǎ tā men dōu dǎ bài</span><span class="line">wǒ shuō ： 「 wǒ huì yī zhí dōu zài 」</span><span class="line">wǒ huì yī zhí dōu</span><span class="gap"></span><span class="section-tag">Verse 2</span><span class="line">zài lù dēng xià yù jiàn le hěn xiàng nǐ de tā</span><span class="line">wǒ méi yǒu shuō huà ， jiù suàn shuō le yě shì huǎng</span><span class="line">méi chà ， wǒ xiǎng dōu yī yàng ba</span><span class="line">zhì shǎo tā zuǐ lǐ nà jù 「 wǒ ài nǐ 」</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">tā shuō ： 「 qù nǐ mā de huā hǎi 」</span><span class="line">wǒ shuō ： 「 nǐ zhè me shuō hǎo shuài 」</span><span class="line">tā shuō yào bǎ tā men dōu dǎ bài</span><span class="line">wǒ shuō ： 「 wǒ huì yī zhí dōu zài 」</span><span class="line">wǒ huì yī zhí dōu</span></div><div class="lyric-col en">
+<span class="section-tag">Verse 1</span>
+<span class="line">Same sky — still only missed connections.</span>
+<span class="line">Same song — still singing about how much he loves her.</span>
+<span class="line">About to give up, same lousy plot,</span>
+<span class="line">yet still hoping for those words from her mouth: "I love you."</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">She said: "Fuck your sea of flowers."</span>
+<span class="line">I said: "That's such a cool thing to say."</span>
+<span class="line">She said she'd defeat them all.</span>
+<span class="line">I said: "I'll always be right here."</span>
+<span class="line">Always be —</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">Under the streetlamp I met someone who looked just like you.</span>
+<span class="line">I didn't speak — even if I had, it would have been a lie.</span>
+<span class="line">No difference. I guess it's all the same.</span>
+<span class="line">At least there's that "I love you" from her mouth.</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">She said: "Fuck your sea of flowers."</span>
+<span class="line">I said: "That's such a cool thing to say."</span>
+<span class="line">She said she'd defeat them all.</span>
+<span class="line">I said: "I'll always be right here."</span>
+<span class="line">Always be —</span>
+</div>
+</div>
+</div>
+<!-- Track 10: 山海 / Wayfarer -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 10</span>
+<span class="song-title" style="margin-left:12px">山海</span>
+<span class="song-title-en" style="margin-left:8px">Wayfarer</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="section-tag">Verse 1</span>
+<span class="line">我看著天真的我自己</span>
+<span class="line">出現在沒有我的故事裡</span>
+<span class="line">等待著我的回應</span>
+<span class="line">一個為何至此的原因</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">他明白、他明白 我給不起</span>
+<span class="line">於是轉身向山裡走去</span>
+<span class="line">他明白、他明白 我給不起</span>
+<span class="line">於是轉身向大海走去</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">我聽著那少年的聲音</span>
+<span class="line">在還有未來的過去</span>
+<span class="line">渴望著美好結局</span>
+<span class="line">卻沒能成為自己</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">他明白、他明白 我給不起</span>
+<span class="line">於是轉身向山裡走去</span>
+<span class="line">他明白、他明白 我給不起</span>
+<span class="line">於是轉身向大海走去</span>
+</div>
+<div class="lyric-col py"><span class="section-tag">Verse 1</span><span class="line">wǒ kàn zhù tiān zhēn de wǒ zì jǐ</span><span class="line">chū xiàn zài méi yǒu wǒ de gù shì lǐ</span><span class="line">děng dài zhù wǒ de huí yīng</span><span class="line">yī gè wèi hé zhì cǐ de yuán yīn</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">tā míng bái 、 tā míng bái   wǒ gěi bù qǐ</span><span class="line">yú shì zhuǎn shēn xiàng shān lǐ zǒu qù</span><span class="line">tā míng bái 、 tā míng bái   wǒ gěi bù qǐ</span><span class="line">yú shì zhuǎn shēn xiàng dà hǎi zǒu qù</span><span class="gap"></span><span class="section-tag">Verse 2</span><span class="line">wǒ tīng zhù nà shǎo nián de shēng yīn</span><span class="line">zài hái yǒu wèi lái de guò qù</span><span class="line">kě wàng zhù měi hǎo jié jú</span><span class="line">què méi néng chéng wèi zì jǐ</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">tā míng bái 、 tā míng bái   wǒ gěi bù qǐ</span><span class="line">yú shì zhuǎn shēn xiàng shān lǐ zǒu qù</span><span class="line">tā míng bái 、 tā míng bái   wǒ gěi bù qǐ</span><span class="line">yú shì zhuǎn shēn xiàng dà hǎi zǒu qù</span></div><div class="lyric-col en">
+<span class="section-tag">Verse 1</span>
+<span class="line">I watched my innocent self</span>
+<span class="line">appear in a story that had no place for me,</span>
+<span class="line">waiting for my response —</span>
+<span class="line">a reason for how things came to this.</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">He understands, he understands — I cannot give.</span>
+<span class="line">So he turns and walks toward the mountains.</span>
+<span class="line">He understands, he understands — I cannot give.</span>
+<span class="line">So he turns and walks toward the sea.</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">I listen to the voice of that youth</span>
+<span class="line">in a past that still had a future,</span>
+<span class="line">longing for a happy ending —</span>
+<span class="line">yet never becoming himself.</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">He understands, he understands — I cannot give.</span>
+<span class="line">So he turns and walks toward the mountains.</span>
+<span class="line">He understands, he understands — I cannot give.</span>
+<span class="line">So he turns and walks toward the sea.</span>
+</div>
+</div>
+</div>
+<!-- Track 11: 我們 / Us -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 11</span>
+<span class="song-title" style="margin-left:12px">我們</span>
+<span class="song-title-en" style="margin-left:8px">Us</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="section-tag">Verse 1</span>
+<span class="line">我們在原野上找一面牆</span>
+<span class="line">我們在標籤裡找方向</span>
+<span class="line">我們在廢墟般的垃圾裡找一塊紅磚</span>
+<span class="line">我們在工整的巷子裡找家</span>
+<span class="gap"></span>
+<span class="section-tag">Refrain</span>
+<span class="line">Oo-oo-ooh, oo-ooh…</span>
+<span class="line">Oo-oo-ooh, oo-ooh…（找家）</span>
+<span class="line">Oo-oo-ooh, oo-ooh…（找）</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">我們義無反顧地試著後悔</span>
+<span class="line">我們聲嘶力竭地假裝吶喊</span>
+<span class="line">我們萬分惋惜地浪費著</span>
+<span class="line">用盡一切換來的紙張</span>
+<span class="gap"></span>
+<span class="section-tag">Refrain</span>
+<span class="line">Oo-oo-ooh, oo-ooh…</span>
+<span class="line">Oo-oo-ooh, oo-ooh…（用盡一切換來的紙張）</span>
+<span class="line">Oo-oo-ooh, oo-ooh…（用盡一切！）</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">Oh, oh-oh-oh-oh-oh / Oh-oh-oh</span>
+<span class="line">Oh, oh-oh-oh-oh-oh / Woah-oh</span>
+<span class="line">Oh, oh-oh-oh-oh-oh / Oh-oh-oh</span>
+<span class="line">Oh, oh-oh-oh-oh-oh / Woah-oh</span>
+</div>
+<div class="lyric-col py"><span class="section-tag">Verse 1</span><span class="line">wǒ men zài yuán yě shàng zhǎo yī miàn qiáng</span><span class="line">wǒ men zài biāo qiān lǐ zhǎo fāng xiàng</span><span class="line">wǒ men zài fèi xū bān de lā jī lǐ zhǎo yī kuài hóng zhuān</span><span class="line">wǒ men zài gōng zhěng de xiàng zi lǐ zhǎo jiā</span><span class="gap"></span><span class="section-tag">Refrain</span><span class="line">Oo-oo-ooh, oo-ooh…</span><span class="line">O o - o o - o o h ,   o o - o o h … （ zhǎo jiā ）</span><span class="line">O o - o o - o o h ,   o o - o o h … （ zhǎo ）</span><span class="gap"></span><span class="section-tag">Verse 2</span><span class="line">wǒ men yì wú fǎn gù dì shì zhù hòu huǐ</span><span class="line">wǒ men shēng sī lì jié dì jiǎ zhuāng nà hǎn</span><span class="line">wǒ men wàn fēn wǎn xī dì làng fèi zhù</span><span class="line">yòng jǐn yī qiè huàn lái de zhǐ zhāng</span><span class="gap"></span><span class="section-tag">Refrain</span><span class="line">Oo-oo-ooh, oo-ooh…</span><span class="line">O o - o o - o o h ,   o o - o o h … （ yòng jǐn yī qiè huàn lái de zhǐ zhāng ）</span><span class="line">O o - o o - o o h ,   o o - o o h … （ yòng jǐn yī qiè ！ ）</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">Oh, oh-oh-oh-oh-oh / Oh-oh-oh</span><span class="line">Oh, oh-oh-oh-oh-oh / Woah-oh</span><span class="line">Oh, oh-oh-oh-oh-oh / Oh-oh-oh</span><span class="line">Oh, oh-oh-oh-oh-oh / Woah-oh</span></div><div class="lyric-col en">
+<span class="section-tag">Verse 1</span>
+<span class="line">We search the open field for a wall.</span>
+<span class="line">We search the labels for a direction.</span>
+<span class="line">We search the ruins of trash for a single red brick.</span>
+<span class="line">We search the tidy lanes for a home.</span>
+<span class="gap"></span>
+<span class="section-tag">Refrain</span>
+<span class="line">Oo-oo-ooh, oo-ooh…</span>
+<span class="line">Oo-oo-ooh, oo-ooh… (A home.)</span>
+<span class="line">Oo-oo-ooh, oo-ooh… (Search.)</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">We throw ourselves into trying to regret.</span>
+<span class="line">We scream hoarse, pretending to cry out.</span>
+<span class="line">We waste with infinite regret</span>
+<span class="line">the paper we traded everything for.</span>
+<span class="gap"></span>
+<span class="section-tag">Refrain</span>
+<span class="line">Oo-oo-ooh, oo-ooh…</span>
+<span class="line">Oo-oo-ooh, oo-ooh… (Paper traded for everything.)</span>
+<span class="line">Oo-oo-ooh, oo-ooh… (Traded everything!)</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">Oh, oh-oh-oh-oh-oh…</span>
+<span class="line">Oh, oh-oh-oh-oh-oh…</span>
+<span class="line">Oh, oh-oh-oh-oh-oh…</span>
+<span class="line">Oh, oh-oh-oh-oh-oh…</span>
+</div>
+</div>
+</div>
+<!-- Track 12: 情歌 / Mottos, Bygones -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 12</span>
+<span class="song-title" style="margin-left:12px">情歌</span>
+<span class="song-title-en" style="margin-left:8px">Mottos, Bygones</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="section-tag">Verse 1</span>
+<span class="line">別再說，讓它去吧</span>
+<span class="line">別再說，讓它去吧</span>
+<span class="line">別再說，讓它去吧</span>
+<span class="line">別再說，讓它去吧</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">殺了它，順便殺了我 拜託你了</span>
+<span class="line">殺了它，順便殺了我 拜託你了</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">你說是夢所以才痛，睡醒了再說</span>
+<span class="line">但那挫折和恐懼依舊</span>
+<span class="line">但那挫折和恐懼依舊</span>
+<span class="line">我把故鄉給賣了、愛人給騙了</span>
+<span class="line">但那挫折和恐懼依舊</span>
+<span class="line">但那挫折和恐懼依舊</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">殺了它，順便殺了我 拜託你了</span>
+<span class="line">殺了它，順便殺了我 拜託你了</span>
+<span class="line">殺了它，順便殺了我 拜託你了</span>
+<span class="line">殺了它，順便殺了我 拜託你了</span>
+</div>
+<div class="lyric-col py"><span class="section-tag">Verse 1</span><span class="line">bié zài shuō ， ràng tā qù ba</span><span class="line">bié zài shuō ， ràng tā qù ba</span><span class="line">bié zài shuō ， ràng tā qù ba</span><span class="line">bié zài shuō ， ràng tā qù ba</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">shā le tā ， shùn biàn shā le wǒ   bài tuō nǐ le</span><span class="line">shā le tā ， shùn biàn shā le wǒ   bài tuō nǐ le</span><span class="gap"></span><span class="section-tag">Verse 2</span><span class="line">nǐ shuō shì mèng suǒ yǐ cái tòng ， shuì xǐng le zài shuō</span><span class="line">dàn nà cuò zhé hé kǒng jù yī jiù</span><span class="line">dàn nà cuò zhé hé kǒng jù yī jiù</span><span class="line">wǒ bǎ gù xiāng gěi mài le 、 ài rén gěi piàn le</span><span class="line">dàn nà cuò zhé hé kǒng jù yī jiù</span><span class="line">dàn nà cuò zhé hé kǒng jù yī jiù</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">shā le tā ， shùn biàn shā le wǒ   bài tuō nǐ le</span><span class="line">shā le tā ， shùn biàn shā le wǒ   bài tuō nǐ le</span><span class="line">shā le tā ， shùn biàn shā le wǒ   bài tuō nǐ le</span><span class="line">shā le tā ， shùn biàn shā le wǒ   bài tuō nǐ le</span></div><div class="lyric-col en">
+<span class="section-tag">Verse 1</span>
+<span class="line">Don't say it anymore — let it go.</span>
+<span class="line">Don't say it anymore — let it go.</span>
+<span class="line">Don't say it anymore — let it go.</span>
+<span class="line">Don't say it anymore — let it go.</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">Kill it. While you're at it, kill me too. I'm begging you.</span>
+<span class="line">Kill it. While you're at it, kill me too. I'm begging you.</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">You say it only hurts because it's a dream — talk after you wake.</span>
+<span class="line">But the frustration and the fear remain.</span>
+<span class="line">But the frustration and the fear remain.</span>
+<span class="line">I sold my hometown. I cheated my lover.</span>
+<span class="line">But the frustration and the fear remain.</span>
+<span class="line">But the frustration and the fear remain.</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">Kill it. While you're at it, kill me too. I'm begging you.</span>
+<span class="line">Kill it. While you're at it, kill me too. I'm begging you.</span>
+<span class="line">Kill it. While you're at it, kill me too. I'm begging you.</span>
+<span class="line">Kill it. While you're at it, kill me too. I'm begging you.</span>
+</div>
+</div>
+</div>
+</section>
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ALBUM 2: THE CLOD (瓦合) -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="album-section" id="clod">
+<div class="album-header">
+<h2>瓦合</h2>
+<div class="album-subtitle">The Clod</div>
+<div class="album-meta">Released · May 20, 2023 · 11 tracks</div>
+</div>
+<!-- Track 1: 苦難精算師 / Intro -->
+<div class="song-card instrumental">
+<div class="song-header">
+<div><span class="track-number">Track 1</span>
+<span class="song-title" style="margin-left:12px">苦難精算師</span>
+<span class="song-title-en" style="margin-left:8px">Intro · The Misery Calculator</span>
+</div>
+<span class="tag-intro">INSTRUMENTAL</span>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col" style="text-align:center;padding:48px 24px">
+<em>A four-minute instrumental opening. A brooding, atmospheric build —
+        layers of guitar feedback, a slow martial drumbeat, the tension of
+        seven years of silence compressed into sound. The title translates
+        to "The Misery Accountant": one who tallies suffering with cold precision.</em>
+</div>
+</div>
+</div>
+<!-- Track 2: 缸 / Pool -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 2</span>
+<span class="song-title" style="margin-left:12px">缸</span>
+<span class="song-title-en" style="margin-left:8px">Pool</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="section-tag">Intro</span>
+<span class="line">預備 各就各位 一二三跳 跳進染缸</span>
+<span class="line">看誰先 游向慾望</span>
+<span class="line">膨脹 膨脹 再膨脹 就像那數字一樣</span>
+<span class="line">誰沒有信仰 誰沒有思想</span>
+<span class="line">誰沒有最便宜的酒來陪葬</span>
+<span class="gap"></span>
+<span class="section-tag">Verse</span>
+<span class="line">一二三跳 跳進染缸</span>
+<span class="line">看誰先 游向慾望</span>
+<span class="line">遺忘 遺忘 再遺忘 就像我們記得的那樣</span>
+<span class="line">缸裡有夢想 缸底有爛帳</span>
+<span class="line">誰賠了信仰 誰對自己撒謊</span>
+<span class="line">誰喝著最便宜的酒去陪葬</span>
+<span class="gap"></span>
+<span class="section-tag">Outro</span>
+<span class="line">一二三跳 跳進染缸</span>
+<span class="line">看誰先 游向慾望</span>
+<span class="line">可就連食色性也終將游向死亡 游向死亡</span>
+<span class="line">於是砸了染缸 砸了染缸</span>
+<span class="line">才看見大海茫茫</span>
+<span class="line">而你我仍不知身在何方</span>
+</div>
+<div class="lyric-col py"><span class="section-tag">Intro</span><span class="line">yù bèi   gè jiù gè wèi   yī èr sān tiào   tiào jìn rǎn gāng</span><span class="line">kàn shuí xiān   yóu xiàng yù wàng</span><span class="line">péng zhàng   péng zhàng   zài péng zhàng   jiù xiàng nà shù zì yī yàng</span><span class="line">shuí méi yǒu xìn yǎng   shuí méi yǒu sī xiǎng</span><span class="line">shuí méi yǒu zuì biàn yí de jiǔ lái péi zàng</span><span class="gap"></span><span class="section-tag">Verse</span><span class="line">yī èr sān tiào   tiào jìn rǎn gāng</span><span class="line">kàn shuí xiān   yóu xiàng yù wàng</span><span class="line">yí wàng   yí wàng   zài yí wàng   jiù xiàng wǒ men jì dé de nà yàng</span><span class="line">gāng lǐ yǒu mèng xiǎng   gāng dǐ yǒu làn zhàng</span><span class="line">shuí péi le xìn yǎng   shuí duì zì jǐ sā huǎng</span><span class="line">shuí hē zhù zuì biàn yí de jiǔ qù péi zàng</span><span class="gap"></span><span class="section-tag">Outro</span><span class="line">yī èr sān tiào   tiào jìn rǎn gāng</span><span class="line">kàn shuí xiān   yóu xiàng yù wàng</span><span class="line">kě jiù lián shí sè xìng yě zhōng jiāng yóu xiàng sǐ wáng   yóu xiàng sǐ wáng</span><span class="line">yú shì zá le rǎn gāng   zá le rǎn gāng</span><span class="line">cái kàn jiàn dà hǎi máng máng</span><span class="line">ér nǐ wǒ réng bù zhī shēn zài hé fāng</span></div><div class="lyric-col en">
+<span class="section-tag">Intro</span>
+<span class="line">Ready — on your marks — one, two, three, jump into the dye vat.</span>
+<span class="line">See who swims toward desire first.</span>
+<span class="line">Swelling, swelling, swelling further — just like the numbers.</span>
+<span class="line">Who's without faith? Who's without thought?</span>
+<span class="line">Who hasn't got the cheapest wine to be buried with?</span>
+<span class="gap"></span>
+<span class="section-tag">Verse</span>
+<span class="line">One, two, three jump — into the dye vat.</span>
+<span class="line">See who swims toward desire first.</span>
+<span class="line">Forgetting, forgetting, forgetting again — the way we remembered it.</span>
+<span class="line">Dreams float inside the vat. Bad debts sink to the bottom.</span>
+<span class="line">Who lost their faith? Who lied to themselves?</span>
+<span class="line">Who drinks the cheapest wine to be buried with?</span>
+<span class="gap"></span>
+<span class="section-tag">Outro</span>
+<span class="line">One, two, three jump — into the dye vat.</span>
+<span class="line">See who swims toward desire first.</span>
+<span class="line">But even food and sex — by nature — will ultimately swim toward death.</span>
+<span class="line">So smash the vat. Smash the dye vat.</span>
+<span class="line">Only then do you see the vast, boundless sea —</span>
+<span class="line">and still, you and I have no idea where we are.</span>
+</div>
+</div>
+</div>
+<!-- Track 3: 空 / Space -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 3</span>
+<span class="song-title" style="margin-left:12px">空</span>
+<span class="song-title-en" style="margin-left:8px">Space</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="section-tag">Verse 1</span>
+<span class="line">空間是一格半 誰也出不去（幾寸也不滿意）</span>
+<span class="line">思想是循環 溫飽思淫欲</span>
+<span class="line">真理就是沒真理</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">在成人之前 真想先成為自己</span>
+<span class="line">在世界毀滅之前 真想先毀滅自己</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">我向我看齊 於是一直往下去（沒人在看你）</span>
+<span class="line">萬物皆有靈 只是我太空虛</span>
+<span class="gap"></span>
+<span class="section-tag">Pre-Chorus</span>
+<span class="line">在成人之前 真想先成為自己</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">在世界毀滅之前 真想先毀滅自己</span>
+<span class="line">真理就是沒真理 那誰想听 那誰想听</span>
+</div>
+<div class="lyric-col py"><span class="section-tag">Verse 1</span><span class="line">kōng jiān shì yī gé bàn   shuí yě chū bù qù （ jǐ cùn yě bù mǎn yì ）</span><span class="line">sī xiǎng shì xún huán   wēn bǎo sī yín yù</span><span class="line">zhēn lǐ jiù shì méi zhēn lǐ</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">zài chéng rén zhī qián   zhēn xiǎng xiān chéng wèi zì jǐ</span><span class="line">zài shì jiè huǐ miè zhī qián   zhēn xiǎng xiān huǐ miè zì jǐ</span><span class="gap"></span><span class="section-tag">Verse 2</span><span class="line">wǒ xiàng wǒ kàn qí   yú shì yī zhí wǎng xià qù （ méi rén zài kàn nǐ ）</span><span class="line">wàn wù jiē yǒu líng   zhǐ shì wǒ tài kōng xū</span><span class="gap"></span><span class="section-tag">Pre-Chorus</span><span class="line">zài chéng rén zhī qián   zhēn xiǎng xiān chéng wèi zì jǐ</span><span class="gap"></span><span class="section-tag">Chorus</span><span class="line">zài shì jiè huǐ miè zhī qián   zhēn xiǎng xiān huǐ miè zì jǐ</span><span class="line">zhēn lǐ jiù shì méi zhēn lǐ   nà shuí xiǎng tīng   nà shuí xiǎng tīng</span></div><div class="lyric-col en">
+<span class="section-tag">Verse 1</span>
+<span class="line">Space is one-and-a-half squares — nobody can get out. (Not even a few inches satisfy.)</span>
+<span class="line">Thought is a loop — warm and full, the mind turns to lust.</span>
+<span class="line">The truth is: there is no truth.</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">Before becoming an adult, I really want to become myself first.</span>
+<span class="line">Before the world destroys itself, I really want to destroy myself first.</span>
+<span class="gap"></span>
+<span class="section-tag">Verse 2</span>
+<span class="line">I measure myself against myself — so I keep sinking. (Nobody's watching you.)</span>
+<span class="line">All things have spirit — it's just me who's too empty.</span>
+<span class="gap"></span>
+<span class="section-tag">Pre-Chorus</span>
+<span class="line">Before becoming an adult, I really want to become myself first.</span>
+<span class="gap"></span>
+<span class="section-tag">Chorus</span>
+<span class="line">Before the world destroys itself, I really want to destroy myself first.</span>
+<span class="line">The truth is: there is no truth. Who even wants to hear that?</span>
+</div>
+</div>
+</div>
+<!-- Track 4: 人洞山 / The Human, the Hole and the Mountain -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 4</span>
+<span class="song-title" style="margin-left:12px">人洞山</span>
+<span class="song-title-en" style="margin-left:8px">The Human, the Hole and the Mountain</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="line">山裡面生了塊疤</span>
+<span class="line">疤裡面住了個人</span>
+<span class="line">人裡面破了個洞</span>
+<span class="line">洞裡是滿滿的</span>
+<span class="line">洞裡是滿滿的</span>
+<span class="gap"></span>
+<span class="line">希望爛泥能開花</span>
+<span class="line">希望枯萎後長大</span>
+<span class="line">希望說謊也算話</span>
+<span class="line">希望有天能嘗</span>
+<span class="gap"></span>
+<span class="line">人與山隔了個洞</span>
+<span class="line">洞裡是滿滿的</span>
+<span class="line">洞裡是滿滿的</span>
+<span class="gap"></span>
+<span class="line">滿滿的心願</span>
+<span class="line">滿滿的淚</span>
+<span class="line">滿滿的依戀</span>
+<span class="line">滿滿的錯覺</span>
+</div>
+<div class="lyric-col py"><span class="line">shān lǐ miàn shēng le kuài bā</span><span class="line">bā lǐ miàn zhù le gè rén</span><span class="line">rén lǐ miàn pò le gè dòng</span><span class="line">dòng lǐ shì mǎn mǎn de</span><span class="line">dòng lǐ shì mǎn mǎn de</span><span class="gap"></span><span class="line">xī wàng làn ní néng kāi huā</span><span class="line">xī wàng kū wēi hòu zhǎng dà</span><span class="line">xī wàng shuō huǎng yě suàn huà</span><span class="line">xī wàng yǒu tiān néng cháng</span><span class="gap"></span><span class="line">rén yǔ shān gé le gè dòng</span><span class="line">dòng lǐ shì mǎn mǎn de</span><span class="line">dòng lǐ shì mǎn mǎn de</span><span class="gap"></span><span class="line">mǎn mǎn de xīn yuàn</span><span class="line">mǎn mǎn de lèi</span><span class="line">mǎn mǎn de yī liàn</span><span class="line">mǎn mǎn de cuò jué</span></div><div class="lyric-col en">
+<span class="line">Inside the mountain, a scar grew.</span>
+<span class="line">Inside the scar, a person lived.</span>
+<span class="line">Inside the person, a hole broke open.</span>
+<span class="line">Inside the hole — filled to the brim.</span>
+<span class="line">Inside the hole — filled to the brim.</span>
+<span class="gap"></span>
+<span class="line">Hoping the mud will bloom.</span>
+<span class="line">Hoping to grow after withering.</span>
+<span class="line">Hoping that lies still count as promises.</span>
+<span class="line">Hoping one day to taste it.</span>
+<span class="gap"></span>
+<span class="line">The person and the mountain — separated by a hole.</span>
+<span class="line">Inside the hole — filled to the brim.</span>
+<span class="line">Inside the hole — filled to the brim.</span>
+<span class="gap"></span>
+<span class="line">Brimming with wishes.</span>
+<span class="line">Brimming with tears.</span>
+<span class="line">Brimming with attachment.</span>
+<span class="line">Brimming with delusion.</span>
+</div>
+</div>
+</div>
+<!-- Track 5: 孑 / Interlude -->
+<div class="song-card instrumental">
+<div class="song-header">
+<div><span class="track-number">Track 5</span>
+<span class="song-title" style="margin-left:12px">孑</span>
+<span class="song-title-en" style="margin-left:8px">Interlude</span>
+</div>
+<span class="tag-intro">INSTRUMENTAL</span>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col" style="text-align:center;padding:48px 24px">
+<em>A brief instrumental bridge. The character 孑 means "alone" or "solitary" —
+        the left half of 孔 (hole). A fragment, incomplete by itself. Less than a minute
+        of ambient drift before the album's second half begins.</em>
+</div>
+</div>
+</div>
+<!-- Track 6: 白日夢 / Daydream -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 6</span>
+<span class="song-title" style="margin-left:12px">白日夢</span>
+<span class="song-title-en" style="margin-left:8px">Daydream</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="section-tag">Verse</span>
+<span class="line">我們把自由都交給彼此牽製著</span>
+<span class="line">誰也沒想過糟蹋它</span>
+<span class="line">我們把白日夢給連成一線吞著它</span>
+<span class="line">誰想過路那麽長</span>
+<span class="gap"></span>
+<span class="section-tag">Outro</span>
+<span class="line">就讓我們嘲笑著悲傷</span>
+<span class="line">再為彼此編一個夢</span>
+<span class="line">好讓回家的路更短</span>
+</div>
+<div class="lyric-col py"><span class="section-tag">Verse</span><span class="line">wǒ men bǎ zì yóu dōu jiāo gěi bǐ cǐ qiān zhì zhù</span><span class="line">shuí yě méi xiǎng guò zāo tà tā</span><span class="line">wǒ men bǎ bái rì mèng gěi lián chéng yī xiàn tūn zhù tā</span><span class="line">shuí xiǎng guò lù nà mó zhǎng</span><span class="gap"></span><span class="section-tag">Outro</span><span class="line">jiù ràng wǒ men cháo xiào zhù bēi shāng</span><span class="line">zài wèi bǐ cǐ biān yī gè mèng</span><span class="line">hǎo ràng huí jiā de lù gèng duǎn</span></div><div class="lyric-col en">
+<span class="section-tag">Verse</span>
+<span class="line">We handed our freedom to each other to hold hostage.</span>
+<span class="line">Neither of us ever meant to waste it.</span>
+<span class="line">We strung daydreams together into a line and swallowed them.</span>
+<span class="line">Who knew the road would be this long?</span>
+<span class="gap"></span>
+<span class="section-tag">Outro</span>
+<span class="line">So let us laugh at our sorrow.</span>
+<span class="line">Let us weave another dream for each other —</span>
+<span class="line">so the road home feels shorter.</span>
+</div>
+</div>
+</div>
+<!-- Track 7: 床 / Lie -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 7</span>
+<span class="song-title" style="margin-left:12px">床</span>
+<span class="song-title-en" style="margin-left:8px">Lie</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="line">看著窗外的光</span>
+<span class="line">分不清是路燈還是太陽</span>
+<span class="line">仔細搜索著自己的身體</span>
+<span class="line">試著找出一道合理的傷</span>
+<span class="line">卻還是得說謊</span>
+<span class="gap"></span>
+<span class="line">築起了對快樂的心防</span>
+<span class="line">說什麼也放不下</span>
+<span class="line">從何時開始對悲劇的向往</span>
+<span class="line">填滿了整顆心臟</span>
+<span class="gap"></span>
+<span class="line">築起了對快樂的心防</span>
+<span class="line">說什麼也放不下</span>
+<span class="line">從何時開始對悲劇的向往</span>
+<span class="line">填滿了整顆心臟</span>
+<span class="gap"></span>
+<span class="line">看著窗外的光</span>
+<span class="line">分不清是路燈還是太陽</span>
+<span class="line">仔細搜索著自己的身體</span>
+<span class="line">試著找出一道合理的傷</span>
+<span class="line">卻還是得說謊</span>
+</div>
+<div class="lyric-col py"><span class="line">kàn zhù chuāng wài de guāng</span><span class="line">fēn bù qīng shì lù dēng hái shì tài yáng</span><span class="line">zǎi xì sōu suǒ zhù zì jǐ de shēn tǐ</span><span class="line">shì zhù zhǎo chū yī dào hé lǐ de shāng</span><span class="line">què hái shì dé shuō huǎng</span><span class="gap"></span><span class="line">zhù qǐ le duì kuài lè de xīn fáng</span><span class="line">shuō shén me yě fàng bù xià</span><span class="line">cóng hé shí kāi shǐ duì bēi jù de xiàng wǎng</span><span class="line">tián mǎn le zhěng kē xīn zàng</span><span class="gap"></span><span class="line">zhù qǐ le duì kuài lè de xīn fáng</span><span class="line">shuō shén me yě fàng bù xià</span><span class="line">cóng hé shí kāi shǐ duì bēi jù de xiàng wǎng</span><span class="line">tián mǎn le zhěng kē xīn zàng</span><span class="gap"></span><span class="line">kàn zhù chuāng wài de guāng</span><span class="line">fēn bù qīng shì lù dēng hái shì tài yáng</span><span class="line">zǎi xì sōu suǒ zhù zì jǐ de shēn tǐ</span><span class="line">shì zhù zhǎo chū yī dào hé lǐ de shāng</span><span class="line">què hái shì dé shuō huǎng</span></div><div class="lyric-col en">
+<span class="line">Watching the light outside the window —</span>
+<span class="line">can't tell if it's a streetlamp or the sun.</span>
+<span class="line">Searching my own body carefully,</span>
+<span class="line">trying to find a wound that makes sense.</span>
+<span class="line">But I still have to lie.</span>
+<span class="gap"></span>
+<span class="line">Built up defenses against happiness.</span>
+<span class="line">No matter what I say, I can't let go.</span>
+<span class="line">When did this longing for tragedy begin</span>
+<span class="line">to fill up my entire heart?</span>
+<span class="gap"></span>
+<span class="line">Built up defenses against happiness.</span>
+<span class="line">No matter what I say, I can't let go.</span>
+<span class="line">When did this longing for tragedy begin</span>
+<span class="line">to fill up my entire heart?</span>
+<span class="gap"></span>
+<span class="line">Watching the light outside the window —</span>
+<span class="line">can't tell if it's a streetlamp or the sun.</span>
+<span class="line">Searching my own body carefully,</span>
+<span class="line">trying to find a wound that makes sense.</span>
+<span class="line">But I still have to lie.</span>
+</div>
+</div>
+</div>
+<!-- Track 8: 八 / B -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 8</span>
+<span class="song-title" style="margin-left:12px">八</span>
+<span class="song-title-en" style="margin-left:8px">B</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="line">喝得再醉 太陽還是出來了</span>
+<span class="line">學姐她最後還是嫁了個王八</span>
+<span class="line">欸 交個朋友吧 欸 交個朋友吧</span>
+<span class="line">欸 交個朋友好嗎</span>
+<span class="line">能不能也分我點說剩的話</span>
+<span class="gap"></span>
+<span class="line">可惜啊 我不是你想找的那個藝術家</span>
+<span class="line">從來沒瀟灑</span>
+<span class="line">可恨啊 怎麼連煙跟酒都幫他</span>
+<span class="line">那到底是誰說的話</span>
+<span class="gap"></span>
+<span class="line">賺錢來花 吃屎來拉</span>
+<span class="line">把夢都留在昨天倒的那家網咖</span>
+<span class="line">欸 交個朋友吧 欸 交個朋友吧</span>
+<span class="line">欸 交個朋友好嗎</span>
+<span class="line">能不能也分我點說剩的話</span>
+<span class="gap"></span>
+<span class="line">可惜啊 我不是你想找的那個藝術家</span>
+<span class="line">從來沒瀟灑</span>
+<span class="line">可恨啊 怎麼連煙跟酒都幫他</span>
+<span class="line">那到底是誰說的話</span>
+<span class="gap"></span>
+<span class="line">欸 交個朋友吧 欸 交個朋友吧</span>
+<span class="line">欸 交個朋友好嗎</span>
+<span class="line">拜託你啦 就讓我哭給你們笑吧</span>
+<span class="line">哭給你們笑吧 哭給你們笑</span>
+</div>
+<div class="lyric-col py"><span class="line">hē dé zài zuì   tài yáng hái shì chū lái le</span><span class="line">xué jiě tā zuì hòu hái shì jià le gè wáng bā</span><span class="line">āi   jiāo gè péng yǒu ba   āi   jiāo gè péng yǒu ba</span><span class="line">āi   jiāo gè péng yǒu hǎo ma</span><span class="line">néng bù néng yě fēn wǒ diǎn shuō shèng de huà</span><span class="gap"></span><span class="line">kě xī a   wǒ bù shì nǐ xiǎng zhǎo de nà gè yì shù jiā</span><span class="line">cóng lái méi xiāo sǎ</span><span class="line">kě hèn a   zěn me lián yān gēn jiǔ dōu bāng tā</span><span class="line">nà dào dǐ shì shuí shuō de huà</span><span class="gap"></span><span class="line">zhuàn qián lái huā   chī shǐ lái lā</span><span class="line">bǎ mèng dōu liú zài zuó tiān dào de nà jiā wǎng kā</span><span class="line">āi   jiāo gè péng yǒu ba   āi   jiāo gè péng yǒu ba</span><span class="line">āi   jiāo gè péng yǒu hǎo ma</span><span class="line">néng bù néng yě fēn wǒ diǎn shuō shèng de huà</span><span class="gap"></span><span class="line">kě xī a   wǒ bù shì nǐ xiǎng zhǎo de nà gè yì shù jiā</span><span class="line">cóng lái méi xiāo sǎ</span><span class="line">kě hèn a   zěn me lián yān gēn jiǔ dōu bāng tā</span><span class="line">nà dào dǐ shì shuí shuō de huà</span><span class="gap"></span><span class="line">āi   jiāo gè péng yǒu ba   āi   jiāo gè péng yǒu ba</span><span class="line">āi   jiāo gè péng yǒu hǎo ma</span><span class="line">bài tuō nǐ la   jiù ràng wǒ kū gěi nǐ men xiào ba</span><span class="line">kū gěi nǐ men xiào ba   kū gěi nǐ men xiào</span></div><div class="lyric-col en">
+<span class="line">No matter how drunk you get, the sun still comes up.</span>
+<span class="line">In the end, the senior girl still married a bastard.</span>
+<span class="line">Hey — let's be friends. Hey — let's be friends.</span>
+<span class="line">Hey, can we be friends?</span>
+<span class="line">Could you spare me some leftover words?</span>
+<span class="gap"></span>
+<span class="line">Such a shame — I'm not the artist you're looking for.</span>
+<span class="line">I've never been cool.</span>
+<span class="line">So hateful — how come even cigarettes and booze take his side?</span>
+<span class="line">Who the hell said that, anyway?</span>
+<span class="gap"></span>
+<span class="line">Earn money, spend it. Eat shit, shit it out.</span>
+<span class="line">Leave all your dreams at that internet café that shut down yesterday.</span>
+<span class="line">Hey — let's be friends. Hey — let's be friends.</span>
+<span class="line">Hey, can we be friends?</span>
+<span class="line">Could you spare me some leftover words?</span>
+<span class="gap"></span>
+<span class="line">Such a shame — I'm not the artist you're looking for.</span>
+<span class="line">I've never been cool.</span>
+<span class="line">So hateful — how come even cigarettes and booze take his side?</span>
+<span class="line">Who the hell said that, anyway?</span>
+<span class="gap"></span>
+<span class="line">Hey — let's be friends. Hey — let's be friends.</span>
+<span class="line">Hey, can we be friends?</span>
+<span class="line">I'm begging you — just let me cry so you can laugh.</span>
+<span class="line">Cry so you can laugh. Cry so you can laugh.</span>
+</div>
+</div>
+</div>
+<!-- Track 9: 老張 / Chang -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 9</span>
+<span class="song-title" style="margin-left:12px">老張</span>
+<span class="song-title-en" style="margin-left:8px">Chang</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="line">抹上了一身的泥巴</span>
+<span class="line">以為能消失在山上</span>
+<span class="line">卻像個智障一樣</span>
+<span class="line">醉倒在柏油路上</span>
+<span class="line">醉倒在柏油路上</span>
+<span class="gap"></span>
+<span class="line">還差一點 還差一點就把它抹上</span>
+<span class="line">還差一點 還差一點就不致於絕望</span>
+<span class="line">還差一點 就能跟他們都站在一起</span>
+<span class="line">還差一點 就能跟他們一起取笑我自己</span>
+<span class="gap"></span>
+<span class="line">抹上了一身的泥巴</span>
+<span class="line">以為能消失在山上</span>
+<span class="line">卻像個智障一樣</span>
+<span class="line">醉倒在柏油路上</span>
+<span class="line">醉倒在柏油路上</span>
+<span class="gap"></span>
+<span class="line">抹上了一身的泥巴</span>
+<span class="line">以為能消失在山上</span>
+<span class="line">卻像個智障一樣</span>
+<span class="line">醉倒在柏油路上</span>
+</div>
+<div class="lyric-col py"><span class="line">mǒ shàng le yī shēn de ní bā</span><span class="line">yǐ wèi néng xiāo shī zài shān shàng</span><span class="line">què xiàng gè zhì zhàng yī yàng</span><span class="line">zuì dào zài bǎi yóu lù shàng</span><span class="line">zuì dào zài bǎi yóu lù shàng</span><span class="gap"></span><span class="line">hái chà yī diǎn   hái chà yī diǎn jiù bǎ tā mǒ shàng</span><span class="line">hái chà yī diǎn   hái chà yī diǎn jiù bù zhì yú jué wàng</span><span class="line">hái chà yī diǎn   jiù néng gēn tā men dōu zhàn zài yī qǐ</span><span class="line">hái chà yī diǎn   jiù néng gēn tā men yī qǐ qǔ xiào wǒ zì jǐ</span><span class="gap"></span><span class="line">mǒ shàng le yī shēn de ní bā</span><span class="line">yǐ wèi néng xiāo shī zài shān shàng</span><span class="line">què xiàng gè zhì zhàng yī yàng</span><span class="line">zuì dào zài bǎi yóu lù shàng</span><span class="line">zuì dào zài bǎi yóu lù shàng</span><span class="gap"></span><span class="line">mǒ shàng le yī shēn de ní bā</span><span class="line">yǐ wèi néng xiāo shī zài shān shàng</span><span class="line">què xiàng gè zhì zhàng yī yàng</span><span class="line">zuì dào zài bǎi yóu lù shàng</span></div><div class="lyric-col en">
+<span class="line">Covered myself in mud,</span>
+<span class="line">thinking I could disappear into the mountains.</span>
+<span class="line">But like an idiot</span>
+<span class="line">I got drunk and collapsed on the asphalt.</span>
+<span class="line">Collapsed on the asphalt.</span>
+<span class="gap"></span>
+<span class="line">Just a little short — just a little short of smearing it on.</span>
+<span class="line">Just a little short — just a little short of not quite despair.</span>
+<span class="line">Just a little short — then I could stand together with them.</span>
+<span class="line">Just a little short — then I could join them in laughing at myself.</span>
+<span class="gap"></span>
+<span class="line">Covered myself in mud,</span>
+<span class="line">thinking I could disappear into the mountains.</span>
+<span class="line">But like an idiot</span>
+<span class="line">I got drunk and collapsed on the asphalt.</span>
+<span class="line">Collapsed on the asphalt.</span>
+<span class="gap"></span>
+<span class="line">Covered myself in mud,</span>
+<span class="line">thinking I could disappear into the mountains.</span>
+<span class="line">But like an idiot</span>
+<span class="line">I got drunk and collapsed on the asphalt.</span>
+</div>
+</div>
+</div>
+<!-- Track 10: 芽 / Shoot -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 10</span>
+<span class="song-title" style="margin-left:12px">芽</span>
+<span class="song-title-en" style="margin-left:8px">Shoot</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="line">生活空空蕩盪</span>
+<span class="line">卻還是想著遺憾</span>
+<span class="line">緊擁著蹉跎</span>
+<span class="line">搖啊搖搖晃晃</span>
+<span class="gap"></span>
+<span class="line">只剩下你還守著</span>
+<span class="line">戰死的每個浪漫</span>
+<span class="line">都拯救 你的從容</span>
+<span class="line">不斷放過自己 是為了誰</span>
+<span class="line">親手埋葬 一刻一顆</span>
+<span class="gap"></span>
+<span class="line">開呀開呀滿山惆悵</span>
+<span class="line">你不過是看透你沒有的瘋狂</span>
+<span class="line">寧願放過自己 是為了誰</span>
+<span class="line">親手埋葬 一刻一顆</span>
+<span class="gap"></span>
+<span class="line">生活空空蕩盪</span>
+<span class="line">卻還是想著遺憾</span>
+<span class="line">緊擁著蹉跎</span>
+<span class="line">搖啊搖搖晃晃</span>
+<span class="line">只剩下你還守著</span>
+<span class="gap"></span>
+<span class="line">請別留下我 也留下你</span>
+<span class="line">親手埋葬 一刻一顆</span>
+</div>
+<div class="lyric-col py"><span class="line">shēng huó kōng kōng dàng dàng</span><span class="line">què hái shì xiǎng zhù yí hàn</span><span class="line">jǐn yōng zhù cuō tuó</span><span class="line">yáo a yáo yáo huǎng huǎng</span><span class="gap"></span><span class="line">zhǐ shèng xià nǐ hái shǒu zhù</span><span class="line">zhàn sǐ de měi gè làng màn</span><span class="line">dōu zhěng jiù   nǐ de cóng róng</span><span class="line">bù duàn fàng guò zì jǐ   shì wèi le shuí</span><span class="line">qīn shǒu mái zàng   yī kè yī kē</span><span class="gap"></span><span class="line">kāi ya kāi ya mǎn shān chóu chàng</span><span class="line">nǐ bù guò shì kàn tòu nǐ méi yǒu de fēng kuáng</span><span class="line">níng yuàn fàng guò zì jǐ   shì wèi le shuí</span><span class="line">qīn shǒu mái zàng   yī kè yī kē</span><span class="gap"></span><span class="line">shēng huó kōng kōng dàng dàng</span><span class="line">què hái shì xiǎng zhù yí hàn</span><span class="line">jǐn yōng zhù cuō tuó</span><span class="line">yáo a yáo yáo huǎng huǎng</span><span class="line">zhǐ shèng xià nǐ hái shǒu zhù</span><span class="gap"></span><span class="line">qǐng bié liú xià wǒ   yě liú xià nǐ</span><span class="line">qīn shǒu mái zàng   yī kè yī kē</span></div><div class="lyric-col en">
+<span class="line">Life is hollow, hollow,</span>
+<span class="line">yet I still dwell on regret.</span>
+<span class="line">Clutching wasted time tight,</span>
+<span class="line">swaying, staggering.</span>
+<span class="gap"></span>
+<span class="line">Only you remain, guarding</span>
+<span class="line">every romance that died in battle.</span>
+<span class="line">They all salvage your composure.</span>
+<span class="line">Constantly letting yourself off — for whose sake?</span>
+<span class="line">Burying, with your own hands, one moment, one seed.</span>
+<span class="gap"></span>
+<span class="line">Blooming, blooming — the whole mountain overgrown with melancholy.</span>
+<span class="line">You've merely seen through a madness you never had.</span>
+<span class="line">Would rather let yourself off — for whose sake?</span>
+<span class="line">Burying, with your own hands, one moment, one seed.</span>
+<span class="gap"></span>
+<span class="line">Life is hollow, hollow,</span>
+<span class="line">yet I still dwell on regret.</span>
+<span class="line">Clutching wasted time tight,</span>
+<span class="line">swaying, staggering.</span>
+<span class="line">Only you remain, guarding —</span>
+<span class="gap"></span>
+<span class="line">Please don't leave me behind — and don't leave you behind either.</span>
+<span class="line">Burying, with your own hands, one moment, one seed.</span>
+</div>
+</div>
+</div>
+<!-- Track 11: 但 / Damn -->
+<div class="song-card">
+<div class="song-header">
+<div><span class="track-number">Track 11</span>
+<span class="song-title" style="margin-left:12px">但</span>
+<span class="song-title-en" style="margin-left:8px">Damn</span>
+</div>
+</div>
+<div class="lyrics-grid">
+<div class="lyric-col cn">
+<span class="line">你說你不想在這裡 我也不想在這裡</span>
+<span class="line">但天黑的太快想走早就來不及</span>
+<span class="line">喔 我愛你 可惜關係變成沒關係</span>
+<span class="line">問題是沒問題</span>
+<span class="gap"></span>
+<span class="line">於是我們繼續</span>
+<span class="line">拿著筆想寫點東西</span>
+<span class="line">以為是武器能伸張正義</span>
+<span class="line">沒人理也沒關係</span>
+<span class="line">至少我還有你</span>
+<span class="line">至少我還有你</span>
+<span class="gap"></span>
+<span class="line">說你不想在這裡 我也不想在這裡</span>
+<span class="line">但天黑的太快想走早就來不及</span>
+<span class="line">喔 我愛你 可惜關係變成沒關係</span>
+<span class="line">問題是沒問題</span>
+<span class="line">於是我們繼續</span>
+<span class="gap"></span>
+<span class="line">喔 我愛你 那些問題我都沒關係</span>
+<span class="line">但你離開了這裡</span>
+<span class="line">於是我們不再年輕</span>
+</div>
+<div class="lyric-col py"><span class="line">nǐ shuō nǐ bù xiǎng zài zhè lǐ   wǒ yě bù xiǎng zài zhè lǐ</span><span class="line">dàn tiān hēi de tài kuài xiǎng zǒu zǎo jiù lái bù jí</span><span class="line">ō   wǒ ài nǐ   kě xī guān xì biàn chéng méi guān xì</span><span class="line">wèn tí shì méi wèn tí</span><span class="gap"></span><span class="line">yú shì wǒ men jì xù</span><span class="line">ná zhù bǐ xiǎng xiě diǎn dōng xī</span><span class="line">yǐ wèi shì wǔ qì néng shēn zhāng zhèng yì</span><span class="line">méi rén lǐ yě méi guān xì</span><span class="line">zhì shǎo wǒ hái yǒu nǐ</span><span class="line">zhì shǎo wǒ hái yǒu nǐ</span><span class="gap"></span><span class="line">shuō nǐ bù xiǎng zài zhè lǐ   wǒ yě bù xiǎng zài zhè lǐ</span><span class="line">dàn tiān hēi de tài kuài xiǎng zǒu zǎo jiù lái bù jí</span><span class="line">ō   wǒ ài nǐ   kě xī guān xì biàn chéng méi guān xì</span><span class="line">wèn tí shì méi wèn tí</span><span class="line">yú shì wǒ men jì xù</span><span class="gap"></span><span class="line">ō   wǒ ài nǐ   nà xiē wèn tí wǒ dōu méi guān xì</span><span class="line">dàn nǐ lí kāi le zhè lǐ</span><span class="line">yú shì wǒ men bù zài nián qīng</span></div><div class="lyric-col en">
+<span class="line">You say you don't want to be here. I don't want to be here either.</span>
+<span class="line">But the sky darkens too fast — it's already too late to leave.</span>
+<span class="line">Oh, I love you. Too bad our relation became no relation.</span>
+<span class="line">The problem is: there's no problem.</span>
+<span class="gap"></span>
+<span class="line">So we carry on.</span>
+<span class="line">Holding a pen, wanting to write something —</span>
+<span class="line">thinking it's a weapon that can deliver justice.</span>
+<span class="line">No one paying attention? It doesn't matter.</span>
+<span class="line">At least I still have you.</span>
+<span class="line">At least I still have you.</span>
+<span class="gap"></span>
+<span class="line">Say you don't want to be here. I don't want to be here either.</span>
+<span class="line">But the sky darkens too fast — it's already too late to leave.</span>
+<span class="line">Oh, I love you. Too bad our relation became no relation.</span>
+<span class="line">The problem is: there's no problem.</span>
+<span class="line">So we carry on.</span>
+<span class="gap"></span>
+<span class="line">Oh, I love you. All those problems — I don't mind them.</span>
+<span class="line">But you left this place.</span>
+<span class="line">And so we are no longer young.</span>
+</div>
+</div>
+</div>
+</section>
+<footer>
+<p>草東沒有派對  <span>·</span>  No Party For Cao Dong</p>
+<p style="margin-top:6px">Original lyrics © No Party For Cao Dong  |  Translations compiled for educational purposes</p>
+<p style="margin-top:6px;font-size:0.7rem">Generated <span>April 2026</span></p>
+</footer>
+<a class="back-to-top" href="#about" title="Back to top">↑</a>
+</body>
+</html>

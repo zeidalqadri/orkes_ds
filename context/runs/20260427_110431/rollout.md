@@ -1,0 +1,1 @@
+GOAL.md cleared, STATE.md updated, status sent. Agent is online and idle — V4 Flash confirmed post-restart.

@@ -1,0 +1,9 @@
+.venv/
+.env
+.envsitter/
+__pycache__/
+*.pyc
+.restart_continue
+chat_id.txt
+dogfood-output/
+logs/

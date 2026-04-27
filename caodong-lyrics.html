@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>草東沒有派對 · No Party for Cao Dong — 完整歌詞</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: #080808;
+  color: #d4d4d4;
+  font-family: 'Inter', 'Noto Sans TC', sans-serif;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+::selection { background: #8b4513; color: #f0f0f0; }
+
+.hero {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  background:
+    radial-gradient(ellipse at 30% 50%, rgba(139, 69, 19, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 50%, rgba(100, 50, 20, 0.06) 0%, transparent 60%),
+    linear-gradient(180deg, #080808 0%, #0d0d0d 100%);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(139, 69, 19, 0.3), transparent);
+}
+
+.hero h1 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: #e8e0d8;
+  text-shadow: 0 2px 40px rgba(0,0,0,0.5);
+  margin-bottom: 0.3em;
+}
+
+.hero .sub {
+  font-size: clamp(1rem, 2.5vw, 1.6rem);
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  color: #8a7a6a;
+  text-transform: uppercase;
+  margin-bottom: 1.5em;
+}
+
+.hero .tagline {
+  font-size: 0.85rem;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  color: #5a4a3a;
+  max-width: 500px;
+  line-height: 1.9;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: #3a3a3a;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(8,8,8,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  height: 52px;
+  gap: 1.5rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+nav::-webkit-scrollbar { display: none; }
+
+nav a {
+  color: #6a6a6a;
+  text-decoration: none;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  font-weight: 400;
+  transition: color 0.3s;
+}
+nav a:hover, nav a.active { color: #c4b4a4; }
+nav .sep { color: #2a2a2a; font-size: 0.6rem; }
+
+.album-section {
+  padding: 5rem 1.5rem 4rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.album-header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(139, 69, 19, 0.15);
+}
+
+.album-header .title-cn {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  color: #e0d8d0;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.2rem;
+}
+
+.album-header .title-en {
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  font-weight: 300;
+  color: #7a6a5a;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.album-header .year {
+  font-size: 0.75rem;
+  color: #4a3a2a;
+  letter-spacing: 0.15em;
+  margin-top: 0.5rem;
+}
+
+.song {
+  margin-bottom: 3.5rem;
+  padding: 2rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.song:last-child { border-bottom: none; }
+
+.song-header {
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.song-header .track-no {
+  font-size: 0.65rem;
+  color: #3a3a3a;
+  letter-spacing: 0.1em;
+  font-weight: 400;
+}
+
+.song-header .song-title-cn {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1.3rem;
+  color: #d0c8c0;
+  letter-spacing: 0.08em;
+}
+
+.song-header .song-title-en {
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: #7a6a5a;
+  letter-spacing: 0.1em;
+}
+
+.lyrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 700px) {
+  .lyrics-grid { grid-template-columns: 1fr; gap: 0.8rem; }
+  .album-section { padding: 4rem 1rem 3rem; }
+  .song { padding: 1.5rem 0; }
+}
+
+.lyric-col {
+  font-size: 0.92rem;
+  line-height: 2;
+}
+
+.lyric-col.original {
+  font-family: 'Noto Sans TC', sans-serif;
+  color: #c8c0b8;
+}
+
+.lyric-col.translation {
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  color: #7a7a7a;
+}
+
+.section-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #4a3a2a;
+  margin: 1.2em 0 0.5em;
+  font-weight: 600;
+}
+
+.section-label:first-child { margin-top: 0; }
+
+.adjacent-line { padding-left: 1.2em; }
+
+footer {
+  text-align: center;
+  padding: 4rem 1.5rem 3rem;
+  color: #3a3a3a;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  border-top: 1px solid rgba(255,255,255,0.03);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+footer a { color: #6a5a4a; text-decoration: none; }
+footer a:hover { color: #9a8a7a; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#hero">Home</a>
+  <span class="sep">/</span>
+  <a href="#album-servile">醜奴兒 · The Servile</a>
+  <span class="sep">/</span>
+  <a href="#album-clod">瓦合 · The Clod</a>
+</nav>
+
+<section class="hero" id="hero">
+  <h1>草東沒有派對</h1>
+  <div class="sub">No Party for Cao Dong</div>
+  <div class="tagline">
+    完整歌詞與英譯<br>
+    Complete Lyrics &amp; English Translations
+  </div>
+  <div class="scroll-hint">— SCROLL —</div>
+</section>
+
+<section class="album-section" id="album-servile">
+  <div class="album-header">
+    <div class="title-cn">醜奴兒</div>
+    <div class="title-en">The Servile</div>
+    <div class="year">2016</div>
+  </div>
+
+  <!-- 01 Intro -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">01</div>
+      <div class="song-title-cn">Intro</div>
+      <div class="song-title-en">Intro</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original"><em>(instrumental)</em></div>
+      <div class="lyric-col translation"><em>(instrumental)</em></div>
+    </div>
+  </div>
+
+  <!-- 02 醜 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">02</div>
+      <div class="song-title-cn">醜</div>
+      <div class="song-title-en">Grisly Me</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        <div class="section-label">[Verse 1]</div>
+        我試過握著她的手<br>
+        卻還是一樣寂寞<br>
+        從沒想過
+        <div class="section-label">[Chorus]</div>
+        原來自己那麼醜陋<br>
+        Oh-oh, oh, oh-oh, oh<br>
+        原來自己那麼醜陋<br>
+        Oh-oh, oh, oh-oh, oh
+        <div class="section-label">[Verse 2]</div>
+        我說得像切身之痛<br>
+        卻一直在退縮<br>
+        從沒想過
+        <div class="section-label">[Chorus]</div>
+        原來自己那麼醜陋<br>
+        Oh-oh, oh, oh-oh, oh<br>
+        原來自己那麼醜陋<br>
+        Oh-oh, oh, oh-oh, oh
+      </div>
+      <div class="lyric-col translation">
+        <div class="section-label">[Verse 1]</div>
+        I tried holding her hand<br>
+        But I was still lonely<br>
+        Never thought
+        <div class="section-label">[Chorus]</div>
+        That I was so ugly all along<br>
+        Oh-oh, oh, oh-oh, oh<br>
+        That I was so ugly all along<br>
+        Oh-oh, oh, oh-oh, oh
+        <div class="section-label">[Verse 2]</div>
+        I speak as if I know the pain<br>
+        But I've been retreating all along<br>
+        Never thought
+        <div class="section-label">[Chorus]</div>
+        That I was so ugly all along<br>
+        Oh-oh, oh, oh-oh, oh<br>
+        That I was so ugly all along<br>
+        Oh-oh, oh, oh-oh, oh
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 爛泥 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">03</div>
+      <div class="song-title-cn">爛泥</div>
+      <div class="song-title-en">Wimpish</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        <div class="section-label">[Verse 1]</div>
+        Oh, 多麼美麗的一顆心<br>
+        怎麼會、怎麼會<br>
+        就變成了一灘爛泥？<br>
+        Oh, 多麼單純的一首詩<br>
+        怎麼會、怎麼會<br>
+        都變成了諷刺？
+        <div class="section-label">[Chorus]</div>
+        我想要說的前人們都說過了<br>
+        我想要做的有錢人都做過了<br>
+        我想要的公平都是不公們虛構的
+        <div class="section-label">[Verse 2]</div>
+        Oh, 多麼乾淨的一幅畫<br>
+        怎麼會、怎麼會<br>
+        充滿了悲傷？<br>
+        Oh, 多麼天真的一句話<br>
+        怎麼會、怎麼會<br>
+        像噩夢一樣？
+        <div class="section-label">[Chorus]</div>
+        我想要說的前人們都說過了<br>
+        我想要做的有錢人都做過了<br>
+        我想要的公平都是不公們虛構的
+      </div>
+      <div class="lyric-col translation">
+        <div class="section-label">[Verse 1]</div>
+        Oh, what a beautiful heart<br>
+        How did it, how did it<br>
+        Turn into a pool of mud?<br>
+        Oh, what an innocent poem<br>
+        How did it, how did it<br>
+        Turn into nothing but mockery?
+        <div class="section-label">[Chorus]</div>
+        Everything I want to say, the ancients have already said<br>
+        Everything I want to do, the rich have already done<br>
+        The fairness I seek is fabricated by injustice
+        <div class="section-label">[Verse 2]</div>
+        Oh, what a clean painting<br>
+        How did it, how did it<br>
+        Become filled with sorrow?<br>
+        Oh, what a naive sentence<br>
+        How did it, how did it<br>
+        Become like a nightmare?
+        <div class="section-label">[Chorus]</div>
+        Everything I want to say, the ancients have already said<br>
+        Everything I want to do, the rich have already done<br>
+        The fairness I seek is fabricated by injustice
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 勇敢的人 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">04</div>
+      <div class="song-title-cn">勇敢的人</div>
+      <div class="song-title-en">The Reluctant</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        <div class="section-label">[Verse 1]</div>
+        又忍著的 失望的 不解的 痛恨的<br>
+        又只用空瓶把今天砸碎<br>
+        然後又哭著對離開了自己的影子道歉<br>
+        別氣了 沒有誰在跟你作對<br>
+        別哭了 沒有誰會心碎
+        <div class="section-label">[Pre-Chorus]</div>
+        Oh, 沒有勇敢的人<br>
+        勇敢的人
+        <div class="section-label">[Chorus]</div>
+        你賣光了一切 你的肝和你的肺<br>
+        Oh, 他們扔了你的世界<br>
+        去成為更好的人類<br>
+        那廉價的眼淚就別掛在嘴邊<br>
+        什麼也沒改變<br>
+        什麼也不改變
+        <div class="section-label">[Verse 2]</div>
+        請別舉起手槍<br>
+        Oh, 這裡沒有反抗的人<br>
+        不用再圍牆<br>
+        Oh, 這裡沒有反抗的人
+      </div>
+      <div class="lyric-col translation">
+        <div class="section-label">[Verse 1]</div>
+        Again enduring disappointment, confusion, hatred<br>
+        Again smashing today with an empty bottle<br>
+        Then crying, apologizing to your shadow that left you<br>
+        Don't be mad, no one is against you<br>
+        Don't cry, no one's heart will break
+        <div class="section-label">[Pre-Chorus]</div>
+        Oh, there is no brave one<br>
+        No brave one
+        <div class="section-label">[Chorus]</div>
+        You sold everything, your liver and your lungs<br>
+        Oh, they threw away your world<br>
+        To become a better human being<br>
+        Keep those cheap tears away from your lips<br>
+        Nothing has changed<br>
+        Nothing will change
+        <div class="section-label">[Verse 2]</div>
+        Please don't raise your gun<br>
+        Oh, there is no one fighting here<br>
+        No need for walls<br>
+        Oh, there is no one fighting here
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 大風吹 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">05</div>
+      <div class="song-title-cn">大風吹</div>
+      <div class="song-title-en">Simon Says</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        <div class="section-label">[Verse 1]</div>
+        大風吹著誰<br>
+        誰就倒楣<br>
+        每個人都想當鬼<br>
+        都一樣的下賤
+        <div class="section-label">[Chorus]</div>
+        哭啊，喊啊，叫你媽媽帶你去買玩具啊<br>
+        快、快拿到學校炫耀吧<br>
+        孩子交點朋友吧<br>
+        哎呀呀，你看你手上拿的是什麼啊<br>
+        那東西我們早就不屑啦<br>
+        哈哈哈
+        <div class="section-label">[Verse 2]</div>
+        一樣又醉了，一樣又掉眼淚<br>
+        一樣的屈辱，一樣的感覺<br>
+        怪罪給時間，它給了起點<br>
+        怪罪給時間，它給了終點
+        <div class="section-label">[Chorus]</div>
+        哭啊，喊啊，叫你媽媽帶你去買玩具啊<br>
+        快、快拿到學校炫耀吧<br>
+        孩子交點朋友吧
+      </div>
+      <div class="lyric-col translation">
+        <div class="section-label">[Verse 1]</div>
+        Whoever the wind blows on<br>
+        Is the one who gets unlucky<br>
+        Everyone wants to be "it"<br>
+        All equally despicable
+        <div class="section-label">[Chorus]</div>
+        Cry, scream, tell your mom to buy you toys<br>
+        Hurry, hurry, show them off at school<br>
+        Kid, go make some friends<br>
+        Aiyah, what's that in your hand?<br>
+        We stopped caring about that long ago<br>
+        Hahaha
+        <div class="section-label">[Verse 2]</div>
+        Drunk again, tears again<br>
+        The same humiliation, the same feeling<br>
+        Blame it on time—it gave us a start<br>
+        Blame it on time—it gave us an end
+        <div class="section-label">[Chorus]</div>
+        Cry, scream, tell your mom to buy you toys<br>
+        Hurry, hurry, show them off at school<br>
+        Kid, go make some friends
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 艾瑪 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">06</div>
+      <div class="song-title-cn">艾瑪</div>
+      <div class="song-title-en">Emma</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        <div class="section-label">[Verse 1]</div>
+        歌唱著一種沒有深度的語言<br>
+        試著跟著這些虛偽一起改變<br>
+        改變
+        <div class="section-label">[Chorus]</div>
+        妳笑著說我所擁有的一切也都是虛偽<br>
+        妳笑著說我所有的謊言活不過明天
+        <div class="section-label">[Verse 2]</div>
+        交換著一種不負責任的畫面<br>
+        試著跟著這些標籤一起改變<br>
+        改變
+        <div class="section-label">[Chorus]</div>
+        妳笑著說我所擁有的一切也都是虛偽<br>
+        妳笑著說我所有的謊言活不過明天
+      </div>
+      <div class="lyric-col translation">
+        <div class="section-label">[Verse 1]</div>
+        Singing in a language with no depth<br>
+        Trying to change along with all this hypocrisy<br>
+        Change
+        <div class="section-label">[Chorus]</div>
+        You smile and say everything I own is also fake<br>
+        You smile and say all my lies won't survive tomorrow
+        <div class="section-label">[Verse 2]</div>
+        Trading in irresponsible images<br>
+        Trying to change along with all these labels<br>
+        Change
+        <div class="section-label">[Chorus]</div>
+        You smile and say everything I own is also fake<br>
+        You smile and say all my lies won't survive tomorrow
+      </div>
+    </div>
+  </div>
+
+  <!-- 07 等 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">07</div>
+      <div class="song-title-cn">等</div>
+      <div class="song-title-en">Await</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        <div class="section-label">[Verse 1]</div>
+        我在等的那部車呢<br>
+        它會不會又拋錨了？<br>
+        我在等的那個人呢<br>
+        他會不會又不來了？
+        <div class="section-label">[Chorus]</div>
+        I'll wait, I'll wait, I'll keep on waiting<br>
+        I'll wait, I'll wait, I'll wait for nothing
+        <div class="section-label">[Verse 2]</div>
+        你在等的那部車呢<br>
+        它會不會也拋錨了？<br>
+        你在等的那個人呢<br>
+        他會不會也不來？
+        <div class="section-label">[Chorus]</div>
+        You'll wait, you'll wait, you'll keep on waiting<br>
+        You'll wait, you'll wait, you'll wait for nothing
+      </div>
+      <div class="lyric-col translation">
+        <div class="section-label">[Verse 1]</div>
+        Where is the bus I'm waiting for?<br>
+        Will it break down again?<br>
+        Where is the person I'm waiting for?<br>
+        Will they not show up again?
+        <div class="section-label">[Chorus]</div>
+        I'll wait, I'll wait, I'll keep on waiting<br>
+        I'll wait, I'll wait, I'll wait for nothing
+        <div class="section-label">[Verse 2]</div>
+        Where is the bus you're waiting for?<br>
+        Will it break down too?<br>
+        Where is the person you're waiting for?<br>
+        Will they not come either?
+        <div class="section-label">[Chorus]</div>
+        You'll wait, you'll wait, you'll keep on waiting<br>
+        You'll wait, you'll wait, you'll wait for nothing
+      </div>
+    </div>
+  </div>
+
+  <!-- 08 鬼 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">08</div>
+      <div class="song-title-cn">鬼</div>
+      <div class="song-title-en">The Specter</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        <div class="section-label">[Intro]</div>
+        從沒想過要傷害誰<br>
+        對一切也都感到抱歉
+        <div class="section-label">[Verse]</div>
+        可是我的自卑勝過了一切愛我的<br>
+        於是我把愛人們都殺死了<br>
+        可是你的傷悲勝過了一切愛你的<br>
+        於是你把我給殺死了
+        <div class="section-label">[Chorus]</div>
+        為了什麼而流著血？<br>
+        是為了誰而流眼淚？<br>
+        我躲在夜裡取笑著黑<br>
+        因為沒有人能殺死鬼
+      </div>
+      <div class="lyric-col translation">
+        <div class="section-label">[Intro]</div>
+        Never thought I'd hurt anyone<br>
+        Apologetic for everything
+        <div class="section-label">[Verse]</div>
+        But my self-loathing outweighed all who loved me<br>
+        So I killed all my lovers<br>
+        But your grief outweighed all who loved you<br>
+        So you killed me
+        <div class="section-label">[Chorus]</div>
+        Why am I bleeding?<br>
+        For whom are these tears?<br>
+        I hide in the night and mock the dark<br>
+        Because no one can kill a specter
+      </div>
+    </div>
+  </div>
+
+  <!-- 09 在 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">09</div>
+      <div class="song-title-cn">在</div>
+      <div class="song-title-en">Am For You</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        <div class="section-label">[Verse 1]</div>
+        一樣的天空，卻還是只有錯過<br>
+        一樣的歌，還是唱著他多愛她<br>
+        一樣快死心，一樣爛的劇情<br>
+        卻還是期待著她嘴裡那句「我愛你」
+        <div class="section-label">[Chorus]</div>
+        她說：「去你媽的花海」<br>
+        我說：「妳這麼說好帥」<br>
+        她說要把它們都打敗<br>
+        我說：「我會一直都在」<br>
+        我會一直都
+        <div class="section-label">[Verse 2]</div>
+        在路燈下遇見了很像妳的她<br>
+        我沒有說話，就算說了也是謊<br>
+        沒差，我想都一樣吧<br>
+        至少她嘴裡那句「我愛你」
+        <div class="section-label">[Chorus]</div>
+        她說：「去你媽的花海」<br>
+        我說：「妳這麼說好帥」<br>
+        她說要把它們都打敗<br>
+        我說：「我會一直都在」
+      </div>
+      <div class="lyric-col translation">
+        <div class="section-label">[Verse 1]</div>
+        Same sky, yet still only missed chances<br>
+        Same song, still singing about how he loves her<br>
+        Same almost giving up, same crappy plot<br>
+        Yet still waiting for those words from her: "I love you"
+        <div class="section-label">[Chorus]</div>
+        She says: "Fuck your flower fields"<br>
+        I say: "You're so cool for saying that"<br>
+        She says she'll defeat them all<br>
+        I say: "I'll always be here"<br>
+        I'll always be
+        <div class="section-label">[Verse 2]</div>
+        Under the streetlight I met someone who looks like you<br>
+        I didn't speak—even if I did, it'd be a lie<br>
+        No matter, I guess it's all the same<br>
+        At least those words from her: "I love you"
+        <div class="section-label">[Chorus]</div>
+        She says: "Fuck your flower fields"<br>
+        I say: "You're so cool for saying that"<br>
+        She says she'll defeat them all<br>
+        I say: "I'll always be here"
+      </div>
+    </div>
+  </div>
+
+  <!-- 10 山海 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">10</div>
+      <div class="song-title-cn">山海</div>
+      <div class="song-title-en">Wayfarer</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        <div class="section-label">[Verse 1]</div>
+        我看著天真的我自己<br>
+        出現在沒有我的故事裡<br>
+        等待著我的回應<br>
+        一個為何至此的原因
+        <div class="section-label">[Chorus]</div>
+        他明白、他明白我給不起<br>
+        於是轉身向山裡走去<br>
+        他明白、他明白我給不起<br>
+        於是轉身向大海走去
+        <div class="section-label">[Verse 2]</div>
+        我聽著那少年的聲音<br>
+        在還有未來的過去<br>
+        渴望著美好結局<br>
+        卻沒能成為自己
+        <div class="section-label">[Chorus]</div>
+        他明白、他明白我給不起<br>
+        於是轉身向山裡走去<br>
+        他明白、他明白我給不起<br>
+        於是轉身向大海走去
+      </div>
+      <div class="lyric-col translation">
+        <div class="section-label">[Verse 1]</div>
+        I see that naive version of myself<br>
+        Appearing in a story without me<br>
+        Waiting for my reply<br>
+        A reason for why I'm here
+        <div class="section-label">[Chorus]</div>
+        He understands, he understands I have nothing to give<br>
+        So he turns and walks toward the mountains<br>
+        He understands, he understands I have nothing to give<br>
+        So he turns and walks toward the sea
+        <div class="section-label">[Verse 2]</div>
+        I hear that young boy's voice<br>
+        In a past that still had a future<br>
+        Yearning for a happy ending<br>
+        But unable to become himself
+        <div class="section-label">[Chorus]</div>
+        He understands, he understands I have nothing to give<br>
+        So he turns and walks toward the mountains<br>
+        He understands, he understands I have nothing to give<br>
+        So he turns and walks toward the sea
+      </div>
+    </div>
+  </div>
+
+  <!-- 11 我們 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">11</div>
+      <div class="song-title-cn">我們</div>
+      <div class="song-title-en">Us</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        <div class="section-label">[Verse 1]</div>
+        我們在原野上找一面牆<br>
+        我們在標籤裡找方向<br>
+        我們在廢墟般的垃圾裡找一塊紅磚<br>
+        我們在工整的巷子裡找家
+        <div class="section-label">[Verse 2]</div>
+        我們義無反顧地試著後悔<br>
+        我們聲嘶力竭地假裝吶喊<br>
+        我們萬分惋惜地浪費著<br>
+        用盡一切換來的紙張
+      </div>
+      <div class="lyric-col translation">
+        <div class="section-label">[Verse 1]</div>
+        We look for a wall in the wilderness<br>
+        We look for direction in labels<br>
+        We look for a red brick in the rubble-like trash<br>
+        We look for home in neat, orderly alleys
+        <div class="section-label">[Verse 2]</div>
+        We regret relentlessly without looking back<br>
+        We scream hoarsely, pretending to shout<br>
+        We waste with profound regret<br>
+        The paper bought with everything we had
+      </div>
+    </div>
+  </div>
+
+  <!-- 12 情歌 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">12</div>
+      <div class="song-title-cn">情歌</div>
+      <div class="song-title-en">Mottos, Bygones</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        <div class="section-label">[Verse 1]</div>
+        別再說，讓它去吧<br>
+        別再說，讓它去吧<br>
+        別再說，讓它去吧<br>
+        別再說，讓它去吧
+        <div class="section-label">[Chorus]</div>
+        殺了它，順便殺了我<br>
+        拜託你了<br>
+        殺了它，順便殺了我<br>
+        拜託你了
+        <div class="section-label">[Verse 2]</div>
+        你說是夢所以才痛，睡醒了再說<br>
+        但那挫折和恐懼依舊<br>
+        但那挫折和恐懼依舊<br>
+        我把故鄉給賣了、愛人給騙了<br>
+        但那挫折和恐懼依舊<br>
+        但那挫折和恐懼依舊
+        <div class="section-label">[Chorus]</div>
+        殺了它，順便殺了我<br>
+        拜託你了
+      </div>
+      <div class="lyric-col translation">
+        <div class="section-label">[Verse 1]</div>
+        Say no more, let it go<br>
+        Say no more, let it go<br>
+        Say no more, let it go<br>
+        Say no more, let it go
+        <div class="section-label">[Chorus]</div>
+        Kill it, and kill me too<br>
+        I beg you<br>
+        Kill it, and kill me too<br>
+        I beg you
+        <div class="section-label">[Verse 2]</div>
+        You say it hurts because it's a dream—talk after you wake<br>
+        But the frustration and fear remain<br>
+        But the frustration and fear remain<br>
+        I sold my hometown, I deceived my lover<br>
+        But the frustration and fear remain<br>
+        But the frustration and fear remain
+        <div class="section-label">[Chorus]</div>
+        Kill it, and kill me too<br>
+        I beg you
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="album-section" id="album-clod">
+  <div class="album-header">
+    <div class="title-cn">瓦合</div>
+    <div class="title-en">The Clod</div>
+    <div class="year">2023</div>
+  </div>
+
+  <!-- 01 苦難精算師 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">01</div>
+      <div class="song-title-cn">苦難精算師</div>
+      <div class="song-title-en">Intro (The Clod)</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original"><em>(instrumental)</em></div>
+      <div class="lyric-col translation"><em>(instrumental)</em></div>
+    </div>
+  </div>
+
+  <!-- 02 缸 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">02</div>
+      <div class="song-title-cn">缸</div>
+      <div class="song-title-en">Pool</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        預備 各就各位<br>
+        一二三跳 跳進染缸<br>
+        看誰先 游向慾望<br>
+        <br>
+        膨脹 膨脹 再膨脹<br>
+        就像那數字一樣<br>
+        <br>
+        誰沒有信仰 誰沒有思想<br>
+        誰沒有最便宜的酒來陪葬<br>
+        <br>
+        一二三跳 跳進染缸<br>
+        看誰先 游向慾望<br>
+        <br>
+        遺忘 遺忘 再遺忘<br>
+        就像我們記得的那樣<br>
+        缸裡有夢想 缸底有爛帳<br>
+        誰賠了信仰 誰對自己撒謊<br>
+        誰喝著最便宜的酒去陪葬<br>
+        <br>
+        一二三跳 跳進染缸<br>
+        看誰先 游向慾望<br>
+        可就連食色性也終將<br>
+        游向死亡 游向死亡<br>
+        於是砸了染缸 砸了染缸<br>
+        才看見大海茫茫<br>
+        而你我仍不知身在何方
+      </div>
+      <div class="lyric-col translation">
+        Ready, on your marks<br>
+        One two three jump, into the vat of dye<br>
+        See who swims first toward desire<br>
+        <br>
+        Inflate, inflate, inflate some more<br>
+        Just like those numbers<br>
+        <br>
+        Who has no faith, who has no thoughts<br>
+        Who doesn't have the cheapest wine to accompany their funeral<br>
+        <br>
+        One two three jump, into the vat of dye<br>
+        See who swims first toward desire<br>
+        <br>
+        Forget, forget, forget again<br>
+        Just the way we remember it<br>
+        The vat holds dreams, the bottom holds bad debts<br>
+        Who lost their faith, who lied to themselves<br>
+        Who drinks the cheapest wine as their funeral accompaniment<br>
+        <br>
+        One two three jump, into the vat of dye<br>
+        See who swims first toward desire<br>
+        But even hunger, lust, and human nature will<br>
+        Swim toward death, swim toward death<br>
+        So smash the vat, smash the vat<br>
+        Only then see the vast ocean<br>
+        And you and I still don't know where we are
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 空 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">03</div>
+      <div class="song-title-cn">空</div>
+      <div class="song-title-en">Space</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        <div class="section-label">[Verse 1]</div>
+        空間是一格半 誰也出不去<br>
+        思想是循環 溫飽思淫欲<br>
+        真理就是沒真理
+        <div class="section-label">[Chorus]</div>
+        在成人之前 真想先成為自己<br>
+        在世界毀滅之前 真想先毀滅自己
+        <div class="section-label">[Verse 2]</div>
+        我向我看齊 於是一直往下去<br>
+        萬物皆有靈 只是我太空虛
+        <div class="section-label">[Pre-Chorus]</div>
+        在成人之前 真想先成為自己
+        <div class="section-label">[Chorus]</div>
+        在世界毀滅之前 真想先毀滅自己<br>
+        真理就是沒真理 那誰想聽
+      </div>
+      <div class="lyric-col translation">
+        <div class="section-label">[Verse 1]</div>
+        Space is one and a half squares, no one can get out<br>
+        Thoughts are cyclical—full belly, lustful mind<br>
+        The truth is there is no truth
+        <div class="section-label">[Chorus]</div>
+        Before becoming an adult, I wish I could first become myself<br>
+        Before the world ends, I wish I could first destroy myself
+        <div class="section-label">[Verse 2]</div>
+        I look up to myself, so I keep sinking down<br>
+        All things have spirit—it's just that I'm too empty
+        <div class="section-label">[Pre-Chorus]</div>
+        Before becoming an adult, I wish I could first become myself
+        <div class="section-label">[Chorus]</div>
+        Before the world ends, I wish I could first destroy myself<br>
+        The truth is there is no truth—who wants to hear it
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 人洞山 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">04</div>
+      <div class="song-title-cn">人洞山</div>
+      <div class="song-title-en">The Human, the Hole and the Mountain</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        山里面生了塊疤<br>
+        疤裡面住了個人<br>
+        人裡面破了個洞<br>
+        洞裡是滿滿的<br>
+        洞裡是滿滿的<br>
+        <br>
+        希望爛泥能開花<br>
+        希望枯萎後長大<br>
+        希望說謊也算話<br>
+        希望有天能嘗<br>
+        <br>
+        人與山隔了個洞<br>
+        洞裡是滿滿的<br>
+        洞裡是滿滿的<br>
+        <br>
+        滿滿的心願<br>
+        滿滿的淚<br>
+        滿滿的依戀<br>
+        滿滿的錯覺
+      </div>
+      <div class="lyric-col translation">
+        Inside the mountain, a scar was born<br>
+        Inside the scar, a person lived<br>
+        Inside the person, a hole broke open<br>
+        The hole is filled with<br>
+        The hole is filled with<br>
+        <br>
+        Hoping the mud will bloom<br>
+        Hoping to grow after withering<br>
+        Hoping lies count as words<br>
+        Hoping one day to taste<br>
+        <br>
+        Man and mountain, separated by a hole<br>
+        The hole is filled with<br>
+        The hole is filled with<br>
+        <br>
+        Full of wishes<br>
+        Full of tears<br>
+        Full of attachment<br>
+        Full of illusions
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 孑 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">05</div>
+      <div class="song-title-cn">孑</div>
+      <div class="song-title-en">Interlude</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original"><em>(interlude)</em></div>
+      <div class="lyric-col translation"><em>(interlude)</em></div>
+    </div>
+  </div>
+
+  <!-- 06 白日夢 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">06</div>
+      <div class="song-title-cn">白日夢</div>
+      <div class="song-title-en">Daydream</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        <div class="section-label">[Verse]</div>
+        我們把自由都交給彼此牽製著<br>
+        誰也沒想過糟蹋它<br>
+        我們把白日夢給連成一線吞著它<br>
+        誰想過路那麽長
+        <div class="section-label">[Outro]</div>
+        就讓我們嘲笑著悲傷再為彼此編一個夢<br>
+        好讓回家的路更短
+      </div>
+      <div class="lyric-col translation">
+        <div class="section-label">[Verse]</div>
+        We surrender our freedom to each other's restraint<br>
+        Neither of us thought to waste it<br>
+        We string our daydreams together and swallow them<br>
+        Who knew the road would be this long
+        <div class="section-label">[Outro]</div>
+        So let us mock our sorrow and weave each other a dream<br>
+        To make the road home a little shorter
+      </div>
+    </div>
+  </div>
+
+  <!-- 07 床 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">07</div>
+      <div class="song-title-cn">床</div>
+      <div class="song-title-en">Lie</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        看著窗外的光<br>
+        分不清是路燈還是太陽<br>
+        仔細搜索著自己的身體試著找出一道合理的傷<br>
+        卻還是得說謊<br>
+        <br>
+        築起了對快樂的心防<br>
+        說什麽也放不下<br>
+        從何時開始對悲劇的向往<br>
+        填滿了整顆心臟<br>
+        <br>
+        築起了對快樂的心防<br>
+        說什麽也放不下<br>
+        從何時開始對悲劇的向往<br>
+        填滿了整顆心臟<br>
+        <br>
+        看著窗外的光<br>
+        分不清是路燈還是太陽<br>
+        仔細搜索著自己的身體試著找出一道合理的傷<br>
+        卻還是得說謊
+      </div>
+      <div class="lyric-col translation">
+        Looking at the light outside the window<br>
+        Can't tell if it's a streetlamp or the sun<br>
+        Searching my body carefully, trying to find a reasonable wound<br>
+        But I still have to lie<br>
+        <br>
+        Built a defense against happiness<br>
+        Can't let go no matter what I say<br>
+        Since when did this longing for tragedy<br>
+        Fill up my entire heart<br>
+        <br>
+        Built a defense against happiness<br>
+        Can't let go no matter what I say<br>
+        Since when did this longing for tragedy<br>
+        Fill up my entire heart<br>
+        <br>
+        Looking at the light outside the window<br>
+        Can't tell if it's a streetlamp or the sun<br>
+        Searching my body carefully, trying to find a reasonable wound<br>
+        But I still have to lie
+      </div>
+    </div>
+  </div>
+
+  <!-- 08 八 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">08</div>
+      <div class="song-title-cn">八</div>
+      <div class="song-title-en">B</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        喝得再醉 太陽還是出來了<br>
+        學姐她最後還是嫁了個王八<br>
+        欸 交個朋友吧<br>
+        欸 交個朋友吧<br>
+        欸 交個朋友好嗎<br>
+        能不能也分我點說剩的話<br>
+        <br>
+        可惜啊 我不是你想找的那個藝術家<br>
+        從來沒瀟灑<br>
+        可恨啊 怎麼連煙跟酒都幫他<br>
+        那到底是誰說的話<br>
+        <br>
+        賺錢來花 吃屎來拉<br>
+        把夢都留在昨天倒的那家網咖<br>
+        欸 交個朋友吧<br>
+        欸 交個朋友吧<br>
+        欸 交個朋友好嗎<br>
+        能不能也分我點說剩的話<br>
+        <br>
+        可惜啊 我不是你想找的那個藝術家<br>
+        從來沒瀟灑<br>
+        可恨啊 怎麼連煙跟酒都幫他<br>
+        那到底是誰說的話<br>
+        <br>
+        欸 交個朋友吧<br>
+        欸 交個朋友吧<br>
+        欸 交個朋友好嗎<br>
+        拜託你啦 就讓我哭給你們笑吧<br>
+        哭給你們笑吧<br>
+        哭給你們笑
+      </div>
+      <div class="lyric-col translation">
+        No matter how drunk, the sun still rises<br>
+        Senior sister ended up marrying a jerk<br>
+        Hey, let's be friends<br>
+        Hey, let's be friends<br>
+        Hey, can we be friends?<br>
+        Can you spare me some leftover words?<br>
+        <br>
+        What a shame, I'm not the artist you're looking for<br>
+        Never been carefree<br>
+        How infuriating—even the cigarettes and alcohol take his side<br>
+        Whose words even are those?<br>
+        <br>
+        Earn money to spend, eat shit to shit<br>
+        Left my dreams at that internet café that closed yesterday<br>
+        Hey, let's be friends<br>
+        Hey, let's be friends<br>
+        Hey, can we be friends?<br>
+        Can you spare me some leftover words?<br>
+        <br>
+        What a shame, I'm not the artist you're looking for<br>
+        Never been carefree<br>
+        How infuriating—even the cigarettes and alcohol take his side<br>
+        Whose words even are those?<br>
+        <br>
+        Hey, let's be friends<br>
+        Hey, let's be friends<br>
+        Hey, can we be friends?<br>
+        Please, just let me cry so you can laugh at me<br>
+        Cry so you can laugh<br>
+        Cry so you can laugh
+      </div>
+    </div>
+  </div>
+
+  <!-- 09 老張 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">09</div>
+      <div class="song-title-cn">老張</div>
+      <div class="song-title-en">Chang</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        抹上了一身的泥巴<br>
+        以為能消失在山上<br>
+        卻像個智障一樣<br>
+        醉倒在柏油路上<br>
+        醉倒在柏油路上<br>
+        <br>
+        還差一點 還差一點就把它抹上<br>
+        還差一點 還差一點就不致於絕望<br>
+        還差一點 就能跟他們都站在一起<br>
+        還差一點 就能跟他們一起取笑我自己<br>
+        <br>
+        抹上了一身的泥巴<br>
+        以為能消失在山上<br>
+        卻像個智障一樣<br>
+        醉倒在柏油路上<br>
+        醉倒在柏油路上<br>
+        <br>
+        抹上了一身的泥巴<br>
+        以為能消失在山上<br>
+        卻像個智障一樣<br>
+        醉倒在柏油路上
+      </div>
+      <div class="lyric-col translation">
+        Covered myself in mud<br>
+        Thought I could disappear into the mountain<br>
+        But like an idiot<br>
+        Passed out drunk on the asphalt road<br>
+        Passed out drunk on the asphalt road<br>
+        <br>
+        Just a little more, just a little more and I'd have it on<br>
+        Just a little more, just a little more and I wouldn't be desperate<br>
+        Just a little more, and I could stand together with them<br>
+        Just a little more, and I could laugh at myself along with them<br>
+        <br>
+        Covered myself in mud<br>
+        Thought I could disappear into the mountain<br>
+        But like an idiot<br>
+        Passed out drunk on the asphalt road<br>
+        Passed out drunk on the asphalt road<br>
+        <br>
+        Covered myself in mud<br>
+        Thought I could disappear into the mountain<br>
+        But like an idiot<br>
+        Passed out drunk on the asphalt road
+      </div>
+    </div>
+  </div>
+
+  <!-- 10 芽 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">10</div>
+      <div class="song-title-cn">芽</div>
+      <div class="song-title-en">Shoot</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        生活空空蕩蕩<br>
+        卻還是想著遺憾<br>
+        緊擁著蹉跎<br>
+        搖啊搖搖晃晃<br>
+        只剩下你還守著<br>
+        <br>
+        戰死的每個浪漫<br>
+        都拯救 你的從容<br>
+        不斷放過自己 是為了誰<br>
+        親手埋葬 一刻一顆<br>
+        <br>
+        開呀開呀滿山惆悵<br>
+        你不過是看透你沒有的瘋狂<br>
+        寧願放過自己 是為了誰<br>
+        親手埋葬 一刻一顆<br>
+        <br>
+        生活空空蕩蕩<br>
+        卻還是想著遺憾<br>
+        緊擁著蹉跎<br>
+        搖啊搖搖晃晃<br>
+        只剩下你還守著<br>
+        <br>
+        請別留下我 也留下你<br>
+        親手埋葬 一刻一顆
+      </div>
+      <div class="lyric-col translation">
+        Life is hollow and empty<br>
+        Yet still I dwell on regrets<br>
+        Clinging to wasted time<br>
+        Swaying, rocking back and forth<br>
+        Only you remain watching over<br>
+        <br>
+        Every romance that died in battle<br>
+        Saves your composure<br>
+        Constantly letting myself off—for whom?<br>
+        Burying with my own hands, moment by moment<br>
+        <br>
+        Blooming, blooming, the hills are full of melancholy<br>
+        You've merely seen through the madness you never had<br>
+        Rather let myself off—for whom?<br>
+        Burying with my own hands, moment by moment<br>
+        <br>
+        Life is hollow and empty<br>
+        Yet still I dwell on regrets<br>
+        Clinging to wasted time<br>
+        Swaying, rocking back and forth<br>
+        Only you remain watching over<br>
+        <br>
+        Please don't leave me, and leave you too<br>
+        Burying with my own hands, moment by moment
+      </div>
+    </div>
+  </div>
+
+  <!-- 11 但 -->
+  <div class="song">
+    <div class="song-header">
+      <div class="track-no">11</div>
+      <div class="song-title-cn">但</div>
+      <div class="song-title-en">Damn</div>
+    </div>
+    <div class="lyrics-grid">
+      <div class="lyric-col original">
+        你說你不想在這裡 我也不想在這裡<br>
+        但天黑的太快想走早就來不及<br>
+        喔 我愛你 可惜關係變成沒關係<br>
+        問題是沒問題<br>
+        於是我們繼續<br>
+        <br>
+        拿著筆想寫點東西<br>
+        以為是武器能伸張正義<br>
+        沒人理也沒關係<br>
+        至少我還有你<br>
+        至少我還有<br>
+        <br>
+        你說你不想在這裡 我也不想在這裡<br>
+        但天黑的太快想走早就來不及<br>
+        喔我愛你 可惜關係變成沒關係<br>
+        問題是沒問題<br>
+        於是我們繼續<br>
+        <br>
+        喔 我愛你 那些問題我都沒關係<br>
+        但你離開了這裡<br>
+        於是我們不再年輕
+      </div>
+      <div class="lyric-col translation">
+        You said you don't want to be here<br>
+        Me neither<br>
+        But dusk came too early, it's too late to leave<br>
+        Oh, I love you<br>
+        But our relationship sailed into a sunken ship<br>
+        Not facing the problems in our grip<br>
+        We go on with the trip<br>
+        <br>
+        Want to pen down something<br>
+        Feel it's mightier than a sword swinging<br>
+        Getting ignored is nothing<br>
+        At least I still have our thing<br>
+        At least I still have<br>
+        <br>
+        You said you don't want to be here<br>
+        Me neither<br>
+        But dusk came too early, it's too late to leave<br>
+        Oh, I love you<br>
+        But our relationship sailed into a sunken ship<br>
+        Not facing the problems in our grip<br>
+        We go on with the trip<br>
+        <br>
+        Oh, I love you<br>
+        So I'm not tied up by those matters<br>
+        But you left here<br>
+        And our youth disappeared
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>草東沒有派對 · No Party for Cao Dong</p>
+  <p>Lyrics transcribed from Genius. English translations by various contributors.</p>
+  <p>
+    <a href="https://nopartyforcaodong.com/" target="_blank">Official Site</a>
+    &nbsp;·&nbsp;
+    <a href="https://genius.com/artists/No-party-for-cao-dong" target="_blank">Genius</a>
+    &nbsp;·&nbsp;
+    <a href="https://www.youtube.com/channel/UCYAyQjEhGHKARXnZe0U__9g" target="_blank">YouTube</a>
+  </p>
+  <p style="margin-top:1rem;font-size:0.6rem;">2026</p>
+</footer>
+
+<script>
+document.querySelectorAll('.song-header').forEach(h => {
+  h.addEventListener('click', () => {
+    const grid = h.nextElementSibling;
+    if (grid) {
+      grid.style.display = grid.style.display === 'none' ? 'grid' : 'none';
+    }
+  });
+});
+</script>
+
+</body>
+</html>
