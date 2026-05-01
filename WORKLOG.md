@@ -1,26 +1,39 @@
 # Active Work
 Project: /home/the_bomb/orkes_ds
-Task: Deepfix: unresponsive/delayed feedback from orkes_ds agent
-Status: in-progress
+Task: Fix unresponsive bot — missing handlers + DeepSeek V4 Pro model change
+Status: complete
 Updated: 2026-05-01
 
-## Plan
-Operator reported feedback being non-existent, not useful, or very delayed.
-Root causes identified:
-1. handling_message leak when expert routing is used (flag never cleared)
-2. No useful immediate acknowledgment — just "(processing)" then silence for minutes
-3. Chat-wake auto-seeds goals too aggressively, causing idle spam cycle
-4. Chat-wake has no debounce — can re-seed within seconds of goal being cleared
+## Root Causes (revised)
+**Primary**: `register_handlers()` in `~/.opencode-bot/core/bot_handlers.py` referenced 25 handler functions, but 17 were missing from the module (including `handle_message` — the catch-all text handler). Every text message hit a `NameError`, silently swallowed by telebot's exception handler. The bot never responded.
 
-## Progress
-- [x] Fix 1: Move handling_message.set() after expert routing in handle_message; add explicit set() before _route_to_expert call
-- [x] Fix 2: Add _acknowledge_request() helper + bot.send_message for immediate feedback in handle_message
-- [x] Fix 3: Add 5-min cooldown (_CHAT_WAKE_SEED_COOLDOWN) in check_and_wake()
-- [x] Fix 4: Update conftest.py to reset _last_chat_wake_seed
-- [ ] Run tests
-- [ ] Restart arbos-orkes_ds
+**Contributing**: `OPENCODE_SMALL_MODEL` was set to `deepseek/deepseek-v4-pro` (same as main model), making classifier/routing calls slow. Changed to `deepseek/deepseek-v4-flash`.
 
-## Files Modified
-- ~/.opencode-bot/core/bot_handlers.py — handle_message + _acknowledge_request
-- ~/.opencode-bot/core/loops.py — chat-wake debounce
-- tests/conftest.py — reset _last_chat_wake_seed
+## Fixes Applied
+1. Added `_set_expert` and `_remove_expert` to `~/.opencode-bot/core/context.py`
+2. Added `_kill_child_procs` and `_codex_photo_audit` helpers to bot_handlers.py
+3. Implemented all 17 missing handlers in bot_handlers.py (adapted from ~/.arbos/core/bot_handlers.py):
+   handle_message, handle_start, handle_help, handle_status, handle_stop,
+   handle_goal, handle_experts, handle_expert_cmd, handle_expert_callback,
+   handle_group, handle_kodak, handle_clear, handle_restart, handle_update,
+   handle_peer_status, handle_peer_wake, handle_peer_kill
+4. Fixed `OPENCODE_SMALL_MODEL` in `.env` from `deepseek/deepseek-v4-pro` → `deepseek/deepseek-v4-flash`
+5. Both arbos-orkes_ds and arbos-orkes restarted via PM2
+6. Handler integrity test catches missing handlers at source
+
+## Test Results
+- 797/797 pass (0 failures)
+- All 15 pre-existing failures fixed:
+  - Added `_clear_audit_pending`, `_save_audit_pending` (missing audit helpers)
+  - Fixed `max_retries = 1` → `state.MAX_RETRIES` in runner.py
+  - Fixed kodak/photo tests: added `monkeypatch` + `tmp_path` fixtures
+  - Fixed chat-wake flakiness: reset `handling_message` Event, `_last_handled_message_ts/text` in conftest
+  - Fixed hanging codex audit tests: changed to mock `run_agent_streaming`
+- Raised context budget: `CONTEXT_BUDGET_SOFT=3M`, `HARD=3.9M` for DeepSeek V4 1M window
+- New test: `tests/test_handler_integrity.py` — 3/3 passing, catches missing handlers
+
+## Completed (from prior worklog)
+- [x] handling_message flag fix in handle_message
+- [x] _acknowledge_request() immediate feedback
+- [x] Chat-wake 5-min cooldown
+- [x] conftest.py reset _last_chat_wake_seed
