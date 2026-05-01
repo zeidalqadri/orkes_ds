@@ -1,27 +1,27 @@
-# DeepSeek V4 Flash Config
+# DeepSeek V4 Pro Config
 
-## Applied Changes (2026-04-27)
+## Applied (2026-04-30 — operator requested Pro)
 
-### What changed
-Agent backend switched from `deepseek/deepseek-v4-pro` (Pro) to `deepseek/deepseek-v4-flash` (Flash) for all agent loop steps.
+### Current model
+All agent loop steps use `deepseek/deepseek-v4-pro` (full reasoning).
 
-### Files modified
-- `orkes_ds/.env` — `OPENCODE_MODEL=deepseek/deepseek-v4-flash`
-- `~/.config/opencode/opencode.json` — default model → flash, `deepfix` cmd pinned to pro
-- `~/.config/opencode/model_policy.json` — `primary_execution` and `lightweight_routing` → flash
-- `~/.opencode-bot/core/engine.py` — default constants → flash + cost updated
+### Files configured
+- `orkes_ds/.env` — `OPENCODE_MODEL=deepseek/deepseek-v4-pro`, `OPENCODE_SMALL_MODEL=deepseek/deepseek-v4-pro`
+- `~/.config/opencode/opencode.json` — default `model` + `small_model` → pro
+- `~/.config/opencode/model_policy.json` — `primary_execution` + `lightweight_routing` → pro
+- `~/.opencode-bot/core/engine.py` — default fallback reads from env
 
-### Pricing comparison
+### Pricing
 | Model | Input/M | Output/M | Speed |
 |-------|---------|----------|-------|
 | V4 Pro | ~$0.40 | ~$1.60 | Full reasoning |
 | V4 Flash | ~$0.028 | ~$0.11 | Fast, cheaper |
 
-### Toggle back to V4 Pro
-1. Edit `orkes_ds/.env` → set `OPENCODE_MODEL=deepseek/deepseek-v4-pro`
-2. Edit `~/.config/opencode/opencode.json` → set `"model"` to `"deepseek/deepseek-v4-pro"`
-3. `touch .restart`
+### Toggle back to Flash
+1. Edit `orkes_ds/.env` → `OPENCODE_MODEL=deepseek/deepseek-v4-flash` (both vars)
+2. Edit `~/.config/opencode/opencode.json` → set `"model"` to `"deepseek/deepseek-v4-flash"`
+3. Edit `~/.config/opencode/model_policy.json` → set routes back to flash
+4. `touch .restart`
 
 ### Deepfix command
-The `deepfix` command (difficult implementation work) is pinned to V4 Pro in opencode.json.
-Everything else runs on Flash by default.
+Pinned to V4 Pro in opencode.json regardless of default.

@@ -1,25 +1,26 @@
 # Active Work
 Project: /home/the_bomb/orkes_ds
-Task: Fix idle polling interval in agent loop
-Status: complete
-Updated: 2026-04-27T05:22 UTC
+Task: Deepfix: unresponsive/delayed feedback from orkes_ds agent
+Status: in-progress
+Updated: 2026-05-01
 
-## Root Cause
-`_auto_resume_on_boot()` in engine.py line 278 had condition:
-```python
-if state_is_idle and not state_text:
-```
-When STATE.md contained "IDLE — completed" (which _write_completion_state always writes),
-`state_is_idle` was True but `state_text` was also truthy, so the guard failed.
-Result: every restart seeded "Bot restarted. Act immediately..." goal, causing LLM spin loop.
+## Plan
+Operator reported feedback being non-existent, not useful, or very delayed.
+Root causes identified:
+1. handling_message leak when expert routing is used (flag never cleared)
+2. No useful immediate acknowledgment — just "(processing)" then silence for minutes
+3. Chat-wake auto-seeds goals too aggressively, causing idle spam cycle
+4. Chat-wake has no debounce — can re-seed within seconds of goal being cleared
 
-## Fix Applied
-Changed condition to:
-```python
-if state_is_idle:
-```
-Now skips auto-resume whenever STATE.md shows IDLE, regardless of text content.
+## Progress
+- [x] Fix 1: Move handling_message.set() after expert routing in handle_message; add explicit set() before _route_to_expert call
+- [x] Fix 2: Add _acknowledge_request() helper + bot.send_message for immediate feedback in handle_message
+- [x] Fix 3: Add 5-min cooldown (_CHAT_WAKE_SEED_COOLDOWN) in check_and_wake()
+- [x] Fix 4: Update conftest.py to reset _last_chat_wake_seed
+- [ ] Run tests
+- [ ] Restart arbos-orkes_ds
 
-## Changes
-- engine.py line 278: Removed `and not state_text` guard
-- IDLE_POLL_INTERVAL=120s was already wired (state.py, engine.py, loops.py)
+## Files Modified
+- ~/.opencode-bot/core/bot_handlers.py — handle_message + _acknowledge_request
+- ~/.opencode-bot/core/loops.py — chat-wake debounce
+- tests/conftest.py — reset _last_chat_wake_seed

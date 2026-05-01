@@ -1,13 +1,9 @@
 # Arbos State
-Updated: 2026-04-27T12:07 UTC
+Updated: 2026-05-01T13:21 UTC
 
-## Status: IDLE — completed after 1 steps
+## Status: IDLE
 
-## Last Completed: Operator sent messages while bot was idle. Act immediately.
-
-## Last Known State
-# Arbos State
-Updated: 2026-04-27T12:03
-
-### Summary
-6 use cases sent via Telegram. GOAL.md cleared. Awaiting your pick.
+## Summary
+Bot engine restarted with infrastructure fixes. Context caps rescaled for DeepSeek V4 1M window.
+PM2 resilience configured (max 20 restarts, 10s delay).
+Awaiting operator commands.
