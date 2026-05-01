@@ -4,6 +4,6 @@
   "model": "deepseek/deepseek-v4-pro",
   "small_model": "deepseek/deepseek-v4-flash",
   "features": ["experts"],
-  "expert_sources": ["global", "local"],
+  "expert_sources": ["local"],
   "exclude_experts": []
 }
