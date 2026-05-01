@@ -197,11 +197,23 @@ class PermauthDaemon:
                     for c in cached:
                         domain = (c.get("domain") or "").lstrip(".")
                         if domain:
-                            safe.append({k: c[k] for k in ("name","value") if k in c} | {"domain": domain, "path": c.get("path","/"), "secure": c.get("secure",True), "httpOnly": c.get("httpOnly",False)})
+                            safe.append({
+                                "name": c["name"], "value": c["value"],
+                                "domain": domain, "path": c.get("path", "/"),
+                                "secure": c.get("secure", True),
+                                "httpOnly": c.get("httpOnly", False),
+                            })
                     if safe:
                         await self.context.add_cookies(safe)
                         logger.info("Fallback: injected %d cached cookies", len(safe))
-                await self.page.goto("about:blank", wait_until="domcontentloaded", timeout=15000)
+                # Navigate to biznet — use cached cookies for session
+                await self.page.goto(
+                    "https://businessnetwork.gep.com/",
+                    wait_until="domcontentloaded", timeout=45000,
+                )
+                await self.page.wait_for_timeout(5000)
+                self._current_url = self.page.url
+                logger.info("Recovered from chrome-error to: %s", self._current_url[:80])
             except Exception:
                 pass
 
@@ -819,7 +831,7 @@ class PermauthDaemon:
 
         logger.info("[boq-extract] Navigating: %s", event_number)
         try:
-            await self.page.goto(doc_url, wait_until="networkidle", timeout=60000)
+            await self.page.goto(doc_url, wait_until="domcontentloaded", timeout=45000)
         except Exception as e:
             logger.warning("[boq-extract] Nav error: %s — continuing", e)
 
