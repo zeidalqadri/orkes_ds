@@ -137,116 +137,96 @@ def test_is_preconfirmed(confirm_cleanup):
 
 def test_ask_confirm(confirm_cleanup):
     from core.bot_handlers import _ask_confirm
+    handler = MagicMock()
     bot = MagicMock()
     message = MagicMock()
     message.chat.id = 1
-    _ask_confirm(bot, message, "clear", "danger")
+    _ask_confirm(bot, message, handler, "clear", "danger")
     bot.send_message.assert_called_once_with(1, "⚠️ danger\n\nReply 'yes' to confirm.")
     bot.register_next_step_handler.assert_called_once()
 
 def test_do_confirm_yes(confirm_cleanup):
     from core.bot_handlers import _do_confirm, _confirmed_actions
+    handler = MagicMock()
     bot = MagicMock()
     message = MagicMock()
     message.chat.id = 1
     message.text = "yes"
-    _do_confirm(bot, message, "clear")
+    _do_confirm(bot, message, handler, "clear")
     assert _confirmed_actions.get(1) == "clear"
 
 def test_do_confirm_yes_y(confirm_cleanup):
     from core.bot_handlers import _do_confirm, _confirmed_actions
+    handler = MagicMock()
     bot = MagicMock()
     message = MagicMock()
     message.chat.id = 1
     message.text = "y"
-    _do_confirm(bot, message, "restart")
+    _do_confirm(bot, message, handler, "restart")
     assert _confirmed_actions.get(1) == "restart"
 
 def test_do_confirm_no(confirm_cleanup):
     from core.bot_handlers import _do_confirm
+    handler = MagicMock()
     bot = MagicMock()
     message = MagicMock()
     message.chat.id = 1
     message.text = "no"
-    _do_confirm(bot, message, "clear")
+    _do_confirm(bot, message, handler, "clear")
     bot.send_message.assert_called_once_with(1, "Cancelled.")
 
 def test_do_confirm_dispatches_clear(confirm_cleanup):
-    patches = [
-        patch("core.bot_handlers.handle_clear", create=True),
-        patch("core.bot_handlers.handle_restart", create=True),
-        patch("core.bot_handlers.handle_kill", create=True),
-    ]
-    for p in patches:
-        p.start()
-    with patch("core.bot_handlers._confirm_orig_msg", {1: MagicMock()}):
-        from core.bot_handlers import _do_confirm
-        bot = MagicMock()
-        message = MagicMock()
-        message.chat.id = 1
-        message.text = "yes"
-        _do_confirm(bot, message, "clear")
-        from core.bot_handlers import handle_clear
-        assert handle_clear.called
-    for p in patches:
-        p.stop()
+    from core.bot_handlers import _do_confirm, _confirm_orig_msg
+    handler = MagicMock()
+    orig_msg = MagicMock()
+    _confirm_orig_msg[1] = orig_msg
+    bot = MagicMock()
+    message = MagicMock()
+    message.chat.id = 1
+    message.text = "yes"
+    _do_confirm(bot, message, handler, "clear")
+    handler.assert_called_once_with(bot, orig_msg)
 
 def test_do_confirm_dispatches_restart(confirm_cleanup):
-    patches = [
-        patch("core.bot_handlers.handle_clear", create=True),
-        patch("core.bot_handlers.handle_restart", create=True),
-        patch("core.bot_handlers.handle_kill", create=True),
-    ]
-    for p in patches:
-        p.start()
-    with patch("core.bot_handlers._confirm_orig_msg", {1: MagicMock()}):
-        from core.bot_handlers import _do_confirm
-        bot = MagicMock()
-        message = MagicMock()
-        message.chat.id = 1
-        message.text = "yes"
-        _do_confirm(bot, message, "restart")
-        from core.bot_handlers import handle_restart
-        assert handle_restart.called
-    for p in patches:
-        p.stop()
+    from core.bot_handlers import _do_confirm, _confirm_orig_msg
+    handler = MagicMock()
+    orig_msg = MagicMock()
+    _confirm_orig_msg[1] = orig_msg
+    bot = MagicMock()
+    message = MagicMock()
+    message.chat.id = 1
+    message.text = "yes"
+    _do_confirm(bot, message, handler, "restart")
+    handler.assert_called_once_with(bot, orig_msg)
 
 def test_do_confirm_dispatches_kill(confirm_cleanup):
-    patches = [
-        patch("core.bot_handlers.handle_clear", create=True),
-        patch("core.bot_handlers.handle_restart", create=True),
-        patch("core.bot_handlers.handle_kill", create=True),
-    ]
-    for p in patches:
-        p.start()
-    with patch("core.bot_handlers._confirm_orig_msg", {1: MagicMock()}):
-        from core.bot_handlers import _do_confirm
-        bot = MagicMock()
-        message = MagicMock()
-        message.chat.id = 1
-        message.text = "yes"
-        _do_confirm(bot, message, "kill")
-        from core.bot_handlers import handle_kill
-        assert handle_kill.called
-    for p in patches:
-        p.stop()
+    from core.bot_handlers import _do_confirm, _confirm_orig_msg
+    handler = MagicMock()
+    orig_msg = MagicMock()
+    _confirm_orig_msg[1] = orig_msg
+    bot = MagicMock()
+    message = MagicMock()
+    message.chat.id = 1
+    message.text = "yes"
+    _do_confirm(bot, message, handler, "kill")
+    handler.assert_called_once_with(bot, orig_msg)
 
 
 # _load_projects / _discover_projects / _resolve_project
 def test_load_projects_normal(tmp_path):
-    with patch("core.bot_handlers.PROJECTS_FILE", tmp_path / "proj.json"):
+    with patch("core.bot_shared.PROJECTS_FILE", tmp_path / "proj.json"):
         (tmp_path / "proj.json").write_text(json.dumps({"projects": {"orkes": {"path": "/x"}}}))
         from core.bot_handlers import _load_projects
         projs = _load_projects()
         assert projs["orkes"]["path"] == "/x"
 
 def test_load_projects_missing(tmp_path):
-    with patch("core.bot_handlers.PROJECTS_FILE", tmp_path / "noexist.json"):
+    with patch("core.bot_shared.PROJECTS_FILE", tmp_path / "noexist.json"):
         from core.bot_handlers import _load_projects
         assert _load_projects() == {}
 
 def test_load_projects_bad_json(tmp_path):
-    with patch("core.bot_handlers.PROJECTS_FILE", tmp_path / "bad.json"):
+    with patch("core.bot_shared.PROJECTS_FILE", tmp_path / "bad.json"):
         (tmp_path / "bad.json").write_text("bad")
         from core.bot_handlers import _load_projects
         assert _load_projects() == {}
@@ -265,17 +245,17 @@ def test_resolve_project_v1(tmp_path):
     proj_dir.mkdir()
     (proj_dir / "arbos.py").write_text("")
     with patch("core.bot_handlers.Path.home", return_value=tmp_path):
-        from core.bot_handlers import _resolve_project, _KNOWN_PROJECTS
+        from core.bot_handlers import _resolve_project
         # v2 shadows v1 — v2 returns tuple via _load_projects
         # Test v2 resolution with empty projects file (falls through to no-match)
         (tmp_path / "proj.json").write_text(json.dumps({"projects": {}}))
-        with patch("core.bot_handlers.PROJECTS_FILE", tmp_path / "proj.json"):
+        with patch("core.bot_shared.PROJECTS_FILE", tmp_path / "proj.json"):
             name, rest, path = _resolve_project("myproj do something")
             assert name is None  # not in projects registry
             assert rest == "myproj do something"
 
 def test_resolve_project_v2(tmp_path):
-    with patch("core.bot_handlers.PROJECTS_FILE", tmp_path / "proj.json"):
+    with patch("core.bot_shared.PROJECTS_FILE", tmp_path / "proj.json"):
         (tmp_path / "proj.json").write_text(json.dumps({
             "projects": {"orkes": {"path": "/x/y", "description": "test"}}
         }))
@@ -312,30 +292,35 @@ def test_fetch_github_issue():
         "body": "Something broke",
     }
     with patch("core.bot_handlers.requests.get", return_value=mock_resp):
-        result = _fetch_github_issue("https://github.com/o/r/issues/1")
-    assert "Bug fix" in result
-    assert "# Bug fix" in result
-    assert "open" in result
-    assert "testuser" in result
+        text, error = _fetch_github_issue("https://github.com/o/r/issues/1")
+    assert text is not None
+    assert error is None
+    assert "Bug fix" in text
+    assert "open" in text
+    assert "testuser" in text
 
 def test_fetch_github_issue_non_200():
     from core.bot_handlers import _fetch_github_issue
     mock_resp = MagicMock()
     mock_resp.status_code = 404
     with patch("core.bot_handlers.requests.get", return_value=mock_resp):
-        result = _fetch_github_issue("https://github.com/o/r/issues/1")
-    assert "HTTP 404" in result
+        text, error = _fetch_github_issue("https://github.com/o/r/issues/1")
+    assert text is None
+    assert isinstance(error, str)
+    assert "HTTP 404" in error
 
 def test_fetch_github_issue_bad_url():
     from core.bot_handlers import _fetch_github_issue
-    result = _fetch_github_issue("not a url")
-    assert result == "not a url"
+    text, error = _fetch_github_issue("not a url")
+    assert text is None
+    assert error == "Invalid GitHub issue URL format"
 
 def test_fetch_github_issue_exception():
     from core.bot_handlers import _fetch_github_issue
     with patch("core.bot_handlers.requests.get", side_effect=Exception("timeout")):
-        result = _fetch_github_issue("https://github.com/o/r/issues/1")
-    assert "Error: timeout" in result
+        text, error = _fetch_github_issue("https://github.com/o/r/issues/1")
+    assert text is None
+    assert "timeout" in error
 
 
 # _build_deepfix_prompt
@@ -350,7 +335,7 @@ def test_build_deepfix_prompt():
 # _extract_mention
 def test_extract_mention():
     from core.bot_handlers import _extract_mention
-    with patch("core.bot_handlers._get_expert", return_value={"active": True}):
+    with patch("core.bot_shared._get_expert", return_value={"active": True}):
         handle, cleaned = _extract_mention("hello @conductor world")
     assert handle == "conductor"
     assert "hello" in cleaned and "world" in cleaned
@@ -559,7 +544,7 @@ def test_is_command_for_me_bare_start(monkeypatch):
 
 def test_is_command_for_me_bare_actionable(monkeypatch):
     monkeypatch.setenv("BOT_USERNAME", "TestBot")
-    with patch("core.bot_handlers._maybe_send_routing_hint") as mock_hint:
+    with patch("core.bot_shared._maybe_send_routing_hint") as mock_hint:
         from core.bot_handlers import _is_command_for_me
         msg = make_msg(chat_type="group", text="/cancel")
         assert _is_command_for_me(msg) is False
@@ -631,7 +616,7 @@ def test_handle_projects_not_authorized(monkeypatch):
     assert "Send /start" in str(args[1])
 
 def test_handle_projects_empty(tmp_path):
-    with patch("core.bot_handlers.PROJECTS_FILE", tmp_path / "empty.json"):
+    with patch("core.bot_shared.PROJECTS_FILE", tmp_path / "empty.json"):
         (tmp_path / "empty.json").write_text('{"projects": {}}')
         from core.bot_handlers import handle_projects
         bot = MagicMock()
@@ -643,7 +628,7 @@ def test_handle_projects_empty(tmp_path):
         assert "No projects registered" in str(args[1])
 
 def test_handle_projects_list(tmp_path):
-    with patch("core.bot_handlers.PROJECTS_FILE", tmp_path / "proj.json"):
+    with patch("core.bot_shared.PROJECTS_FILE", tmp_path / "proj.json"):
         (tmp_path / "proj.json").write_text(json.dumps({
             "projects": {
                 "orkes": {"path": "/x", "description": "the project", "host": "vm1"}
@@ -662,19 +647,17 @@ def test_handle_projects_list(tmp_path):
 
 # handle_cancel
 def test_handle_cancel_full_flow(tmp_path):
-    import core.bot_handlers
-    core.bot_handlers._kill_child_procs = MagicMock()
     state.GOAL_FILE = tmp_path / "GOAL.md"
     state.GOAL_FILE.write_text("my goal")
+    from core.bot_handlers import handle_cancel
     bot = MagicMock()
     msg = make_msg(chat_type="private", text="/cancel")
     with patch("core.bot_handlers._is_command_for_me", return_value=True):
         with patch("core.bot_handlers._is_authorized", return_value=True):
-            core.bot_handlers.handle_cancel(bot, msg)
-    core.bot_handlers._kill_child_procs.assert_called_once()
+            with patch("core.bot_handlers._kill_child_procs") as mock_kill:
+                handle_cancel(bot, msg)
+    mock_kill.assert_called_once()
     assert state.GOAL_FILE.read_text() == ""
-    assert core.bot_handlers._kill_child_procs.called
-    del core.bot_handlers._kill_child_procs
 
 
 # _build_operator_prompt
@@ -709,7 +692,7 @@ def test_build_operator_prompt_with_chatlog():
     state.GOAL_FILE.exists.return_value = False
     state.STATE_FILE = MagicMock()
     state.STATE_FILE.exists.return_value = False
-    with patch("core.bot_handlers.load_chatlog", return_value="recent chat"):
+    with patch("core.bot_shared.load_chatlog", return_value="recent chat"):
         from core.bot_handlers import _build_operator_prompt
         result = _build_operator_prompt("hi")
     assert "recent chat" in result
@@ -726,9 +709,9 @@ def test_build_operator_prompt_with_expert():
     mock_ctx.state_file = MagicMock()
     mock_ctx.state_file.exists.return_value = True
     mock_ctx.state_file.read_text.return_value = "expert state"
-    with patch("core.bot_handlers.load_chatlog", return_value=""):
-        with patch("core.bot_handlers.ExpertContext", return_value=mock_ctx):
-            with patch("core.bot_handlers._get_expert", return_value={
+    with patch("core.bot_shared.load_chatlog", return_value=""):
+        with patch("core.bot_shared.ExpertContext", return_value=mock_ctx):
+            with patch("core.bot_shared._get_expert", return_value={
                 "system_prompt": "you are an expert",
                 "name": "CodeReviewer"
             }):
@@ -772,7 +755,7 @@ def test_maybe_send_routing_hint_sends(monkeypatch):
     from core.bot_handlers import _maybe_send_routing_hint, _routing_hint_sent
     _routing_hint_sent.discard(999)
     state.MY_PM2_NAME = "arbos-primary"
-    with patch("core.bot_handlers._pm2_peer_list", return_value=[
+    with patch("core.bot_shared._pm2_peer_list", return_value=[
         {"name": "arbos-primary", "status": "online"},
         {"name": "arbos-secondary", "status": "online"},
     ]):
@@ -785,7 +768,7 @@ def test_maybe_send_routing_hint_sends(monkeypatch):
 
 # handle_deepfix usage path
 def test_handle_deepfix_no_args(tmp_path):
-    with patch("core.bot_handlers.PROJECTS_FILE", tmp_path / "empty.json"):
+    with patch("core.bot_shared.PROJECTS_FILE", tmp_path / "empty.json"):
         (tmp_path / "empty.json").write_text('{"projects": {}}')
         from core.bot_handlers import handle_deepfix
         bot = MagicMock()
@@ -801,7 +784,7 @@ def test_handle_deepfix_github_issue(tmp_path):
     state.CHAT_ID_FILE = tmp_path / "chat_id.txt"
     state.CHAT_ID_FILE.write_text("")
     state.CHATLOG_DIR = tmp_path / "chatlog"
-    with patch("core.bot_handlers.PROJECTS_FILE", tmp_path / "empty.json"):
+    with patch("core.bot_shared.PROJECTS_FILE", tmp_path / "empty.json"):
         (tmp_path / "empty.json").write_text('{"projects": {}}')
         from core.bot_handlers import handle_deepfix
         bot = MagicMock()
@@ -809,16 +792,16 @@ def test_handle_deepfix_github_issue(tmp_path):
         msg.message_id = 10
         with patch("core.bot_handlers._is_command_for_me", return_value=True):
             with patch("core.bot_handlers._is_authorized", return_value=True):
-                with patch("core.bot_handlers._fetch_github_issue", return_value="fetched issue"):
+                with patch("core.bot_handlers._fetch_github_issue", return_value=("fetched issue", None)):
                     with patch("core.bot_handlers._build_deepfix_prompt", return_value="prompt"):
-                        with patch("core.bot_handlers.run_agent_streaming", return_value="ok"):
+                        with patch("core.bot_shared.run_agent_streaming", return_value="ok"):
                             handle_deepfix(bot, msg)
         bot.send_message.assert_any_call(1, "Project: (current working directory)")
 
 
 # handle_deepfix not authorized
 def test_handle_deepfix_not_authorized(tmp_path):
-    with patch("core.bot_handlers.PROJECTS_FILE", tmp_path / "empty.json"):
+    with patch("core.bot_shared.PROJECTS_FILE", tmp_path / "empty.json"):
         (tmp_path / "empty.json").write_text('{"projects": {}}')
         from core.bot_handlers import handle_deepfix
         bot = MagicMock()
@@ -834,9 +817,9 @@ def test_handle_deepfix_not_authorized(tmp_path):
 def test_classify_message_no_active_experts():
     from core import state as core_state
     core_state._loop_manager = MagicMock()
-    with patch("core.bot_handlers._list_experts", return_value={}):
+    with patch("core.bot_shared._list_experts", return_value={}):
         from core.bot_handlers import _classify_message
-        assert _classify_message("hello") is None
+        assert _classify_message("fix it") is None
 
 
 def test_classify_message_llm_returns_handle():
@@ -844,8 +827,8 @@ def test_classify_message_llm_returns_handle():
     core_state._loop_manager = MagicMock()
     core_state._loop_manager.is_running.return_value = False
     experts = {"coder": {"active": True, "expertise": "python"}}
-    with patch("core.bot_handlers._list_experts", return_value=experts):
-        with patch("core.bot_handlers._run_opencode_once", return_value=(0, "coder", "", "")):
+    with patch("core.bot_shared._list_experts", return_value=experts):
+        with patch("core.bot_shared._run_opencode_once", return_value=(0, "coder", "", "")):
             from core.bot_handlers import _classify_message
             assert _classify_message("fix this bug") == "coder"
 
@@ -855,8 +838,8 @@ def test_classify_message_llm_returns_none():
     core_state._loop_manager = MagicMock()
     core_state._loop_manager.is_running.return_value = False
     experts = {"coder": {"active": True, "expertise": "python"}}
-    with patch("core.bot_handlers._list_experts", return_value=experts):
-        with patch("core.bot_handlers._run_opencode_once", return_value=(0, "none", "", "")):
+    with patch("core.bot_shared._list_experts", return_value=experts):
+        with patch("core.bot_shared._run_opencode_once", return_value=(0, "none", "", "")):
             from core.bot_handlers import _classify_message
             assert _classify_message("how are you?") is None
 
@@ -866,8 +849,8 @@ def test_classify_message_llm_returns_invalid():
     core_state._loop_manager = MagicMock()
     core_state._loop_manager.is_running.return_value = False
     experts = {"coder": {"active": True, "expertise": "python"}}
-    with patch("core.bot_handlers._list_experts", return_value=experts):
-        with patch("core.bot_handlers._run_opencode_once", return_value=(0, "nonexistent", "", "")):
+    with patch("core.bot_shared._list_experts", return_value=experts):
+        with patch("core.bot_shared._run_opencode_once", return_value=(0, "nonexistent", "", "")):
             from core.bot_handlers import _classify_message
             assert _classify_message("do stuff") is None
 
@@ -877,8 +860,8 @@ def test_classify_message_llm_fails():
     core_state._loop_manager = MagicMock()
     core_state._loop_manager.is_running.return_value = False
     experts = {"coder": {"active": True, "expertise": "python"}}
-    with patch("core.bot_handlers._list_experts", return_value=experts):
-        with patch("core.bot_handlers._run_opencode_once", return_value=(1, "", "", "")):
+    with patch("core.bot_shared._list_experts", return_value=experts):
+        with patch("core.bot_shared._run_opencode_once", return_value=(1, "", "", "")):
             from core.bot_handlers import _classify_message
             assert _classify_message("do stuff") is None
 
@@ -887,8 +870,8 @@ def test_classify_message_exception():
     from core import state as core_state
     core_state._loop_manager = MagicMock()
     experts = {"coder": {"active": True, "expertise": "python"}}
-    with patch("core.bot_handlers._list_experts", return_value=experts):
-        with patch("core.bot_handlers._run_opencode_once", side_effect=Exception("timeout")):
+    with patch("core.bot_shared._list_experts", return_value=experts):
+        with patch("core.bot_shared._run_opencode_once", side_effect=Exception("timeout")):
             from core.bot_handlers import _classify_message
             assert _classify_message("do stuff") is None
 
@@ -898,8 +881,8 @@ def test_classify_message_llm_returns_handle_with_stripped_answer():
     core_state._loop_manager = MagicMock()
     core_state._loop_manager.is_running.return_value = False
     experts = {"coder": {"active": True, "expertise": "python"}}
-    with patch("core.bot_handlers._list_experts", return_value=experts):
-        with patch("core.bot_handlers._run_opencode_once", return_value=(0, " @coder ", "", "")):
+    with patch("core.bot_shared._list_experts", return_value=experts):
+        with patch("core.bot_shared._run_opencode_once", return_value=(0, " @coder ", "", "")):
             from core.bot_handlers import _classify_message
             assert _classify_message("do stuff") == "coder"
 
@@ -908,7 +891,7 @@ def test_classify_message_llm_returns_handle_with_stripped_answer():
 
 def test_route_message_extract_mention(monkeypatch):
     monkeypatch.setenv("BOT_USERNAME", "TestBot")
-    with patch("core.bot_handlers._extract_mention", return_value=("coder", "fix this")):
+    with patch("core.bot_shared._extract_mention", return_value=("coder", "fix this")):
         from core.bot_handlers import _route_message
         handle, text = _route_message("hello", is_group=True)
         assert handle == "coder"
@@ -920,9 +903,9 @@ def test_route_message_group_active_experts_classifies(monkeypatch):
     from core import state as core_state
     core_state._loop_manager = MagicMock()
     core_state._loop_manager.list_active.return_value = ["coder"]
-    with patch("core.bot_handlers._get_expert", return_value={"active": True}):
-        with patch("core.bot_handlers._extract_mention", return_value=(None, "do stuff")):
-            with patch("core.bot_handlers._classify_message", return_value="coder"):
+    with patch("core.bot_shared._get_expert", return_value={"active": True}):
+        with patch("core.bot_shared._extract_mention", return_value=(None, "do stuff")):
+            with patch("core.bot_shared._classify_message", return_value="coder"):
                 from core.bot_handlers import _route_message
                 handle, text = _route_message("do stuff", is_group=True)
                 assert handle == "coder"
@@ -933,7 +916,7 @@ def test_route_message_group_no_active_experts(monkeypatch):
     from core import state as core_state
     core_state._loop_manager = MagicMock()
     core_state._loop_manager.list_active.return_value = []
-    with patch("core.bot_handlers._extract_mention", return_value=(None, "do stuff")):
+    with patch("core.bot_shared._extract_mention", return_value=(None, "do stuff")):
         from core.bot_handlers import _route_message
         handle, text = _route_message("do stuff", is_group=True)
         assert handle is None
@@ -941,7 +924,7 @@ def test_route_message_group_no_active_experts(monkeypatch):
 
 def test_route_message_private_no_routing(monkeypatch):
     monkeypatch.setenv("BOT_USERNAME", "TestBot")
-    with patch("core.bot_handlers._extract_mention", return_value=(None, "hello")):
+    with patch("core.bot_shared._extract_mention", return_value=(None, "hello")):
         from core.bot_handlers import _route_message
         handle, text = _route_message("hello", is_group=False)
         assert handle is None
@@ -950,7 +933,7 @@ def test_route_message_private_no_routing(monkeypatch):
 
 def test_route_message_strips_bot_username(monkeypatch):
     monkeypatch.setenv("BOT_USERNAME", "TestBot")
-    with patch("core.bot_handlers._extract_mention", return_value=("coder", "fix it")):
+    with patch("core.bot_shared._extract_mention", return_value=("coder", "fix it")):
         from core.bot_handlers import _route_message
         handle, text = _route_message("@TestBot fix it", is_group=True)
         assert handle == "coder"
@@ -962,13 +945,13 @@ def test_route_to_expert_starts_and_wakes():
     from core import state as core_state
     core_state._loop_manager = MagicMock()
     core_state._loop_manager.is_running.return_value = False
-    with patch("core.bot_handlers._get_expert", return_value={"active": True}):
-        with patch("core.bot_handlers.ExpertContext") as MockCtx:
-            ctx = MagicMock()
-            MockCtx.return_value = ctx
-            with patch("core.bot_handlers._build_operator_prompt", return_value="prompt"):
-                with patch("core.bot_handlers.run_agent_streaming", return_value="ok"):
-                    with patch("core.bot_handlers.log_chat"):
+    with patch("core.bot_shared.ExpertContext") as MockCtx:
+        ctx = MagicMock()
+        MockCtx.return_value = ctx
+        with patch("core.bot_shared._get_expert", return_value={"active": True}):
+            with patch("core.bot_shared._build_operator_prompt", return_value="prompt"):
+                with patch("core.bot_shared.run_agent_streaming", return_value="ok"):
+                    with patch("core.bot_shared.log_chat"):
                         from core.bot_handlers import _route_to_expert
                         bot = MagicMock()
                         message = MagicMock()
@@ -983,13 +966,13 @@ def test_route_to_expert_already_running():
     from core import state as core_state
     core_state._loop_manager = MagicMock()
     core_state._loop_manager.is_running.return_value = True
-    with patch("core.bot_handlers._get_expert", return_value={"active": True}):
-        with patch("core.bot_handlers.ExpertContext") as MockCtx:
-            ctx = MagicMock()
-            MockCtx.return_value = ctx
-            with patch("core.bot_handlers._build_operator_prompt", return_value="prompt"):
-                with patch("core.bot_handlers.run_agent_streaming", return_value="ok"):
-                    with patch("core.bot_handlers.log_chat"):
+    with patch("core.bot_shared.ExpertContext") as MockCtx:
+        ctx = MagicMock()
+        MockCtx.return_value = ctx
+        with patch("core.bot_shared._get_expert", return_value={"active": True}):
+            with patch("core.bot_shared._build_operator_prompt", return_value="prompt"):
+                with patch("core.bot_shared.run_agent_streaming", return_value="ok"):
+                    with patch("core.bot_shared.log_chat"):
                         from core.bot_handlers import _route_to_expert
                         bot = MagicMock()
                         _route_to_expert(bot, "coder", "fix this", 1, 10)
@@ -1001,13 +984,13 @@ def test_route_to_expert_not_active():
     from core import state as core_state
     core_state._loop_manager = MagicMock()
     core_state._loop_manager.is_running.return_value = False
-    with patch("core.bot_handlers._get_expert", return_value={"active": False}):
-        with patch("core.bot_handlers.ExpertContext") as MockCtx:
+    with patch("core.bot_shared._get_expert", return_value={"active": False}):
+        with patch("core.bot_shared.ExpertContext") as MockCtx:
             ctx = MagicMock()
             MockCtx.return_value = ctx
-            with patch("core.bot_handlers._build_operator_prompt", return_value="prompt"):
-                with patch("core.bot_handlers.run_agent_streaming", return_value="ok"):
-                    with patch("core.bot_handlers.log_chat"):
+            with patch("core.bot_shared._build_operator_prompt", return_value="prompt"):
+                with patch("core.bot_shared.run_agent_streaming", return_value="ok"):
+                    with patch("core.bot_shared.log_chat"):
                         from core.bot_handlers import _route_to_expert
                         bot = MagicMock()
                         _route_to_expert(bot, "coder", "fix this", 1, 10)
@@ -1021,6 +1004,7 @@ def test_handle_voice_import_error(monkeypatch):
     import core.loops
     monkeypatch.delattr("core.loops.transcribe_voice", raising=False)
     monkeypatch.setenv("BOT_USERNAME", "TestBot")
+    monkeypatch.setenv("TELEGRAM_OWNER_ID", "1")
     from core.bot_handlers import handle_voice
     bot = MagicMock()
     msg = make_msg(chat_type="private", text="")
@@ -1032,6 +1016,7 @@ def test_handle_voice_import_error(monkeypatch):
 
 def test_handle_voice_success(monkeypatch, tmp_path):
     monkeypatch.setenv("BOT_USERNAME", "TestBot")
+    monkeypatch.setenv("TELEGRAM_OWNER_ID", "1")
     from core import state as core_state
     core_state.WORKING_DIR = tmp_path
     from core.bot_handlers import handle_voice
@@ -1046,7 +1031,7 @@ def test_handle_voice_success(monkeypatch, tmp_path):
     bot.get_file.return_value = file_info
     bot.download_file.return_value = b"audio data"
     with patch("core.loops.transcribe_voice", return_value="hello world"):
-        with patch("core.bot_handlers.run_agent_streaming", return_value="ok"):
+        with patch("core.bot_shared.run_agent_streaming", return_value="ok"):
             with patch("core.bot_handlers.log_chat"):
                 with patch("threading.Thread", autospec=True) as mock_thread:
                     handle_voice(bot, msg)
@@ -1056,6 +1041,7 @@ def test_handle_voice_success(monkeypatch, tmp_path):
 
 def test_handle_voice_transcription_fails(monkeypatch, tmp_path):
     monkeypatch.setenv("BOT_USERNAME", "TestBot")
+    monkeypatch.setenv("TELEGRAM_OWNER_ID", "1")
     from core import state as core_state
     core_state.WORKING_DIR = tmp_path
     from core.bot_handlers import handle_voice
@@ -1077,6 +1063,7 @@ def test_handle_voice_transcription_fails(monkeypatch, tmp_path):
 
 def test_handle_voice_with_caption(monkeypatch, tmp_path):
     monkeypatch.setenv("BOT_USERNAME", "TestBot")
+    monkeypatch.setenv("TELEGRAM_OWNER_ID", "1")
     from core import state as core_state
     core_state.WORKING_DIR = tmp_path
     from core.bot_handlers import handle_voice
@@ -1091,7 +1078,7 @@ def test_handle_voice_with_caption(monkeypatch, tmp_path):
     bot.get_file.return_value = file_info
     bot.download_file.return_value = b"data"
     with patch("core.loops.transcribe_voice", return_value="hello"):
-        with patch("core.bot_handlers.run_agent_streaming", return_value="ok"):
+        with patch("core.bot_shared.run_agent_streaming", return_value="ok"):
             with patch("core.bot_handlers.log_chat"):
                 with patch("threading.Thread", autospec=True) as mock_thread:
                     handle_voice(bot, msg)
@@ -1133,7 +1120,7 @@ def test_handle_document_text_file():
     bot.download_file.return_value = b"print('hello')"
     with patch("core.bot_handlers._is_addressed_to_me", return_value=True):
         with patch("core.bot_handlers._is_authorized", return_value=True):
-            with patch("core.bot_handlers.run_agent_streaming", return_value="ok"):
+            with patch("core.bot_shared.run_agent_streaming", return_value="ok"):
                 with patch("core.bot_handlers.log_chat"):
                     handle_document(bot, msg)
     assert bot.send_message.called
@@ -1155,7 +1142,7 @@ def test_handle_document_binary_file():
     bot.download_file.return_value = b"PNG data"
     with patch("core.bot_handlers._is_addressed_to_me", return_value=True):
         with patch("core.bot_handlers._is_authorized", return_value=True):
-            with patch("core.bot_handlers.run_agent_streaming", return_value="ok"):
+            with patch("core.bot_shared.run_agent_streaming", return_value="ok"):
                 with patch("core.bot_handlers.log_chat"):
                     handle_document(bot, msg)
     assert bot.send_message.called
@@ -1177,7 +1164,7 @@ def test_handle_document_truncated():
     bot.download_file.return_value = b"x" * 60000
     with patch("core.bot_handlers._is_addressed_to_me", return_value=True):
         with patch("core.bot_handlers._is_authorized", return_value=True):
-            with patch("core.bot_handlers.run_agent_streaming", return_value="ok"):
+            with patch("core.bot_shared.run_agent_streaming", return_value="ok"):
                 with patch("core.bot_handlers.log_chat"):
                     handle_document(bot, msg)
     assert bot.send_message.called
@@ -1199,7 +1186,7 @@ def test_handle_document_with_caption():
     bot.download_file.return_value = b"content"
     with patch("core.bot_handlers._is_addressed_to_me", return_value=True):
         with patch("core.bot_handlers._is_authorized", return_value=True):
-            with patch("core.bot_handlers.run_agent_streaming", return_value="ok"):
+            with patch("core.bot_shared.run_agent_streaming", return_value="ok"):
                 with patch("core.bot_handlers.log_chat"):
                     handle_document(bot, msg)
     assert bot.send_message.called
@@ -1232,8 +1219,8 @@ def test_codex_audit_no_backend(tmp_path):
     bot = MagicMock()
     img = tmp_path / "test.png"
     img.write_text("fake")
-    with patch("core.bot_handlers.run_agent_streaming", return_value="") as mock_ras:
-        with patch("core.bot_handlers.log_chat"):
+    with patch("core.bot_shared.run_agent_streaming", return_value="") as mock_ras:
+        with patch("core.bot_shared.log_chat"):
             _codex_photo_audit(bot, 1, img, "caption", None)
     mock_ras.assert_called_once()
 
@@ -1245,8 +1232,8 @@ def test_codex_audit_success_small(tmp_path):
     bot = MagicMock()
     img = tmp_path / "test.png"
     img.write_text("fake")
-    with patch("core.bot_handlers.run_agent_streaming", return_value="<audit/>") as mock_ras:
-        with patch("core.bot_handlers.log_chat"):
+    with patch("core.bot_shared.run_agent_streaming", return_value="<audit/>") as mock_ras:
+        with patch("core.bot_shared.log_chat"):
             _codex_photo_audit(bot, 1, img, "caption", None)
     mock_ras.assert_called_once()
 
@@ -1271,8 +1258,8 @@ def test_codex_audit_failure(tmp_path):
     bot = MagicMock()
     img = tmp_path / "test.png"
     img.write_text("fake")
-    with patch("core.bot_handlers.run_agent_streaming", return_value="") as mock_ras:
-        with patch("core.bot_handlers.log_chat"):
+    with patch("core.bot_shared.run_agent_streaming", return_value="") as mock_ras:
+        with patch("core.bot_shared.log_chat"):
             _codex_photo_audit(bot, 1, img, "caption", None)
     mock_ras.assert_called_once()
 
@@ -1284,8 +1271,8 @@ def test_codex_audit_timeout(tmp_path):
     bot = MagicMock()
     img = tmp_path / "test.png"
     img.write_text("fake")
-    with patch("core.bot_handlers.run_agent_streaming", return_value="") as mock_ras:
-        with patch("core.bot_handlers.log_chat"):
+    with patch("core.bot_shared.run_agent_streaming", return_value="") as mock_ras:
+        with patch("core.bot_shared.log_chat"):
             _codex_photo_audit(bot, 1, img, "caption", None)
     mock_ras.assert_called_once()
 
@@ -1297,8 +1284,8 @@ def test_codex_audit_exception(tmp_path):
     bot = MagicMock()
     img = tmp_path / "test.png"
     img.write_text("fake")
-    with patch("core.bot_handlers.run_agent_streaming", return_value="") as mock_ras:
-        with patch("core.bot_handlers.log_chat"):
+    with patch("core.bot_shared.run_agent_streaming", return_value="") as mock_ras:
+        with patch("core.bot_shared.log_chat"):
             _codex_photo_audit(bot, 1, img, "caption", None)
     mock_ras.assert_called_once()
 
@@ -1451,7 +1438,7 @@ def test_handle_photo_normal(monkeypatch, tmp_path):
     bot.download_file.return_value = b"image data"
     with patch("core.bot_handlers._is_addressed_to_me", return_value=True):
         with patch("core.bot_handlers._is_authorized", return_value=True):
-            with patch("core.bot_handlers.run_agent_streaming", return_value="ok"):
+            with patch("core.bot_shared.run_agent_streaming", return_value="ok"):
                 with patch("core.bot_handlers.log_chat"):
                     with patch("threading.Thread", autospec=True) as mock_thread:
                         handle_photo(bot, msg)
@@ -1511,7 +1498,7 @@ def test_handle_message_operator():
         with patch("core.bot_handlers._is_authorized", return_value=True):
             with patch("core.bot_handlers._route_message", return_value=(None, "hello")):
                 with patch("core.bot_handlers._build_operator_prompt", return_value="prompt"):
-                    with patch("core.bot_handlers.run_agent_streaming", return_value="ok"):
+                    with patch("core.bot_shared.run_agent_streaming", return_value="ok"):
                         with patch("core.bot_handlers.log_chat"):
                             with patch("threading.Thread", autospec=True) as mock_thread:
                                 from core.bot_handlers import handle_message
@@ -1595,7 +1582,7 @@ def test_handle_project_new_already_registered():
     with patch("core.bot_handlers._is_command_for_me", return_value=True):
         with patch("core.bot_handlers._is_authorized", return_value=True):
             with patch("pathlib.Path.exists", return_value=False):
-                with patch("core.bot_handlers._load_projects", return_value={"testproj": {}}):
+                with patch("core.project_scaffolder._load_projects", return_value={"testproj": {}}):
                     handle_project(bot, msg)
     args = bot.send_message.call_args[0]
     assert "already registered" in str(args[1])
@@ -1783,6 +1770,8 @@ def test_register_handlers_wires_everything():
 
 def test_handle_voice_audio_instead_of_voice(monkeypatch, tmp_path):
     monkeypatch.setenv("BOT_USERNAME", "TestBot")
+    monkeypatch.setenv("TELEGRAM_OWNER_ID", "1")
+    monkeypatch.setenv("TELEGRAM_OWNER_ID", "1")
     from core import state as core_state
     core_state.WORKING_DIR = tmp_path
     from core.bot_handlers import handle_voice
@@ -1797,7 +1786,7 @@ def test_handle_voice_audio_instead_of_voice(monkeypatch, tmp_path):
     bot.get_file.return_value = file_info
     bot.download_file.return_value = b"audio"
     with patch("core.loops.transcribe_voice", return_value="transcribed"):
-        with patch("core.bot_handlers.run_agent_streaming", return_value="ok"):
+        with patch("core.bot_shared.run_agent_streaming", return_value="ok"):
             with patch("core.bot_handlers.log_chat"):
                 with patch("threading.Thread", autospec=True) as mt:
                     handle_voice(bot, msg)
@@ -1816,7 +1805,17 @@ def test_handle_document_not_authorized_group():
 
 def test_handle_document_read_exception(tmp_path):
     state.UPLOADS_DIR = tmp_path
+    state.GOAL_FILE = tmp_path / "GOAL.md"
+    state.GOAL_FILE.write_text("")
+    state.STATE_FILE = tmp_path / "STATE.md"
+    state.STATE_FILE.write_text("")
     from core.bot_handlers import handle_document
+    from pathlib import PosixPath
+    original_read_text = PosixPath.read_text
+    def raising_read_text(self, *args, **kwargs):
+        if "broken.py" in str(self):
+            raise Exception("read error")
+        return original_read_text(self, *args, **kwargs)
     bot = MagicMock()
     msg = make_msg(chat_type="private", text="")
     msg.document = MagicMock()
@@ -1831,13 +1830,12 @@ def test_handle_document_read_exception(tmp_path):
     bot.download_file.return_value = b"content"
     with patch("core.bot_handlers._is_addressed_to_me", return_value=True):
         with patch("core.bot_handlers._is_authorized", return_value=True):
-            with patch("pathlib.Path.write_bytes"):
-                with patch("pathlib.Path.read_text", side_effect=Exception("read error")):
-                    with patch("core.bot_handlers.load_chatlog", return_value=""):
-                        with patch("core.bot_handlers.run_agent_streaming", return_value="ok"):
-                            with patch("core.bot_handlers.log_chat"):
-                                with patch("threading.Thread", autospec=True) as mt:
-                                    handle_document(bot, msg)
+            with patch.object(PosixPath, "read_text", raising_read_text):
+                with patch("core.bot_handlers.load_chatlog", return_value=""):
+                    with patch("core.bot_shared.run_agent_streaming", return_value="ok"):
+                        with patch("core.bot_handlers.log_chat"):
+                            with patch("threading.Thread", autospec=True) as mt:
+                                handle_document(bot, msg)
     mt.assert_called_once()
 
 
@@ -1872,7 +1870,10 @@ def test_codex_notify_fallback(tmp_path):
     assert bot.send_message.called
 
 
-def test_handle_deepfix_edit_fails(monkeypatch):
+def test_handle_deepfix_edit_fails(monkeypatch, tmp_path):
+    state.CHAT_ID_FILE = tmp_path / "chat_id.txt"
+    state.CHAT_ID_FILE.write_text("")
+    state.CHATLOG_DIR = tmp_path / "chatlog"
     from core.bot_handlers import handle_deepfix
     bot = MagicMock()
     sent_msg = MagicMock()
@@ -1883,9 +1884,9 @@ def test_handle_deepfix_edit_fails(monkeypatch):
     msg.message_id = 10
     with patch("core.bot_handlers._is_command_for_me", return_value=True):
         with patch("core.bot_handlers._is_authorized", return_value=True):
-            with patch("core.bot_handlers._fetch_github_issue", return_value="fetched"):
+            with patch("core.bot_handlers._fetch_github_issue", return_value=("fetched", None)):
                 with patch("core.bot_handlers._build_deepfix_prompt", return_value="prompt"):
-                    with patch("core.bot_handlers.run_agent_streaming", return_value="ok"):
+                    with patch("core.bot_shared.run_agent_streaming", return_value="ok"):
                         handle_deepfix(bot, msg)
     bot.send_message.assert_any_call(1, "Fetching GitHub issue...")
 
@@ -1904,7 +1905,7 @@ def test_handle_photo_with_caption(tmp_path):
     bot.download_file.return_value = b"data"
     with patch("core.bot_handlers._is_addressed_to_me", return_value=True):
         with patch("core.bot_handlers._is_authorized", return_value=True):
-            with patch("core.bot_handlers.run_agent_streaming", return_value="ok"):
+            with patch("core.bot_shared.run_agent_streaming", return_value="ok"):
                 with patch("core.bot_handlers.log_chat"):
                     with patch("threading.Thread", autospec=True) as mt:
                         handle_photo(bot, msg)
@@ -1913,7 +1914,10 @@ def test_handle_photo_with_caption(tmp_path):
 
 # handle_deepfix with project + no issue text
 def test_handle_deepfix_project_no_issue(tmp_path):
-    with patch("core.bot_handlers.PROJECTS_FILE", tmp_path / "proj.json"):
+    state.CHAT_ID_FILE = tmp_path / "chat_id.txt"
+    state.CHAT_ID_FILE.write_text("")
+    state.CHATLOG_DIR = tmp_path / "chatlog"
+    with patch("core.bot_shared.PROJECTS_FILE", tmp_path / "proj.json"):
         (tmp_path / "proj.json").write_text(json.dumps({
             "projects": {"orkes": {"path": "/x/y", "description": "test"}}
         }))
@@ -1929,7 +1933,7 @@ def test_handle_deepfix_project_no_issue(tmp_path):
 
 # handle_deepfix with no issue text after project resolution
 def test_handle_deepfix_empty_issue(tmp_path):
-    with patch("core.bot_handlers.PROJECTS_FILE", tmp_path / "empty.json"):
+    with patch("core.bot_shared.PROJECTS_FILE", tmp_path / "empty.json"):
         (tmp_path / "empty.json").write_text('{"projects": {}}')
         from core.bot_handlers import handle_deepfix
         bot = MagicMock()
@@ -2090,7 +2094,7 @@ def test_handle_project_new_no_shim(tmp_path):
         with patch("core.bot_handlers._is_authorized", return_value=True):
             with patch("pathlib.Path.exists", return_value=False):
                 with patch("core.bot_handlers._load_projects", return_value={}):
-                    with patch("core.bot_handlers.PROJECTS_FILE", PROJECTS_FILE):
+                    with patch("core.bot_shared.PROJECTS_FILE", PROJECTS_FILE):
                         with patch("pathlib.Path.mkdir"):
                             with patch("core.bot_handlers.state.WORKING_DIR", tmp_path):
                                 with patch("subprocess.run") as mock_run:
