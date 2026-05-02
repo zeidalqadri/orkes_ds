@@ -185,8 +185,23 @@ class PermauthDaemon:
                 cook_count = len(self._tokens.get("cookies", []))
                 print(patrol_section("Login", True, f"cookies={cook_count}"), flush=True)
             else:
-                print(patrol_section("Login", False, "failed"), flush=True)
-                logger.warning("Login failed")
+                cook_count = len(self._tokens.get("cookies", []))
+                print(patrol_section("Login", False, f"failed — cookies={cook_count}"), flush=True)
+                logger.warning("Login check failed but %d cookies set", cook_count)
+                # SSO redirect may have timed out (BizNet under maintenance) —
+                # but cookies are valid.  Try to navigate to BizNet directly.
+                if cook_count >= 8 and self.page:
+                    try:
+                        logger.info("Attempting BizNet recovery with fresh cookies...")
+                        await self.page.goto(
+                            "https://businessnetwork.gep.com/",
+                            wait_until="domcontentloaded", timeout=30000,
+                        )
+                        await self.page.wait_for_timeout(5000)
+                        self._current_url = self.page.url
+                        logger.info("BizNet recovery: %s", self._current_url[:80])
+                    except Exception as recovery_e:
+                        logger.warning("BizNet recovery failed: %s", recovery_e)
         elif "chrome-error" in url_lower:
             print(patrol_section("Navigation", False, "chrome-error — loading cached cookies"), flush=True)
             try:
@@ -218,6 +233,21 @@ class PermauthDaemon:
 
         await self._save_cookies()
         await self._extract_tokens()
+
+        # Navigate to SmartGEP event to extract netsessionid from Angular SPA
+        await self._navigate_to_smartgep_event()
+
+        # Recover to BizNet for listing operations
+        try:
+            await self.page.goto(
+                "https://businessnetwork.gep.com/",
+                wait_until="domcontentloaded", timeout=RELOAD_TIMEOUT,
+            )
+            await self.page.wait_for_timeout(5000)
+            self._current_url = self.page.url
+            logger.info("Post-init recovery to BizNet: %s", self._current_url[:80])
+        except Exception as e:
+            logger.warning("Post-init recovery to BizNet failed (page may be on error): %s", e)
 
         nsid = self._tokens.get("netsessionid") or "NONE"
         cook_count = len(self._tokens.get("cookies", []))
@@ -288,7 +318,7 @@ class PermauthDaemon:
 
         # Already on BizNet with cookies — good enough
         if on_biznet:
-            if len(self._tokens.get("cookies", [])) > 10:
+            if self._is_on_biznet():
                 return True
             try:
                 await self.page.reload(wait_until="domcontentloaded", timeout=30000)
@@ -297,7 +327,7 @@ class PermauthDaemon:
                 pass
             self._current_url = self.page.url
             await self._extract_tokens()
-            if len(self._tokens.get("cookies", [])) > 10:
+            if self._is_on_biznet():
                 await self._save_cookies()
                 return True
 
@@ -404,10 +434,11 @@ class PermauthDaemon:
             self._current_url = self.page.url
             await self._extract_tokens()
             cookie_count = len(self._tokens.get("cookies", []))
-            print(patrol_section("Login complete", cookie_count > 10, f"URL={self._current_url[:60]} cookies={cookie_count}"), flush=True)
-            logger.info("Login complete: URL=%s cookies=%d", self._current_url[:80], cookie_count)
+            on_biznet = self._is_on_biznet()
+            print(patrol_section("Login complete", on_biznet, f"URL={self._current_url[:60]} cookies={cookie_count}"), flush=True)
+            logger.info("Login complete: URL=%s cookies=%d on_biznet=%s", self._current_url[:80], cookie_count, on_biznet)
             print(f"{SEP}\n", flush=True)
-            return cookie_count > 10
+            return on_biznet
 
         except Exception as e:
             print(patrol_section("Login", False, f"error: {e}"), flush=True)
@@ -416,49 +447,114 @@ class PermauthDaemon:
             return False
 
     async def _navigate_to_smartgep_event(self):
-        """Navigate to a SmartGEP SPA event detail page to extract netsessionid.
-        The netsessionid only exists in the AngularJS SPA context on smart.gep.com.
-        If navigation fails (smart.gep.com unreachable from VPS), recover to biznet."""
+        """Navigate to a SmartGEP SPA event page to extract netsessionid.
+
+        Strategy (in order of preference):
+        1. Click a SMART link from the BizNet listing page (open in new tab).
+           This triggers the proper BizNet→SmartGEP SSO handoff that the main
+           scraper uses.  Netsessionid is extracted from the new tab.
+        2. Fall back: direct page.goto() with anchor event URL.
+
+        If BizNet is under maintenance, skip and retry next refresh cycle.
+        """
         if not self.page:
             return
-        evt = self._get_anchor_event()
-        if not evt:
-            logger.warning("No anchor event URL available — staying on biznet")
+
+        # ── Check if BizNet is under maintenance ──────────────────────
+        if await self._is_biznet_under_maintenance():
+            logger.warning("BizNet is under maintenance — skipping SmartGEP nav (will retry next cycle)")
             return
+
+        # ── Strategy 1: Click a SMART link on BizNet listing page ───────
+        # Only scan when on BizNet — the idplogin login page has SSO
+        # redirect URLs containing "smart-auth" which are false positives.
+        if "businessnetwork.gep.com" not in (self.page.url or "").lower():
+            logger.info("SmartGEP nav skipped — not on BizNet (page: %s)", (self.page.url or "")[:80])
+            return
+
         try:
-            print(patrol_section("SmartGEP event nav", False, "navigating to extract netsessionid..."), flush=True)
-            await self.page.goto(
-                evt["full_url"],
-                wait_until="domcontentloaded", timeout=RELOAD_TIMEOUT,
-            )
-            await self.page.wait_for_timeout(SETTLE_TIME)
-            self._current_url = self.page.url
-            await self._extract_tokens()
-            nsid = self._tokens.get("netsessionid")
-            if nsid:
-                print(patrol_section("SmartGEP event nav", True, f"nsid={nsid[:12]}—"), flush=True)
-                logger.info("SmartGEP SPA booted — netsessionid extracted: %s", nsid[:12])
+            # Find any SMART/RFX/Sourcing link on the current page
+            smart_link = await self.page.evaluate("""() => {
+                const links = document.querySelectorAll('a');
+                for (const a of links) {
+                    const href = (a.getAttribute('href') || '').toLowerCase();
+                    const text = (a.innerText || '').toLowerCase();
+                    if (href.includes('smart') || href.includes('rfx') || href.includes('sourcing') ||
+                        text.includes('rfp') || text.includes('rfx')) {
+                        return {href: a.getAttribute('href'), text: a.innerText.trim().substring(0, 60)};
+                    }
+                }
+                return null;
+            }""")
+            if smart_link:
+                logger.info("Found BizNet→SmartGEP link: %s → %s",
+                            smart_link["text"], (smart_link["href"] or "")[:100])
             else:
-                print(patrol_section("SmartGEP event nav", False, "nsid still empty — SPA may not have booted"), flush=True)
-                logger.warning("No netsessionid after SmartGEP nav — SPA may not be loading")
+                logger.info("No SMART links on BizNet listing (may be under maintenance or empty listing)")
         except Exception as e:
-            print(patrol_section("SmartGEP event nav", False, str(e)), flush=True)
-            logger.error("SmartGEP event navigation failed: %s", e)
-        # Recover: if we got stuck on SSO or error page, go back to biznet
-        if self.page:
-            current_url = self.page.url.lower() if self.page else ""
-            if any(h in current_url for h in ["smart-sts", "idplogin", "chrome-error", "login", "authenticate"]):
-                logger.warning("SmartGEP nav left us on SSO/error — navigating back to biznet")
+            logger.warning("Could not scan BizNet links: %s", e)
+            smart_link = None
+
+        if smart_link and self.context:
+            try:
+                print(patrol_section("SmartGEP event nav", False, "Ctrl+clicking BizNet link..."), flush=True)
+                async with self.context.expect_page(timeout=30000) as new_page_info:
+                    link_el = self.page.locator(f'a[href="{smart_link["href"]}"]').first
+                    if await link_el.is_visible(timeout=3000):
+                        await link_el.click(modifiers=["Control"], force=True)
+                    else:
+                        # Try broader selector
+                        link_el = self.page.locator('a').filter(has_text=smart_link["text"]).first
+                        if await link_el.is_visible(timeout=3000):
+                            await link_el.click(modifiers=["Control"], force=True)
+                        else:
+                            raise Exception("Link not interactable")
+
+                detail_page = await new_page_info.value
                 try:
-                    await self.page.goto(
-                        "https://businessnetwork.gep.com/BusinessNetwork/Landing/v2#/bn-landing",
-                        wait_until="domcontentloaded", timeout=45000,
-                    )
-                    await self.page.wait_for_timeout(5000)
-                    self._current_url = self.page.url
-                    logger.info("Recovered to biznet: %s", self._current_url[:80])
-                except Exception as recovery_e:
-                    logger.error("Recovery to biznet failed: %s", recovery_e)
+                    await detail_page.wait_for_load_state("networkidle", timeout=30000)
+                except Exception:
+                    await detail_page.wait_for_load_state("domcontentloaded", timeout=15000)
+                await detail_page.wait_for_timeout(SETTLE_TIME)
+
+                # Extract tokens from the new tab
+                nsid = await detail_page.evaluate(
+                    "() => { try { return rfx.resources.constants.netsessionid || ''; } catch(e) { return ''; } }"
+                )
+                if nsid:
+                    # Merge new cookies from the detail tab
+                    try:
+                        detail_cookies = await self.context.cookies()
+                        await self._save_cookies()
+                        self._tokens["netsessionid"] = nsid
+                        rvt = await detail_page.evaluate(
+                            "() => { try { return window.rfx.resources.constants.requestVerificationToken || ''; } catch(e) { return ''; } }"
+                        )
+                        if rvt:
+                            self._tokens["requestverificationtoken"] = rvt
+                        m = __import__("re").search(r"[?&]oloc=(\d+)", detail_page.url)
+                        if m:
+                            self._tokens["oloc"] = m.group(1)
+                        logger.info("SmartGEP SPA booted via BizNet link — nsid=%s cookies=%d",
+                                    nsid[:12], len(detail_cookies))
+                        print(patrol_section("SmartGEP event nav", True, f"nsid={nsid[:12]}—"), flush=True)
+                    except Exception as e:
+                        logger.error("Failed to merge detail tab tokens: %s", e)
+                else:
+                    logger.warning("BizNet link opened but nsid still empty — SPA may not have booted")
+                    print(patrol_section("SmartGEP event nav", False, "nsid empty (SPA not booted)"), flush=True)
+                await detail_page.close()
+                return
+            except Exception as e:
+                logger.warning("BizNet link approach failed: %s — falling back to direct goto", e)
+
+        # ── Strategy 2: Not attempted ────────────────────────────────
+        # Direct page.goto() to smart.gep.com triggers a passive SSO
+        # handoff that fails (msg=001), leaving us on error pages.
+        # Only the BizNet→click approach works; if no links are available
+        # (maintenance, empty listing), we skip and retry next cycle.
+        logger.info("SmartGEP nav skipped — no BizNet links available (will retry next refresh)")
+        return
 
     def _load_event_id_map(self) -> dict:
         """Load the event_id_map.json to resolve event_number → event_id + doc_url."""
@@ -499,7 +595,7 @@ class PermauthDaemon:
         return None
 
     async def _refresh_page(self):
-        """Refresh BizNet session to keep cookies alive."""
+        """Refresh BizNet session + extract SmartGEP netsessionid."""
         if not self.page:
             logger.warning("No page to refresh")
             return
@@ -523,7 +619,6 @@ class PermauthDaemon:
             else:
                 cook_count = len(self._tokens.get("cookies", []))
                 print(patrol_section("Session refresh", True, f"cookies={cook_count}"), flush=True)
-                print(f"{SEP}\n", flush=True)
                 # Health watchdog: verify browser can make authenticated requests
                 try:
                     resp = await asyncio.wait_for(
@@ -536,10 +631,59 @@ class PermauthDaemon:
                         logger.warning("Health watchdog returned %s — session may be stale", resp.status)
                 except Exception as e:
                     logger.warning("Health watchdog failed: %s — session may be dead", type(e).__name__)
+
+            # ── SmartGEP SPA navigation for netsessionid ───────────────
+            await self._navigate_to_smartgep_event()
+
+            # Navigate back to BizNet to preserve SSO for listing ops
+            try:
+                await self.page.goto(
+                    "https://businessnetwork.gep.com/",
+                    wait_until="domcontentloaded", timeout=RELOAD_TIMEOUT,
+                )
+                await self.page.wait_for_timeout(5000)
+                self._current_url = self.page.url
+                logger.info("Returned to BizNet after SmartGEP token extraction")
+            except Exception as recovery_e:
+                logger.warning("Recovery to BizNet after SmartGEP nav failed: %s", recovery_e)
+
+            print(f"{SEP}\n", flush=True)
         except Exception as e:
             print(patrol_section("Session refresh", False, str(e)), flush=True)
             print(f"{SEP}\n", flush=True)
             logger.error("Page refresh failed: %s", e)
+
+    def _is_on_biznet(self) -> bool:
+        """Check if we have an authenticated BizNet session.
+        Accepts: (1) page on BizNet domain, (2) any gep.com page with cookies,
+        (3) cookies-only when page failed to load (chrome-error after SSO redirect).
+        BizNet cookies are proof of successful SSO authentication."""
+        if not self.page:
+            return False
+        url = (self.page.url or "").lower()
+        cookie_count = len(self._tokens.get("cookies", []))
+        if "businessnetwork.gep.com" in url:
+            return True
+        if ".gep.com" in url and "login" not in url and "error" not in url:
+            if cookie_count >= 8:
+                return True
+        # Fallback: SSO succeeded (cookies set) but BizNet page didn't load
+        # (e.g., under maintenance).  The cookies are what matter for API access.
+        if cookie_count >= 8:
+            return True
+        return False
+
+    async def _is_biznet_under_maintenance(self) -> bool:
+        """Check if BizNet is showing maintenance page (SPA not loading)."""
+        if not self.page or not self._is_on_biznet():
+            return False
+        try:
+            body = await self.page.evaluate(
+                "() => document.body ? document.body.innerText || '' : ''"
+            )
+            return "UNDER MAINTENANCE" in body
+        except Exception:
+            return False
 
     async def _extract_tokens(self):
         if not self.page:
