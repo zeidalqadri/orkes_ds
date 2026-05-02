@@ -330,7 +330,7 @@ class TestAlerter:
         with patch.dict(os.environ, {}, clear=True):
             with patch('core.alerter._alert_enabled', return_value=True):
                 with patch('core.alerter._rate_limited', return_value=False):
-                    with patch('core.alerter._send_owner_alert', side_effect=Exception("network error")):
+                    with patch('core.telegram._send_owner_alert', side_effect=Exception("network error")):
                         result = send_alert("exception test")
                         assert result is False
 
@@ -341,7 +341,7 @@ class TestAlerter:
         with patch.dict(os.environ, {}, clear=True):
             with patch('core.alerter._alert_enabled', return_value=True):
                 with patch('core.alerter._rate_limited', return_value=False):
-                    with patch('core.alerter._send_owner_alert', return_value=True):
+                    with patch('core.telegram._send_owner_alert', return_value=True):
                         result = send_alert("successful test")
                         assert result is True
 
