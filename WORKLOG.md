@@ -74,3 +74,9 @@ Each has 1 item from API (parent sheet). Expected: 100+ child data sheets per te
 ## Completed
 - [x] Bot handler fix — 17 missing handlers, model change to deepseek-v4-flash
 - [x] All 797 tests passing
+- [x] Telegram bot fix (2026-05-02) — arbos-orkes_ds was not running; started under PM2, cleaned stale .bot.lock, removed useless arbos-testproj
+
+- [x] Bot relapse prevention (2026-05-02) — 3 layers:
+  - Layer 1: PM2 systemd startup already configured (verified)
+  - Layer 2: Cron watchdog every 5min on scripts/check-bot.sh — auto-restarts + Telegram alert on failure
+  - Layer 3: HEALTH_PORT=8766 enabled, health endpoint live at :8766/health
