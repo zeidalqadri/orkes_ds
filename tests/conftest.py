@@ -54,7 +54,7 @@ def mock_project_dir(tmp_path: Path) -> Path:
 def init_state(mock_project_dir: Path):
     """Initialize engine path/config on state module using tmp_path."""
     from core import state
-    from core.engine import _init_paths, _init_config, _init_permission
+    from core.engine import _init_config, _init_paths, _init_permission
 
     _init_paths(mock_project_dir)
     _init_config()

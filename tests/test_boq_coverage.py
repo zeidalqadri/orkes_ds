@@ -1,9 +1,5 @@
 """Tests for BoQ extraction coverage and data integrity."""
 import json
-from pathlib import Path
-
-import pytest
-
 
 EXPECTED_EVENTS = [
     "RFP-000000178771",

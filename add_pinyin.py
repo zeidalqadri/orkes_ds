@@ -2,8 +2,9 @@
 """Regenerate lyrics page with pinyin column - reconstructing from original HTML structure."""
 
 import re
-from bs4 import BeautifulSoup, Tag, NavigableString
-from pypinyin import pinyin, Style
+
+from bs4 import BeautifulSoup, NavigableString, Tag
+from pypinyin import Style, pinyin
 
 FILE = "/home/the_bomb/orkes_ds/lyrics/nopartyforcaodong_lyrics.html"
 
@@ -23,7 +24,7 @@ def to_pinyin(text):
             result.append(ch)
     return ' '.join(result)
 
-with open(FILE, 'r') as f:
+with open(FILE) as f:
     content = f.read()
     soup = BeautifulSoup(content, 'html.parser')
 

@@ -2077,7 +2077,7 @@ def test_handle_deepfix_not_command():
 # ── handle_project new without arbos.py shim ──
 
 def test_handle_project_new_no_shim(tmp_path):
-    from core.bot_handlers import PROJECTS_FILE as _PROJECTS_FILE, handle_project
+    from core.bot_handlers import handle_project
     bot = MagicMock()
     bot.edit_message_text = MagicMock()
     msg = make_msg(chat_type="private", text="/project new noproj test")

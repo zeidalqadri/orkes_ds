@@ -10,10 +10,9 @@ import json
 import sys
 import time
 from argparse import ArgumentParser
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Dict, List, Optional
-from urllib.request import urlopen, Request
+from urllib.request import Request, urlopen
 
 DAEMON_URL = "http://127.0.0.1:9876"
 OUTPUT_DIR = Path(__file__).resolve().parent.parent / "data" / "pricesheet_extract"
@@ -57,7 +56,7 @@ def check_daemon_health() -> bool:
         return False
 
 
-def extract_boq(event_number: str, event_map: dict, timeout: int = 120) -> Optional[dict]:
+def extract_boq(event_number: str, event_map: dict, timeout: int = 120) -> dict | None:
     entry = event_map.get(event_number, {})
     payload = {
         "event_number": event_number,
@@ -107,7 +106,7 @@ def main():
     parser.add_argument("--force", action="store_true", help="Re-extract already completed events")
     args = parser.parse_args()
 
-    print(f"[{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}] BoQ Daemon Extractor")
+    print(f"[{datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S')}] BoQ Daemon Extractor")
     print()
 
     if not check_daemon_health():

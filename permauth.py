@@ -23,14 +23,13 @@ import argparse
 import asyncio
 import json
 import logging
-import os
 import re
 import sys
 import time
 import urllib.parse
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 from urllib.parse import urlparse
 
 SMARTGEP_ENGINE = Path("/home/the_bomb/orkes/yellowpages/scrapers/smartgep_engine_v2")
@@ -87,7 +86,7 @@ class PermauthDaemon:
     def __init__(self, account_id: str, port: int = 9876):
         self.account_id = account_id
         self.port = port
-        self.account: Optional[Dict] = self._load_account(account_id)
+        self.account: dict | None = self._load_account(account_id)
         self.cookies_path = DATA_DIR / f"smartgep_cookies_{account_id}.json"
 
         self.browser = None
@@ -95,13 +94,13 @@ class PermauthDaemon:
         self.page = None
         self._pw = None
 
-        self._tokens: Dict[str, Any] = {"cookies": []}
+        self._tokens: dict[str, Any] = {"cookies": []}
         self._last_refresh: float = 0
         self._start_time: float = 0
         self._current_url: str = "https://businessnetwork.gep.com/BusinessNetwork/Landing/v2#/bn-landing"
 
     @staticmethod
-    def _load_account(account_id: str) -> Dict:
+    def _load_account(account_id: str) -> dict:
         data = json.loads(ACCOUNTS_PATH.read_text())
         for a in data.get("accounts", []):
             if a["id"] == account_id:
@@ -231,7 +230,7 @@ class PermauthDaemon:
             cook_count,
         )
 
-    def _load_cookies(self) -> List[Dict]:
+    def _load_cookies(self) -> list[dict]:
         paths = [self.cookies_path]
         # Also check for the fresh cookies from SmartGEPAuth login test
         alt = DATA_DIR / f"smartgep_cookies_{self.account_id}.json"
@@ -270,7 +269,7 @@ class PermauthDaemon:
                 cookies.append(entry)
             self.cookies_path.parent.mkdir(parents=True, exist_ok=True)
             self.cookies_path.write_text(
-                json.dumps({"cookies": cookies, "saved_at": datetime.now(timezone.utc).isoformat()}, indent=2)
+                json.dumps({"cookies": cookies, "saved_at": datetime.now(UTC).isoformat()}, indent=2)
             )
             self.cookies_path.chmod(0o600)
         except Exception as e:
@@ -427,7 +426,7 @@ class PermauthDaemon:
             logger.warning("No anchor event URL available — staying on biznet")
             return
         try:
-            print(patrol_section("SmartGEP event nav", False, f"navigating to extract netsessionid..."), flush=True)
+            print(patrol_section("SmartGEP event nav", False, "navigating to extract netsessionid..."), flush=True)
             await self.page.goto(
                 evt["full_url"],
                 wait_until="domcontentloaded", timeout=RELOAD_TIMEOUT,
@@ -476,7 +475,7 @@ class PermauthDaemon:
                     logger.warning("Failed to load event_id_map: %s", e)
         return {}
 
-    def _get_anchor_event(self) -> Optional[dict]:
+    def _get_anchor_event(self) -> dict | None:
         """Load a known SmartGEP event detail URL from saved data.
         Returns BizNet landing as fallback."""
         search_dirs = [
@@ -505,7 +504,7 @@ class PermauthDaemon:
             logger.warning("No page to refresh")
             return
         print(f"\n{SEP}", flush=True)
-        print(f"  \U0001f36a Cookie Monster Session Refresh", flush=True)
+        print("  \U0001f36a Cookie Monster Session Refresh", flush=True)
         print(f"{SEP}", flush=True)
         try:
             await self.page.goto(
@@ -545,7 +544,7 @@ class PermauthDaemon:
     async def _extract_tokens(self):
         if not self.page:
             return
-        tokens: Dict[str, Any] = {
+        tokens: dict[str, Any] = {
             "netsessionid": "",
             "requestverificationtoken": "",
             "oloc": "",
@@ -613,14 +612,14 @@ class PermauthDaemon:
         )
 
     async def _refresh_loop(self):
-        from datetime import datetime, timezone
+        from datetime import datetime
         while True:
             await asyncio.sleep(REFRESH_INTERVAL)
-            ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+            ts = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S")
             print(f"\n  [{ts}] \U0001f36a Cookie Monster scheduled refresh ({REFRESH_INTERVAL}s interval)", flush=True)
             await self._refresh_page()
 
-    async def _reload(self, target_url: Optional[str] = None):
+    async def _reload(self, target_url: str | None = None):
         if not self.page:
             return self._tokens
         try:
@@ -635,7 +634,7 @@ class PermauthDaemon:
         await self._extract_tokens()
         return self._tokens
 
-    async def _read_post_body(self, reader: asyncio.StreamReader, headers: Dict[str, str]) -> bytes:
+    async def _read_post_body(self, reader: asyncio.StreamReader, headers: dict[str, str]) -> bytes:
         cl = int(headers.get("content-length", "0"))
         if cl > 0 and cl < 10_000_000:
             return await reader.readexactly(cl)
@@ -693,8 +692,8 @@ class PermauthDaemon:
         )
 
     def _http_fetch(self, url: str, method: str = "GET",
-                              headers: Optional[dict] = None,
-                              body: Optional[str] = None,
+                              headers: dict | None = None,
+                              body: str | None = None,
                               timeout: int = 30) -> dict:
         """Server-side HTTP request using stored cookies as fallback."""
         try:
@@ -780,9 +779,9 @@ class PermauthDaemon:
         if not doc_url.startswith("http"):
             doc_url = f"https://smart.gep.com{doc_url}"
 
-        psevent_body: Optional[str] = None
-        pricesheet_bodies: Dict[str, str] = {}
-        pricedatasheet_bodies: Dict[str, str] = {}
+        psevent_body: str | None = None
+        pricesheet_bodies: dict[str, str] = {}
+        pricedatasheet_bodies: dict[str, str] = {}
 
         def _extract_id_from_url(url: str, pattern: str) -> str:
             try:
@@ -1130,7 +1129,7 @@ class PermauthDaemon:
                 }
                 logger.info("/browse-fetch L1 (browser-request) OK: %s → %s", url[:80], response.status)
                 return result
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 logger.warning("/browse-fetch L1 (browser-request) timeout: %s", url[:80])
             except Exception as e:
                 logger.warning("/browse-fetch L1 (browser-request) error: %s: %s", type(e).__name__, str(e)[:120])
@@ -1245,7 +1244,7 @@ class PermauthDaemon:
                     "tokens_valid": has_nsid,
                     "spa_available": has_nsid,
                     "last_refresh": (
-                        datetime.fromtimestamp(self._last_refresh, tz=timezone.utc).isoformat()
+                        datetime.fromtimestamp(self._last_refresh, tz=UTC).isoformat()
                         if self._last_refresh else ""
                     ),
                 })

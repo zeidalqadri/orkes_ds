@@ -7,9 +7,8 @@ Usage:
 """
 import asyncio
 import json
-import sys
 from argparse import ArgumentParser
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 ACCOUNTS_PATH = Path("/home/the_bomb/orkes/yellowpages/scrapers/smartgep_accounts.json")
@@ -106,7 +105,7 @@ async def bootstrap(account_id: str) -> bool:
         COOKIES_DIR.mkdir(parents=True, exist_ok=True)
         cookie_path.write_text(json.dumps({
             "cookies": cookie_list,
-            "saved_at": datetime.now(timezone.utc).isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
         }, indent=2))
         cookie_path.chmod(0o600)
         print(f"[bootstrap] Saved {len(cookie_list)} cookies to {cookie_path}")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Arbos bot — thin shim. Core at ~/.opencode-bot/core/"""
-import sys
 import os
+import sys
 from pathlib import Path
 
 sys.path.insert(0, os.path.expanduser("~/.opencode-bot"))
