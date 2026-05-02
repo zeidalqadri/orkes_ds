@@ -1,12 +1,9 @@
 """Tests for bot_handlers.py utility functions."""
 import json
 import os
-import subprocess
-from pathlib import Path
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 
 import pytest
-
 from core import state
 
 
@@ -121,7 +118,7 @@ def test_unregister_group(tmp_path):
 # _is_preconfirmed / _ask_confirm / _do_confirm
 @pytest.fixture
 def confirm_cleanup():
-    from core.bot_handlers import _confirmed_actions, _confirm_orig_msg
+    from core.bot_handlers import _confirm_orig_msg, _confirmed_actions
     _confirmed_actions.clear()
     _confirm_orig_msg.clear()
     yield
@@ -129,7 +126,7 @@ def confirm_cleanup():
     _confirm_orig_msg.clear()
 
 def test_is_preconfirmed(confirm_cleanup):
-    from core.bot_handlers import _is_preconfirmed, _confirmed_actions
+    from core.bot_handlers import _confirmed_actions, _is_preconfirmed
     assert _is_preconfirmed(1, "clear") is False
     _confirmed_actions[1] = "clear"
     assert _is_preconfirmed(1, "clear") is True
@@ -146,7 +143,7 @@ def test_ask_confirm(confirm_cleanup):
     bot.register_next_step_handler.assert_called_once()
 
 def test_do_confirm_yes(confirm_cleanup):
-    from core.bot_handlers import _do_confirm, _confirmed_actions
+    from core.bot_handlers import _confirmed_actions, _do_confirm
     handler = MagicMock()
     bot = MagicMock()
     message = MagicMock()
@@ -156,7 +153,7 @@ def test_do_confirm_yes(confirm_cleanup):
     assert _confirmed_actions.get(1) == "clear"
 
 def test_do_confirm_yes_y(confirm_cleanup):
-    from core.bot_handlers import _do_confirm, _confirmed_actions
+    from core.bot_handlers import _confirmed_actions, _do_confirm
     handler = MagicMock()
     bot = MagicMock()
     message = MagicMock()
@@ -176,7 +173,7 @@ def test_do_confirm_no(confirm_cleanup):
     bot.send_message.assert_called_once_with(1, "Cancelled.")
 
 def test_do_confirm_dispatches_clear(confirm_cleanup):
-    from core.bot_handlers import _do_confirm, _confirm_orig_msg
+    from core.bot_handlers import _confirm_orig_msg, _do_confirm
     handler = MagicMock()
     orig_msg = MagicMock()
     _confirm_orig_msg[1] = orig_msg
@@ -188,7 +185,7 @@ def test_do_confirm_dispatches_clear(confirm_cleanup):
     handler.assert_called_once_with(bot, orig_msg)
 
 def test_do_confirm_dispatches_restart(confirm_cleanup):
-    from core.bot_handlers import _do_confirm, _confirm_orig_msg
+    from core.bot_handlers import _confirm_orig_msg, _do_confirm
     handler = MagicMock()
     orig_msg = MagicMock()
     _confirm_orig_msg[1] = orig_msg
@@ -200,7 +197,7 @@ def test_do_confirm_dispatches_restart(confirm_cleanup):
     handler.assert_called_once_with(bot, orig_msg)
 
 def test_do_confirm_dispatches_kill(confirm_cleanup):
-    from core.bot_handlers import _do_confirm, _confirm_orig_msg
+    from core.bot_handlers import _confirm_orig_msg, _do_confirm
     handler = MagicMock()
     orig_msg = MagicMock()
     _confirm_orig_msg[1] = orig_msg
@@ -423,7 +420,7 @@ def test_reject_no_from_user(monkeypatch):
 
 # _get_bot_id
 def test_get_bot_id_caches():
-    from core.bot_handlers import _get_bot_id, _cached_bot_id
+    from core.bot_handlers import _cached_bot_id, _get_bot_id
     _cached_bot_id["id"] = None
     bot = MagicMock()
     bot.get_me.return_value.id = 42
@@ -434,7 +431,7 @@ def test_get_bot_id_caches():
     bot.get_me.assert_called_once()
 
 def test_get_bot_id_exception():
-    from core.bot_handlers import _get_bot_id, _cached_bot_id
+    from core.bot_handlers import _cached_bot_id, _get_bot_id
     _cached_bot_id["id"] = None
     bot = MagicMock()
     bot.get_me.side_effect = Exception("fail")
@@ -478,7 +475,7 @@ def test_is_addressed_to_me_no_username(monkeypatch):
 
 def test_is_addressed_to_me_reply_to_bot(monkeypatch):
     monkeypatch.setenv("BOT_USERNAME", "")
-    from core.bot_handlers import _is_addressed_to_me, _cached_bot_id
+    from core.bot_handlers import _cached_bot_id, _is_addressed_to_me
     _cached_bot_id["id"] = 99
     bot = MagicMock()
     reply_to = MagicMock()
@@ -488,7 +485,7 @@ def test_is_addressed_to_me_reply_to_bot(monkeypatch):
 
 def test_is_addressed_to_me_reply_no_bot_id(monkeypatch):
     monkeypatch.setenv("BOT_USERNAME", "TestBot")
-    from core.bot_handlers import _is_addressed_to_me, _cached_bot_id
+    from core.bot_handlers import _cached_bot_id, _is_addressed_to_me
     _cached_bot_id["id"] = None
     bot = MagicMock()
     bot.get_me.side_effect = Exception("fail")
@@ -1001,7 +998,6 @@ def test_route_to_expert_not_active():
 # ── handle_voice ─────────────────────────────────────────────────────────────
 
 def test_handle_voice_import_error(monkeypatch):
-    import core.loops
     monkeypatch.delattr("core.loops.transcribe_voice", raising=False)
     monkeypatch.setenv("BOT_USERNAME", "TestBot")
     monkeypatch.setenv("TELEGRAM_OWNER_ID", "1")
@@ -1413,7 +1409,7 @@ def test_handle_photo_kodak_keyword(monkeypatch, tmp_path):
     bot.download_file.return_value = b"image data"
     with patch("core.bot_handlers._is_addressed_to_me", return_value=True):
         with patch("core.bot_handlers._is_authorized", return_value=True):
-            with patch("core.bot_handlers._codex_photo_audit") as mock_codex:
+            with patch("core.bot_handlers._codex_photo_audit"):
                 with patch("threading.Thread", autospec=True) as mock_thread:
                     handle_photo(bot, msg)
     mock_thread.assert_called_once()
@@ -1589,7 +1585,6 @@ def test_handle_project_new_already_registered():
 
 
 def test_handle_project_new_success(monkeypatch):
-    import json
     from core.bot_handlers import handle_project
     bot = MagicMock()
     bot.edit_message_text = MagicMock()
@@ -1731,8 +1726,6 @@ def test_handle_project_start_exception():
 def test_register_handlers_wires_everything():
     handlers = {}
     commands = {}
-    content_types = {}
-
     def fake_message_handler(**kwargs):
         def dec(f):
             if "commands" in kwargs:
@@ -1809,8 +1802,9 @@ def test_handle_document_read_exception(tmp_path):
     state.GOAL_FILE.write_text("")
     state.STATE_FILE = tmp_path / "STATE.md"
     state.STATE_FILE.write_text("")
-    from core.bot_handlers import handle_document
     from pathlib import PosixPath
+
+    from core.bot_handlers import handle_document
     original_read_text = PosixPath.read_text
     def raising_read_text(self, *args, **kwargs):
         if "broken.py" in str(self):
@@ -1845,7 +1839,7 @@ def test_save_audit_pending_exception():
     _save_audit_pending(MagicMock(), 1, 2)
 
 
-def test_clear_audit_pending_exception():
+def test_clear_audit_pending_exception_none_dir():
     from core.bot_handlers import _clear_audit_pending
     state.UPLOADS_DIR = None
     _clear_audit_pending()
@@ -1986,9 +1980,9 @@ def test_save_audit_pending_symlink_exists(tmp_path):
 
 
 # _is_addressed_to_me reply to bot but no cached bot id
-def test_is_addressed_to_me_reply_no_bot_id(monkeypatch):
+def test_is_addressed_to_me_reply_no_bot_id_nousername(monkeypatch):
     monkeypatch.delenv("BOT_USERNAME", raising=False)
-    from core.bot_handlers import _is_addressed_to_me, _cached_bot_id
+    from core.bot_handlers import _cached_bot_id, _is_addressed_to_me
     _cached_bot_id["id"] = None
     bot = MagicMock()
     bot.get_me.side_effect = Exception()
@@ -2000,9 +1994,9 @@ def test_is_addressed_to_me_reply_no_bot_id(monkeypatch):
 
 
 # _is_addressed_to_me reply to bot with matching bot id, with BOT_USERNAME set
-def test_is_addressed_to_me_reply_to_bot(monkeypatch):
+def test_is_addressed_to_me_reply_to_bot_named(monkeypatch):
     monkeypatch.setenv("BOT_USERNAME", "my_bot")
-    from core.bot_handlers import _is_addressed_to_me, _cached_bot_id
+    from core.bot_handlers import _cached_bot_id, _is_addressed_to_me
     _cached_bot_id["id"] = 42
     bot = MagicMock()
     reply_to = MagicMock()
@@ -2015,7 +2009,7 @@ def test_is_addressed_to_me_reply_to_bot(monkeypatch):
 # _is_addressed_to_me reply to another user (not bot)
 def test_is_addressed_to_me_reply_to_other(monkeypatch):
     monkeypatch.setenv("BOT_USERNAME", "my_bot")
-    from core.bot_handlers import _is_addressed_to_me, _cached_bot_id
+    from core.bot_handlers import _cached_bot_id, _is_addressed_to_me
     _cached_bot_id["id"] = 42
     bot = MagicMock()
     reply_to = MagicMock()
@@ -2026,7 +2020,7 @@ def test_is_addressed_to_me_reply_to_other(monkeypatch):
 
 
 # handle_projects not for me
-def test_handle_projects_not_for_me():
+def test_handle_projects_not_for_me_short():
     from core.bot_handlers import handle_projects
     bot = MagicMock()
     msg = make_msg(chat_type="private", text="/projects")
@@ -2036,7 +2030,7 @@ def test_handle_projects_not_for_me():
 
 
 # handle_projects not authorized
-def test_handle_projects_not_authorized(monkeypatch):
+def test_handle_projects_not_authorized_short(monkeypatch):
     from core.bot_handlers import handle_projects
     bot = MagicMock()
     msg = make_msg(chat_type="private", text="/projects")
@@ -2048,7 +2042,7 @@ def test_handle_projects_not_authorized(monkeypatch):
 
 # ── handle_document not authorized in group (no rejection) ──
 
-def test_handle_document_not_authorized_group():
+def test_handle_document_not_authorized_group_short():
     from core.bot_handlers import handle_document
     bot = MagicMock()
     msg = make_msg(chat_type="group", text="")
@@ -2083,18 +2077,18 @@ def test_handle_deepfix_not_command():
 # ── handle_project new without arbos.py shim ──
 
 def test_handle_project_new_no_shim(tmp_path):
-    from core.bot_handlers import handle_project, PROJECTS_FILE
+    from core.bot_handlers import PROJECTS_FILE as _PROJECTS_FILE, handle_project
     bot = MagicMock()
     bot.edit_message_text = MagicMock()
     msg = make_msg(chat_type="private", text="/project new noproj test")
     msg.message_id = 10
-    PROJECTS_FILE = tmp_path / "projects.json"
-    PROJECTS_FILE.write_text('{"projects": {}}')
+    proj_file = tmp_path / "projects.json"
+    proj_file.write_text('{"projects": {}}')
     with patch("core.bot_handlers._is_command_for_me", return_value=True):
         with patch("core.bot_handlers._is_authorized", return_value=True):
             with patch("pathlib.Path.exists", return_value=False):
                 with patch("core.bot_handlers._load_projects", return_value={}):
-                    with patch("core.bot_shared.PROJECTS_FILE", PROJECTS_FILE):
+                    with patch("core.bot_shared.PROJECTS_FILE", proj_file):
                         with patch("pathlib.Path.mkdir"):
                             with patch("core.bot_handlers.state.WORKING_DIR", tmp_path):
                                 with patch("subprocess.run") as mock_run:

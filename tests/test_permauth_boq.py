@@ -2,7 +2,7 @@
 import json
 import sys
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -50,7 +50,6 @@ class TestBoQExtract:
         assert "doc_url" in result["error"].lower() or "event_id" in result["error"].lower()
 
     def test_resolves_event_number_from_map(self, mock_daemon):
-        request = {"event_number": "RFP-000000178771"}
         mock_daemon.page = AsyncMock()
         mock_daemon.page.url = "https://businessnetwork.gep.com/"
         mock_daemon.page.goto = AsyncMock()

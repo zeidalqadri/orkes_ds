@@ -1,10 +1,9 @@
 """Tests for permauth.py — SSO redirect, auth lifecycle, tokens, cookies, HTTP routing."""
-import asyncio
 import json
-import logging
 import sys
+from datetime import UTC
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, PropertyMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -145,7 +144,7 @@ class TestEnsureLoginFlow:
 
     @pytest.mark.asyncio
     async def test_ensure_login_skips_when_on_biznet_with_cookies(self, mock_daemon):
-        page = self._setup_page_for_login(
+        self._setup_page_for_login(
             mock_daemon, "https://businessnetwork.gep.com/BusinessNetwork/Landing/v2"
         )
         mock_daemon._tokens = {"cookies": [{"name": "x", "value": "y"}] * 15}
@@ -170,7 +169,7 @@ class TestEnsureLoginFlow:
         page.goto = AsyncMock(side_effect=goto_effect)
         mock_daemon._tokens = {"netsessionid": "abc123", "cookies": [{"name": "x", "value": "y"}] * 20}
 
-        result = await mock_daemon._ensure_login()
+        await mock_daemon._ensure_login()
         assert mock_save.called, "_save_cookies should be called after login"
         assert mock_extract.called, "_extract_tokens should be called after login"
 
@@ -337,7 +336,6 @@ class TestCookieFileIO:
         primary.write_text(json.dumps({"cookies": []}))
         mock_daemon.cookies_path = primary
         # Monkey-patch alt path to point at our temp file
-        from permauth import DATA_DIR
         import permauth
         with patch.object(permauth, "DATA_DIR", return_value=alt.parent):
             pass
@@ -600,16 +598,16 @@ class TestCookieStaleness:
     """Cookie freshness validation."""
 
     def test_old_cookies_are_stale(self):
-        from datetime import datetime, timezone, timedelta
+        from datetime import datetime, timedelta
         saved = "2026-04-29T12:00:00+00:00"
         saved_dt = datetime.fromisoformat(saved)
-        age = datetime.now(timezone.utc) - saved_dt
+        age = datetime.now(UTC) - saved_dt
         assert age > timedelta(hours=24)
 
     def test_recent_cookies_are_fresh(self):
-        from datetime import datetime, timezone, timedelta
-        recent = datetime.now(timezone.utc) - timedelta(minutes=30)
-        age = datetime.now(timezone.utc) - recent
+        from datetime import datetime, timedelta
+        recent = datetime.now(UTC) - timedelta(minutes=30)
+        age = datetime.now(UTC) - recent
         assert age < timedelta(hours=1)
 
 
