@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui_audit_report>
+  <subject>UI Screenshot (unprocessed — no vision backend)</subject>
+  <platform>Unknown</platform>
+  <image_path>context/uploads/photo_20260503_141953.jpg</image_path>
+  <status>No vision-capable LLM configured. Run `python scripts/codex_audit.py --check` for setup instructions.</status>
+  <prompt_sent>You are analyzing a screenshot of Bayu ESG Live Account (bayu.roowang.com/v2). This is an ESG dashboard for UTP (Universiti Teknologi PETRONAS). The page has 5 movements: Account Status, ESG Ledger, Proof of Claims, Challenges, Monthly Close. Analyze the screenshot for: 1. Layout issues (elements broken, misaligned, overlapping) 2. Visual hierarchy (is it clear what to look at first?) 3. Missing/broken UI elements (empty states, loading spinners stuck, missing data) 4. Styling inconsistencies 5.</prompt_sent>
+</ui_audit_report>
