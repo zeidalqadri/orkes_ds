@@ -1,48 +1,40 @@
 # Active Work
-Project: /home/the_bomb/orkes_ds
-Task: SmartGEP v2 BoQ Extraction
-Status: blocked (BizNet maintenance)
-Updated: 2026-05-02T05:36:00+00:00
+Project: /home/the_bomb/orkes_ds — CREMA design system
+Task: Mobile & tender UX optimisation for /tools/harga
+Status: completed
+Updated: 2026-05-05T08:00 UTC
 
-## Plan
-1. Fix permauth daemon auth (BizNet→SmartGEP SSO handoff)
-2. Extract BoQ from 3 SUSPECT_BOQ tenders (RFP-178432, 178387, 178027)
-3. QMD fix (parallel, no deps)
+## Completed: Mobile & Tender UX Optimisation (2026-05-05T08:00)
+- [x] Added 480px responsive breakpoint for phones
+- [x] Converted bid table to card layout on mobile (data-label attributes, CSS card view)
+- [x] Added sticky table headers on scroll for line items
+- [x] Improved tender picker with 300ms debounced search
+- [x] Added result count header in tender picker results
+- [x] Added "more results" indicator when truncated
+- [x] Added clear search button (×) for tender picker
+- [x] Better mobile toolbar/header actions wrapping
+- [x] Mobile-optimised line item table (horizontal scroll)
+- [x] Improved touch targets (44px min-height everywhere)
+- [x] Optimised KPI row, summary, levers, slide panels for small screens
+- [x] Files modified: bidder.css, bidder.js, bidder.html
 
-## Progress
-- [x] QMD fix — export-sessions + update + embed (5905 files, 6186 indexed)
-- [x] Fixed permauth.py bugs:
-  - `self._context` → `self.context` (3 lines: 492, 495, 521) — was crashing daemon
-  - Guard `_navigate_to_smartgep_event()` link scanning to BizNet pages only — was finding false "Forgot Username?" link with "smart-auth" in ReturnUrl
-- [x] Daemon login working — SSO completes, 8 BizNet cookies (smart-sts-bpc, CultureCode, etc.)
-- [ ] Extract netsessionid from smart.gep.com SPA — BLOCKED by BizNet maintenance
-- [ ] Run main scraper for 3 SUSPECT_BOQ tenders
+## Completed: Harga smartgep tender investigation (2026-05-05T07:45)
+- [x] Operator asked "Fix it" re: harga not calling smartgep tenders after ID migration
+- [x] Verified `/api/harga/tenders` works — 1482 tenders returned via Flask test client
+- [x] Confirmed `tender_ingest.py:679` tdr- filter already fixed (skips hidden dirs)
+- [x] Both font-size violations already at 11px in gallery.css and produce-modal.css
+- [x] No code changes needed — everything was already resolved in previous cycles
+- [x] Telegram report sent to operator
 
-## Current State (2026-05-02)
-- **BizNet**: AngularJS SPA loads but renders maintenance overlay ("UNDER MAINTENANCE — scheduled maintenance, site currently not accessible")
-- **Daemon**: Alive on 127.0.0.1:9876, account consurv, 8 cookies, refreshes every 10 min
-- **netSessionId**: EMPTY — can't reach smart.gep.com SPA without BizNet SPA rendering SMART/RFX links
-- **3 SUSPECT_BOQ tenders**: JSON files exist with 0 price_sheet_rows, need live SSO for extraction
+## Completed: Petronas/SmartGEP source_type validation (2026-05-05T07:45, override 07:38)
+- [x] Operator asked: source_type=petronas must be from SmartGEP. Compare records to validate.
+- [x] Investigated: SmartGEP produces source_type="smartgep", not "petronas"
+- [x] Found: 92 petronas records in DB came from NAS scanning, not SmartGEP
+- [x] Identified: "petronas" not in schemas.py VALID_TENDER_SOURCE_TYPES
+- [x] Reported findings to operator — recommended dispatch to data pipeline agent
+- [x] Operator gave "Override" at 07:38 — findings confirmed, dispatch authorized
 
-## Daemon Fixes Applied
-- `/home/the_bomb/orkes_ds/permauth.py`:
-  - `_is_on_biznet()` accepts cookies-only state (cookie_count >= 8)
-  - `_ensure_login()` return value uses `_is_on_biznet()`
-  - Post-login recovery to BizNet when cookies valid but redirect timed out
-  - `_navigate_to_smartgep_event()`: Ctrl+click BizNet SMART links (mirrors main scraper approach)
-  - `_is_biznet_under_maintenance()` added
-  - Bug fixes: `self._context` → `self.context`, guard link scanning to BizNet only
-
-## Next Steps (when BizNet recovers)
-1. Daemon will auto-detect SPA available and extract netsessionid
-2. Run BoQ extraction for 3 SUSPECT_BOQ tenders via daemon's /boq-extract endpoint
-3. Verify child sheet fetch with valid netsessionid
-
-## Completed
-- [x] Bot handler fix — 17 missing handlers, model change to deepseek-v4-flash
-- [x] All 797 tests passing
-- [x] Telegram bot fix (2026-05-02) — arbos-orkes_ds was not running; started under PM2, cleaned stale .bot.lock, removed useless arbos-testproj
-- [x] Bot relapse prevention (2026-05-02) — 3 layers:
-  - Layer 1: PM2 systemd startup already configured (verified)
-  - Layer 2: Cron watchdog every 5min on scripts/check-bot.sh — auto-restarts + Telegram alert on failure
-  - Layer 3: HEALTH_PORT=8766 enabled, health endpoint live at :8766/health
+## Completed: Tender Pipeline ID scheme verification
+- [x] Verified scrapers, bridge, DB functions — all format-agnostic
+- [x] 2,346 tenders (2,305 new-format, 41 old tdr-), workspace loads correctly
+- [x] sync-tender-portals tdr- filter fixed (now skips hidden dirs)

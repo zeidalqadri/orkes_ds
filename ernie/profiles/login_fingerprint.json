@@ -1,0 +1,29 @@
+{
+  "name": "login",
+  "created": 1777511975.0161552,
+  "fingerprint": {
+    "title": "BizNet",
+    "url_domain": "businessnetwork.gep.com",
+    "url_path": "https://businessnetwork.gep.com/",
+    "url_fragment": "",
+    "selector_count": 11,
+    "selector_hashes": {
+      "input[placeholder=\"Username\"]": "b366a40fd7cc",
+      "input[name=\"Username\"]": "560cd1116517",
+      "input[id=\"Username\"]": "88c7186bcc33",
+      "button:has-text(\"Login with Password\")": "a79f4587834c",
+      "input[placeholder=\"Password\"]": "5d7f5ee2e7ff",
+      "input[name=\"Password\"]": "6fc0f727e9ba",
+      "input[id=\"Password\"]": "de60d8cf5feb",
+      "input[type=\"password\"]": "89f0c4b59e74",
+      "button[type=\"submit\"]": "51f97f7b395b",
+      "button:has-text(\"Sign In\")": "3f3b86e1f793",
+      "button:has-text(\"Login\")": "4074b9f0567b"
+    },
+    "login_host_match": false,
+    "biznet_match": true,
+    "html_length": 1113,
+    "html_prefix_hash": "4e850c498c328e0f",
+    "timestamp": 1777511975.0160599
+  }
+}

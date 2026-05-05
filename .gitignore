@@ -8,3 +8,17 @@ chat_id.txt
 dogfood-output/
 logs/
 context/backups/
+context/runs/
+context/chat/
+context/.bot.lock
+context/.fleet_status.json
+context/.heartbeat
+*.py,cover
+.coverage
+.coverage.*
+htmlcov/
+bubblesnake/
+output/
+psevent_test_output.json
+pricesheet_full.json.gz
+pricesheet_investigate.json

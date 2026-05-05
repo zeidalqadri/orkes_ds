@@ -1,8 +1,8 @@
 {
   "name": "arbos-orkes_ds",
-  "engine": "opencode",
-  "model": "deepseek/deepseek-v4-pro",
-  "small_model": "deepseek/deepseek-v4-flash",
+  "engine": "claude",
+  "provider": "chutes",
+  "model": "deepseek-v4-flash",
   "features": ["experts"],
   "expert_sources": ["local"],
   "exclude_experts": []

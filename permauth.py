@@ -23,6 +23,7 @@ import argparse
 import asyncio
 import json
 import logging
+import os
 import re
 import sys
 import time
@@ -31,6 +32,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
+
+# Load env vars from orkes/.env (contains SMARTGEP_* credentials)
+from dotenv import load_dotenv
+load_dotenv(Path("/home/the_bomb/orkes/.env"))
 
 SMARTGEP_ENGINE = Path("/home/the_bomb/orkes/yellowpages/scrapers/smartgep_engine_v2")
 if str(SMARTGEP_ENGINE) not in sys.path:
@@ -104,6 +109,15 @@ class PermauthDaemon:
         data = json.loads(ACCOUNTS_PATH.read_text())
         for a in data.get("accounts", []):
             if a["id"] == account_id:
+                # Resolve username_env/password_env → actual credentials from env vars
+                for field in ("username", "password"):
+                    env_key = a.get(f"{field}_env")
+                    if env_key:
+                        a[field] = os.environ.get(env_key, "")
+                        if not a[field]:
+                            logger.warning("Account %s: env var %s is empty or unset", account_id, env_key)
+                    elif field not in a:
+                        a[field] = ""
                 return a
         raise ValueError(f"Account '{account_id}' not found")
 
@@ -449,31 +463,49 @@ class PermauthDaemon:
     async def _navigate_to_smartgep_event(self):
         """Navigate to a SmartGEP SPA event page to extract netsessionid.
 
-        Strategy (in order of preference):
-        1. Click a SMART link from the BizNet listing page (open in new tab).
-           This triggers the proper BizNet→SmartGEP SSO handoff that the main
-           scraper uses.  Netsessionid is extracted from the new tab.
-        2. Fall back: direct page.goto() with anchor event URL.
-
-        If BizNet is under maintenance, skip and retry next refresh cycle.
+        Strategy A: Click a SMART link from the BizNet listing page (best SSO handoff).
+        Strategy B: HTTP-based SMART session bootstrap via requests.Session, then
+                    inject acquired smart.gep.com cookies into browser.
+        Strategy C: Direct page.goto() with extended patience for SSO redirect chain.
         """
         if not self.page:
             return
 
-        # ── Check if BizNet is under maintenance ──────────────────────
         if await self._is_biznet_under_maintenance():
-            logger.warning("BizNet is under maintenance — skipping SmartGEP nav (will retry next cycle)")
+            logger.warning("BizNet under maintenance — skipping SmartGEP nav (will retry next cycle)")
             return
 
-        # ── Strategy 1: Click a SMART link on BizNet listing page ───────
-        # Only scan when on BizNet — the idplogin login page has SSO
-        # redirect URLs containing "smart-auth" which are false positives.
-        if "businessnetwork.gep.com" not in (self.page.url or "").lower():
-            logger.info("SmartGEP nav skipped — not on BizNet (page: %s)", (self.page.url or "")[:80])
-            return
+        # ── Strategy A: Click a SMART link on BizNet listing page ───────
+        if "businessnetwork.gep.com" in (self.page.url or "").lower():
+            try:
+                if await self._strategy_a_click_smart_link():
+                    return
+            except Exception as e:
+                logger.warning("Strategy A threw: %s \u2014 falling through to B", e)
+        else:
+            logger.info("Strategy A skipped \u2014 not on BizNet (page: %s)", (self.page.url or "")[:80])
 
+        # ── Strategy B: HTTP bootstrap + inject cookies ──────────────
+        logger.info("Strategy B: HTTP SMART bootstrap + cookie injection...")
         try:
-            # Find any SMART/RFX/Sourcing link on the current page
+            if await self._strategy_b_http_bootstrap():
+                return
+        except Exception as e:
+            logger.warning("Strategy B threw: %s \u2014 falling through to C", e)
+
+        # ── Strategy C: Direct page.goto with patience ───────────────
+        logger.info("Strategy C: Direct page.goto with extended patience...")
+        try:
+            if await self._strategy_c_direct_goto():
+                return
+        except Exception as e:
+            logger.warning("Strategy C threw: %s", e)
+
+        logger.warning("All SmartGEP nav strategies exhausted \u2014 no netsessionid (will retry next cycle)")
+
+    async def _strategy_a_click_smart_link(self) -> bool:
+        """Click a SMART link on BizNet listing and extract netsessionid."""
+        try:
             smart_link = await self.page.evaluate("""() => {
                 const links = document.querySelectorAll('a');
                 for (const a of links) {
@@ -486,75 +518,205 @@ class PermauthDaemon:
                 }
                 return null;
             }""")
-            if smart_link:
-                logger.info("Found BizNet→SmartGEP link: %s → %s",
-                            smart_link["text"], (smart_link["href"] or "")[:100])
-            else:
-                logger.info("No SMART links on BizNet listing (may be under maintenance or empty listing)")
-        except Exception as e:
-            logger.warning("Could not scan BizNet links: %s", e)
-            smart_link = None
+            if not smart_link:
+                logger.info("Strategy A: No SMART links on BizNet listing")
+                return False
 
-        if smart_link and self.context:
-            try:
-                print(patrol_section("SmartGEP event nav", False, "Ctrl+clicking BizNet link..."), flush=True)
-                async with self.context.expect_page(timeout=30000) as new_page_info:
-                    link_el = self.page.locator(f'a[href="{smart_link["href"]}"]').first
+            logger.info("Strategy A: BizNet SMART link: %s \u2192 %s",
+                        smart_link["text"], (smart_link["href"] or "")[:100])
+
+            if not self.context:
+                return False
+
+            print(patrol_section("SmartGEP event nav", False, "Ctrl+clicking BizNet link..."), flush=True)
+            async with self.context.expect_page(timeout=30000) as new_page_info:
+                link_el = self.page.locator(f'a[href="{smart_link["href"]}"]').first
+                if await link_el.is_visible(timeout=3000):
+                    await link_el.click(modifiers=["Control"], force=True)
+                else:
+                    link_el = self.page.locator('a').filter(has_text=smart_link["text"]).first
                     if await link_el.is_visible(timeout=3000):
                         await link_el.click(modifiers=["Control"], force=True)
                     else:
-                        # Try broader selector
-                        link_el = self.page.locator('a').filter(has_text=smart_link["text"]).first
-                        if await link_el.is_visible(timeout=3000):
-                            await link_el.click(modifiers=["Control"], force=True)
-                        else:
-                            raise Exception("Link not interactable")
+                        raise Exception("Link not interactable")
 
-                detail_page = await new_page_info.value
-                try:
-                    await detail_page.wait_for_load_state("networkidle", timeout=30000)
-                except Exception:
-                    await detail_page.wait_for_load_state("domcontentloaded", timeout=15000)
-                await detail_page.wait_for_timeout(SETTLE_TIME)
+            detail_page = await new_page_info.value
+            try:
+                await detail_page.wait_for_load_state("networkidle", timeout=30000)
+            except Exception:
+                await detail_page.wait_for_load_state("domcontentloaded", timeout=15000)
+            await detail_page.wait_for_timeout(SETTLE_TIME)
 
-                # Extract tokens from the new tab
-                nsid = await detail_page.evaluate(
-                    "() => { try { return rfx.resources.constants.netsessionid || ''; } catch(e) { return ''; } }"
+            nsid = await detail_page.evaluate(
+                "() => { try { return rfx.resources.constants.netsessionid || ''; } catch(e) { return ''; } }"
+            )
+            if nsid:
+                await self._save_cookies()
+                self._tokens["netsessionid"] = nsid
+                rvt = await detail_page.evaluate(
+                    "() => { try { return window.rfx.resources.constants.requestVerificationToken || ''; } catch(e) { return ''; } }"
                 )
+                if rvt:
+                    self._tokens["requestverificationtoken"] = rvt
+                m = re.search(r"[?&]oloc=(\d+)", detail_page.url)
+                if m:
+                    self._tokens["oloc"] = m.group(1)
+                logger.info("Strategy A: SUCCESS \u2014 nsid=%s", nsid[:12])
+                print(patrol_section("SmartGEP event nav", True, f"nsid={nsid[:12]}"), flush=True)
+                await detail_page.close()
+                return True
+            else:
+                logger.warning("Strategy A: Link opened but nsid empty (SPA not booted)")
+                await detail_page.close()
+                return False
+        except Exception as e:
+            logger.warning("Strategy A failed: %s", e)
+            return False
+
+    async def _strategy_b_http_bootstrap(self) -> bool:
+        """HTTP bootstrap SmartGEP session, inject cookies, navigate browser."""
+        from smartgep_api import build_http_session, bootstrap_smart_session, _clear_smart_cookies
+
+        cookies = self._tokens.get("cookies", [])
+        if not cookies:
+            logger.warning("Strategy B: No cookies for HTTP bootstrap")
+            return False
+
+        session = build_http_session(cookies)
+        _clear_smart_cookies(session)
+
+        anchor = self._get_anchor_event()
+        event_map = self._load_event_id_map()
+        bootstrap_url = anchor["full_url"] if anchor else ""
+        boot_ok = bootstrap_smart_session(session, event_map, bootstrap_url=bootstrap_url)
+
+        if not boot_ok:
+            logger.warning("Strategy B: HTTP bootstrap failed")
+            return False
+
+        smart_cookies = []
+        for c in session.cookies:
+            domain = c.domain or ""
+            if "smart.gep.com" in domain.lower():
+                smart_cookies.append({
+                    "name": c.name, "value": c.value,
+                    "domain": domain.lstrip("."),
+                    "path": c.path or "/",
+                    "secure": getattr(c, "secure", True),
+                    "httpOnly": getattr(c, "httpOnly", False),
+                })
+
+        if not smart_cookies:
+            logger.warning("Strategy B: No smart.gep.com cookies after bootstrap")
+            return False
+
+        logger.info("Strategy B: %d smart.gep.com cookies acquired \u2014 injecting into browser", len(smart_cookies))
+        await self.context.add_cookies(smart_cookies)
+        await self._save_cookies()
+
+        try:
+            if await self._navigate_smartgep_and_extract(timeout=45, label="B"):
+                return True
+        except Exception as e:
+            logger.warning("Strategy B nav failed: %s \u2014 falling through to C", e)
+
+        self._current_url = self.page.url if self.page else ""
+        await self._extract_tokens() if self.page else None
+        return False
+
+    async def _strategy_c_direct_goto(self) -> bool:
+        """Two-step smart.gep.com navigation: root first for SSO, then event URL."""
+        anchor = self._get_anchor_event()
+        target_url = anchor["full_url"] if anchor else "https://smart.gep.com/Smart/Workspace#/workspace/documents/sourcing;document=rfx"
+        root_url = "https://smart.gep.com/"
+        logger.info("Strategy C: two-step nav — root first (%s) then event (%s)", root_url, target_url[:80])
+        try:
+            await self.page.goto(root_url, wait_until="domcontentloaded", timeout=30000)
+            await self.page.wait_for_timeout(SETTLE_TIME)
+            await self._save_cookies()
+            step1_url = (self.page.url or "").lower()
+            logger.info("Strategy C step 1 landed: %s", step1_url[:80])
+        except Exception as e:
+            logger.warning("Strategy C step 1 (root) failed: %s — trying direct goto", e)
+        return await self._navigate_smartgep_and_extract(target_url=target_url, timeout=60, label="C")
+
+    async def _navigate_smartgep_and_extract(self, target_url: str = "",
+                                              timeout: int = 45, label: str = "") -> bool:
+        """Navigate browser to smart.gep.com URL, wait for SPA, extract netsessionid."""
+        if not target_url:
+            anchor = self._get_anchor_event()
+            target_url = anchor["full_url"] if anchor else "https://smart.gep.com/Smart/Workspace#/workspace/documents/sourcing;document=rfx"
+        try:
+            await self.page.goto(target_url, wait_until="domcontentloaded", timeout=timeout * 1000)
+            # Wait for SSO redirect chain to settle before evaluating JS
+            await self.page.wait_for_timeout(5000)
+            for i in range(timeout // 3):
+                await self.page.wait_for_timeout(3000)
+                current_url = (self.page.url or "").lower()
+                if i % 3 == 0:  # Log URL every ~9s for diagnostics
+                    logger.info("Strategy %s poll %d: %s", label, i, current_url[:80])
+                # If redirected to login page, SSO session isn't established for smart.gep.com
+                if "idplogin" in current_url or "smart-auth" in current_url or "smart-sts" in current_url:
+                    if i == 0:
+                        logger.info("Strategy %s: SSO redirect detected (%s) — waiting for chain to complete", label, current_url[:60])
+                    continue
+                # BizNet frames SmartGEP in an iframe (docurl= redirect) — find the right frame
+                eval_target = self.page
+                if "businessnetwork.gep.com" in current_url and "docurl=" in current_url:
+                    smart_frame = None
+                    for frame in self.page.frames:
+                        frame_url = frame.url or ""
+                        # Match frames whose hostname is smart.gep.com (not just URL substring)
+                        try:
+                            host = urlparse(frame_url).hostname or ""
+                        except Exception:
+                            host = ""
+                        if host == "smart.gep.com":
+                            smart_frame = frame
+                            break
+                    if smart_frame:
+                        if i == 0:
+                            logger.info("Strategy %s: Found SmartGEP iframe (host=smart.gep.com): %s", label, smart_frame.url[:80])
+                        eval_target = smart_frame
+                    elif i % 3 == 0:
+                        frame_urls = [(f.url or "about:blank")[:60] for f in self.page.frames]
+                        logger.info("Strategy %s: BizNet docurl but no smart.gep.com iframe. Frames (%d): %s", label, len(frame_urls), frame_urls[:5])
+                try:
+                    nsid = await eval_target.evaluate(
+                        "() => { try { return rfx.resources.constants.netsessionid || ''; } catch(e) { return ''; } }"
+                    )
+                except Exception as eval_err:
+                    # Context destroyed by ongoing navigation — wait and retry
+                    if "context was destroyed" in str(eval_err).lower() or "navigation" in str(eval_err).lower():
+                        logger.debug("Strategy %s: eval context destroyed (attempt %d) — retrying", label, i + 1)
+                        await self.page.wait_for_timeout(3000)
+                        continue
+                    raise
                 if nsid:
-                    # Merge new cookies from the detail tab
+                    self._tokens["netsessionid"] = nsid
                     try:
-                        detail_cookies = await self.context.cookies()
-                        await self._save_cookies()
-                        self._tokens["netsessionid"] = nsid
-                        rvt = await detail_page.evaluate(
+                        rvt = await eval_target.evaluate(
                             "() => { try { return window.rfx.resources.constants.requestVerificationToken || ''; } catch(e) { return ''; } }"
                         )
                         if rvt:
                             self._tokens["requestverificationtoken"] = rvt
-                        m = __import__("re").search(r"[?&]oloc=(\d+)", detail_page.url)
-                        if m:
-                            self._tokens["oloc"] = m.group(1)
-                        logger.info("SmartGEP SPA booted via BizNet link — nsid=%s cookies=%d",
-                                    nsid[:12], len(detail_cookies))
-                        print(patrol_section("SmartGEP event nav", True, f"nsid={nsid[:12]}—"), flush=True)
-                    except Exception as e:
-                        logger.error("Failed to merge detail tab tokens: %s", e)
-                else:
-                    logger.warning("BizNet link opened but nsid still empty — SPA may not have booted")
-                    print(patrol_section("SmartGEP event nav", False, "nsid empty (SPA not booted)"), flush=True)
-                await detail_page.close()
-                return
-            except Exception as e:
-                logger.warning("BizNet link approach failed: %s — falling back to direct goto", e)
-
-        # ── Strategy 2: Not attempted ────────────────────────────────
-        # Direct page.goto() to smart.gep.com triggers a passive SSO
-        # handoff that fails (msg=001), leaving us on error pages.
-        # Only the BizNet→click approach works; if no links are available
-        # (maintenance, empty listing), we skip and retry next cycle.
-        logger.info("SmartGEP nav skipped — no BizNet links available (will retry next refresh)")
-        return
+                    except Exception:
+                        pass
+                    # Check iframe URL for oloc, fall back to top-level page URL
+                    oloc_url = eval_target.url if hasattr(eval_target, 'url') else self.page.url
+                    m = re.search(r"[?&]oloc=(\d+)", oloc_url or self.page.url)
+                    logger.info("Strategy %s: SUCCESS \u2014 nsid=%s", label, nsid[:12])
+                    print(patrol_section("SmartGEP event nav", True, f"nsid={nsid[:12]}"), flush=True)
+                    return True
+            smart_count = sum(
+                1 for c in await self.context.cookies()
+                if "smart.gep.com" in (c.get("domain", "") or "").lower()
+            )
+            logger.info("Strategy %s: No nsid after %ds \u2014 smart.gep.com cookies=%d", label, timeout, smart_count)
+            return False
+        except Exception as e:
+            logger.warning("Strategy %s nav failed: %s", label, e)
+            return False
 
     def _load_event_id_map(self) -> dict:
         """Load the event_id_map.json to resolve event_number → event_id + doc_url."""
@@ -1027,9 +1189,12 @@ class PermauthDaemon:
         materials_selectors = [
             'a:has-text("Materials")', 'a:has-text("Material")',
             'a:has-text("Price Sheet")', 'a:has-text("PriceSheets")',
+            'a:has-text("PRICE SHEETS")', 'a:has-text("PRICE SHEET")',
             'li:has-text("Materials")', 'li:has-text("Material")',
             'button:has-text("Materials")', 'button:has-text("Material")',
             'span:has-text("Materials")', 'a[href*="material"]', 'a[href*="price"]',
+            'li:has-text("PRICE SHEETS")', 'span:has-text("PRICE SHEETS")',
+            'a[id*="pd_sheetName"]',
         ]
         for sel in materials_selectors:
             try:
@@ -1055,6 +1220,57 @@ class PermauthDaemon:
                            ps_id[:12], len(buyer_ids), len(supplier_ids))
             except Exception:
                 pass
+
+        if not pricesheet_bodies and price_sheet_ids:
+            logger.info("[boq-extract] No pricesheet bodies captured, trying direct Angular fetch")
+            for psid in price_sheet_ids:
+                result = await self.page.evaluate("""
+                async (args) => {
+                    const {psid, pc, oloc} = args;
+                    const urls = [
+                        '/action/doGetPricesheet/' + psid + '?oloc=' + oloc + '&c=' + pc,
+                        '/data/doGetPricesheet/' + psid + '?oloc=' + oloc + '&c=' + pc,
+                        '/data/pricesheet/' + psid + '?oloc=' + oloc + '&c=' + pc,
+                    ];
+                    for (const url of urls) {
+                        try {
+                            const injector = angular.element(document.body).injector();
+                            const $http = injector.get('$http');
+                            const resp = await $http.post(url);
+                            if (resp.data && typeof resp.data === 'object') {
+                                const text = JSON.stringify(resp.data);
+                                if (text.length > 200) return {ok: true, body: text, size: text.length, url: url};
+                            }
+                        } catch(e) {}
+                    }
+                    for (const url of urls) {
+                        try {
+                            const r = await fetch(url, {
+                                method: 'GET', credentials: 'include',
+                                headers: {'Accept': 'application/json'}
+                            });
+                            const text = await r.text();
+                            if (r.ok && text.length > 200 && text.startsWith('{'))
+                                return {ok: true, body: text, size: text.length, url: url};
+                        } catch(e) {}
+                    }
+                    return {ok: false};
+                }
+                """, {"psid": psid, "pc": partner_code, "oloc": oloc})
+                if result and result.get("ok"):
+                    pricesheet_bodies[psid] = result["body"]
+                    try:
+                        ps = json.loads(result["body"])
+                        buyer_ids = ps.get("buyerDataSheets", [])
+                        supplier_ids = ps.get("supplierDataSheets", [])
+                        for cid in buyer_ids + supplier_ids:
+                            cid_str = str(cid)
+                            if cid_str and cid_str not in child_sheet_ids:
+                                child_sheet_ids.append(cid_str)
+                        logger.info("[boq-extract] Direct fetch PS %s: %dB + %dS children, url=%s",
+                                   psid[:12], len(buyer_ids), len(supplier_ids), result.get("url", "?"))
+                    except Exception:
+                        pass
 
         logger.info("[boq-extract] Child sheet IDs to fetch: %d", len(child_sheet_ids))
 
@@ -1397,11 +1613,12 @@ class PermauthDaemon:
                 self._send_http(writer, 200, self._tokens)
 
             elif method == "POST" and path_only == "/reload":
-                qs = path.split("?", 1)[1] if "?" in path else ""
-                parsed = urllib.parse.parse_qs(qs)
-                target_url = parsed.get("url", [None])[0]
-                tokens = await self._reload(target_url)
-                self._send_http(writer, 200, {"message": "reload complete", "tokens": tokens})
+                await self._refresh_page()
+                self._send_http(writer, 200, {
+                    "message": "reload complete",
+                    "tokens_valid": bool(self._tokens.get("netsessionid")),
+                    "cookies": len(self._tokens.get("cookies", [])),
+                })
 
             elif method == "POST" and path_only == "/fetch":
                 if not self.page:

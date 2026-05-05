@@ -1,0 +1,106 @@
+{
+  "name": "auth_flow",
+  "created": 1777511977.3342245,
+  "fingerprint": {
+    "probes": {
+      "https://businessnetwork.gep.com/": {
+        "target_url": "https://businessnetwork.gep.com/",
+        "hops": [
+          {
+            "url": "https://businessnetwork.gep.com/",
+            "status": 200,
+            "headers": {
+              "content-type": "text/html; charset=utf-8",
+              "cache-control": "no-cache, no-store, must-revalidate",
+              "pragma": "no-cache",
+              "x-frame-options": "SAMEORIGIN",
+              "strict-transport-security": "max-age=31536000; includeSubDomains; preload"
+            }
+          }
+        ],
+        "hop_count": 1,
+        "final_status": 200,
+        "final_url": "https://businessnetwork.gep.com/",
+        "final_headers": {
+          "content-type": "text/html; charset=utf-8",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "pragma": "no-cache",
+          "x-frame-options": "SAMEORIGIN",
+          "strict-transport-security": "max-age=31536000; includeSubDomains; preload"
+        },
+        "body_length": 1113,
+        "body_markers": {
+          "has_login_form": false,
+          "has_password_field": false,
+          "has_username_field": false,
+          "login_with_password": false,
+          "sign_in_button": true,
+          "has_error": false,
+          "has_captcha": false,
+          "has_csrf_token": false,
+          "has_forgot_password": false
+        },
+        "body_hash": "4e850c498c328e0f",
+        "timestamp": 1777511975.8993294
+      },
+      "https://businessnetwork.gep.com/Account/Login": {
+        "target_url": "https://businessnetwork.gep.com/Account/Login",
+        "hops": [
+          {
+            "url": "https://businessnetwork.gep.com/Account/Login",
+            "status": 404,
+            "error": "Not Found"
+          }
+        ],
+        "hop_count": 1,
+        "final_status": 404,
+        "final_url": "https://businessnetwork.gep.com/Account/Login",
+        "final_headers": {},
+        "body_length": 0,
+        "body_markers": {
+          "has_login_form": false,
+          "has_password_field": false,
+          "has_username_field": false,
+          "login_with_password": false,
+          "sign_in_button": false,
+          "has_error": false,
+          "has_captcha": false,
+          "has_csrf_token": false,
+          "has_forgot_password": false
+        },
+        "body_hash": "",
+        "timestamp": 1777511976.700046
+      },
+      "https://idplogin.gep.com/Account/Login": {
+        "target_url": "https://idplogin.gep.com/Account/Login",
+        "hops": [
+          {
+            "url": "https://idplogin.gep.com/Account/Login",
+            "status": 405,
+            "error": "Method Not Allowed"
+          }
+        ],
+        "hop_count": 1,
+        "final_status": 405,
+        "final_url": "https://idplogin.gep.com/Account/Login",
+        "final_headers": {},
+        "body_length": 0,
+        "body_markers": {
+          "has_login_form": false,
+          "has_password_field": false,
+          "has_username_field": false,
+          "login_with_password": false,
+          "sign_in_button": false,
+          "has_error": false,
+          "has_captcha": false,
+          "has_csrf_token": false,
+          "has_forgot_password": false
+        },
+        "body_hash": "",
+        "timestamp": 1777511977.3341446
+      }
+    },
+    "composite_hash": "4c05b468d12050033045749bb0cf6d74",
+    "timestamp": 1777511977.3341722
+  }
+}

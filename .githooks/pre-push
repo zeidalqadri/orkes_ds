@@ -1,0 +1,14 @@
+#!/bin/sh
+# Pre-push hook: prevent pushing broken code
+set -e
+
+echo "--- Pre-push: lint ---"
+ruff check arbos.py scripts/ tests/
+
+echo "--- Pre-push: tests ---"
+python -m pytest tests/ -q
+
+echo "--- Pre-push: state integrity ---"
+python scripts/validate_state.py
+
+echo "--- All checks passed ---"
