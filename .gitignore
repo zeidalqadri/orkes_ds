@@ -22,3 +22,6 @@ output/
 psevent_test_output.json
 pricesheet_full.json.gz
 pricesheet_investigate.json
+data/
+plans/
+repos/
