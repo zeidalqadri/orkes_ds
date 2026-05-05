@@ -13,9 +13,14 @@ Rules:
 Duplicates get a -1, -2 suffix.
 """
 
-import sqlite3, json, os, sys, re, shutil
-from pathlib import Path
+import json
+import os
+import re
+import shutil
+import sqlite3
+import sys
 from collections import defaultdict
+from pathlib import Path
 
 BACKUP = Path("/home/the_bomb/orkes_ds/data/db_backups/tenders_backup_20260504_201253.db")
 TARGET = Path("/home/the_bomb/orkes/yellowpages/tenders/tenders.db")
@@ -24,7 +29,7 @@ MIGRATION_LOG = Path("/home/the_bomb/orkes_ds/data/db_backups/id_migration_log.t
 
 def new_id_from_tender(row) -> str:
     """Compute the new source-based ID for a tender row."""
-    tid, ref, stype, data_json = row["id"], row["reference"], row["source_type"], row["data"]
+    tid, ref, stype = row["id"], row["reference"], row["source_type"]
 
     # Empty reference → keep existing
     if not ref or ref.strip() == "":
@@ -113,7 +118,7 @@ def main():
 
     # Write migration log
     with open(MIGRATION_LOG, "w") as f:
-        f.write(f"ID Migration Log\n")
+        f.write("ID Migration Log\n")
         f.write(f"Source: {BACKUP.name}\n")
         f.write(f"Total: {len(mapping)}, Changed: {changed}, Kept: {kept}\n\n")
         f.write("\n".join(log_lines))
@@ -211,7 +216,7 @@ def main():
     conn.close()
 
     # 7. All good? Replace target
-    print(f"\n--- Restore ---")
+    print("\n--- Restore ---")
     target_bak = TARGET.parent / "tenders.db.pre_migrate_bak"
     if TARGET.exists():
         shutil.copy2(TARGET, target_bak)
@@ -221,7 +226,7 @@ def main():
 
     # Cleanup working copy
     os.unlink(work_path)
-    print(f"Cleaned up working copy")
+    print("Cleaned up working copy")
 
     print("\nDone. Tender IDs migrated in backup and restored.")
 

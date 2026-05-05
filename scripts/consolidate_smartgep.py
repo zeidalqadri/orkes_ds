@@ -19,7 +19,7 @@ import os
 import shutil
 import sqlite3
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 # ─── Config ──────────────────────────────────────────────────────────────────
@@ -141,14 +141,14 @@ def phase1_source_type_cleanup(dry_run=True):
     c.execute(
         f"UPDATE tenders SET source_type='smartgep', updated_at=? "
         f"WHERE entity IN ({placeholders}) AND source_type != 'smartgep'",
-        (datetime.now(timezone.utc).isoformat(),) + SMARTGEP_ENTITIES,
+        (datetime.now(UTC).isoformat(),) + SMARTGEP_ENTITIES,
     )
     retagged_entity = c.rowcount
 
     c.execute(
         "UPDATE tenders SET source_type='smartgep', updated_at=? "
         "WHERE entity='' AND reference LIKE 'GEP-RFP%' AND source_type != 'smartgep'",
-        (datetime.now(timezone.utc).isoformat(),),
+        (datetime.now(UTC).isoformat(),),
     )
     retagged_orphan = c.rowcount
 
@@ -247,7 +247,7 @@ def phase2_silo_consolidation(dry_run=True):
 
         c.execute(
             "UPDATE tenders SET data=?, updated_at=? WHERE id=?",
-            (json.dumps(data), datetime.now(timezone.utc).isoformat(), tender_id),
+            (json.dumps(data), datetime.now(UTC).isoformat(), tender_id),
         )
         updates += 1
 
@@ -405,7 +405,7 @@ def phase3_dedup(dry_run=True):
             "UPDATE tenders SET data=?, search_text=?, document_count=?, updated_at=? WHERE id=?",
             (json.dumps(primary_data), primary["search_text"],
              primary_data["document_count"],
-             datetime.now(timezone.utc).isoformat(), primary["id"]),
+             datetime.now(UTC).isoformat(), primary["id"]),
         )
 
         # Delete secondary records
