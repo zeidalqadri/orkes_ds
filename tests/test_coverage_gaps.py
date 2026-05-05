@@ -257,7 +257,7 @@ class TestPrompt:
         log_chat("bot", "Hello user")
         result = load_chatlog(max_chars=5000)
         assert "Hello bot" in result
-        assert "Hello user" in result
+        assert "Hello user" not in result  # bot messages are filtered
         assert "Recent Telegram chat" in result
 
     def test_chatlog_truncates_restarted(self, init_state):
