@@ -1,10 +1,15 @@
 # Arbos State
-Updated: 2026-05-05T07:50 UTC
+Updated: 2026-05-05T11:45 UTC
 
-## Status: IDLE — completed
+## Status: ACTIVE — implementing concurrent session handling
 
-## Last Completed: Committed all pending changes to `crema/auto-0505` (ab0788b)
+## Phase: act
 
-- Harga tool, Gemini model updates, tender ID migration, workspace UX fixes, design token enforcement
-- 47 files changed, 5932 insertions, 721 deletions
-- Working tree clean, no pending changes
+## Current Task
+1. Fix fetchChatSessions frontend bug (response unwrapping)
+2. Add POST /chat/sessions endpoint
+3. Update resetChatSession to create backend session
+
+## Context
+- Gemini → OpenAI: Already done (Gemini not in chatbot provider list, OpenAI is)
+- Session handling: Substantially implemented but has frontend/backend response format mismatch

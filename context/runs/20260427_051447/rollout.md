@@ -1,1 +1,0 @@
-No active task. GOAL.md is done, INBOX is empty. What would you like me to work on?

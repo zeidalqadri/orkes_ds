@@ -1,1 +1,0 @@
-Let me verify the actual integrated assets exist, then answer.Done. Sent the operator a full breakdown of 4 concrete capabilities + 3 recommended next moves. Awaiting their direction.

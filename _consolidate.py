@@ -39,12 +39,12 @@ def phase1_source_type_cleanup(dry_run: bool = True) -> dict:
 
     rows = conn.execute(
         """SELECT id, reference, source_type, data FROM tenders
-           WHERE source_type='petronas'
+           WHERE source_type != 'smartgep'
            AND (reference LIKE 'RFP-%' OR reference LIKE 'GEP-RFP-%')
            ORDER BY reference"""
     ).fetchall()
 
-    log.info("Phase 1: Found %d petronas-tagged tenders with RFP/GEP-RFP refs", len(rows))
+    log.info("Phase 1: Found %d non-smartgep tenders with RFP/GEP-RFP refs", len(rows))
     updated_ids = []
 
     for r in rows:
