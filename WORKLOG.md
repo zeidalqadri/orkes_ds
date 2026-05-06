@@ -1,8 +1,8 @@
 ## Active Work
 Project: /home/the_bomb/orkes_ds (yellowpages)
-Task: SmartGEP scraper — kill stuck browser + seed event_map
-Status: completed
-Updated: 2026-05-06T07:55 UTC
+Task: harga.roowang.com dogfood review
+Status: completed — awaiting operator
+Updated: 2026-05-06T11:32 UTC
 
 ### Done
 - Killed stuck Playwright Chromium (PID 2201916, 500MB resident) that was stuck from the HTTP refresh → browser restart loop
