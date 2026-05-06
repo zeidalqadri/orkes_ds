@@ -1,11 +1,9 @@
 # Arbos State
-Updated: 2026-05-05T13:05 UTC
+Updated: 2026-05-06T08:03 UTC
 
-## Status: IDLE — completed (auto-cleared: idle output) after 1 steps
+## Status: IDLE — completed after 1 steps
 
-## Last Completed: # Cleared
-
-Operator request completed: committed + pushed to both remotes.
+## Last Completed: Awaiting operator direction.
 
 ### Summary
-System status is steady. Here's the morning check-in:
+**fleet.css border-radius cleanup** complete:
