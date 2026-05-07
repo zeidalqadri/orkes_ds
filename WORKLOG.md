@@ -1,8 +1,29 @@
 # Active Work
 Project: /home/the_bomb/orkes_ds2
-Task: Option 2 — Fix permauth HTTP refresh fallback to browser-based refresh
+Task: Truth-check and fix remaining harga gaps
 Status: completed
-Updated: 2026-05-07T13:05 UTC
+Updated: 2026-05-07T15:45 UTC
+
+## What was done
+- Re-read all v3/v2 frontend code to verify gap analysis accuracy
+- Fixed placeholder: "Ask about a price…" → "Salaam. Apa mau?" (harga-v3.html:49)
+- Fixed typing indicator: stops at last stage instead of cycling infinitely (harga-v3.html:226)
+- Fixed v2 JS: added conversational_response display before price card in sendChat() (harga-v2.js:221-223 + .new variant)
+- Confirmed: send button already 44px ✓, conversational text already shown in v3 ✓
+
+## Completed
+
+### Re-verified gaps
+- Greeting: "Salaam. Apa mau?" already correct in welcome + newChat()
+- Conversational text: v3 already shows it; v2 JS now fixed
+- Send button: 44px meets CREMA minimum
+- Typing stages: now stops at final stage
+- Wizard/canvas/provider features: intentionally absent in standalone deployment
+
+---
+
+## Previous work (archived)
+[Earlier completed tasks remain below; see worklog history for full detail]
 
 ## What was done
 - Investigated SmartGEP scraper stall (last ran May 4, 3d stale)
