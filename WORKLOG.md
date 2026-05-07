@@ -1,8 +1,8 @@
 # Active Work
 Project: /home/the_bomb/orkes_ds2
-Task: Address Issue 1 — SmartGEP scraper stalled
+Task: Option 2 — Fix permauth HTTP refresh fallback to browser-based refresh
 Status: completed
-Updated: 2026-05-07T12:15 UTC
+Updated: 2026-05-07T13:05 UTC
 
 ## What was done
 - Investigated SmartGEP scraper stall (last ran May 4, 3d stale)
@@ -72,6 +72,16 @@ Updated: 2026-05-07T12:15 UTC
 - GOAL cleared — standing by for next direction
 
 ## Completed (moved from Active Work)
+### Task: Option 2 — Fix permauth HTTP refresh → browser fallback
+- Problem: Permauth HTTP cookie refresh (`_refresh_cookies_http()`) always fails for SmartGEP because SSO requires full browser JS context
+- After 3 consecutive failures (every 30min), permauth was restarting the entire Chromium browser — wasteful and disruptive
+- Fix: Modified `_refresh_loop` in `/home/the_bomb/orkes/yellowpages/scrapers/smartgep_engine_v2/permauth.py`:
+  - Layer 1: Try HTTP refresh (fast path, works for simple cookie renewal)
+  - Layer 2: On HTTP failure, fall back to Playwright `_refresh_page()` (browser-based, handles SSO)
+  - Browser restart only after 3 failures across refresh cycles (same as before, but now `_refresh_page()` resets counter)
+- Restarted permauth daemon — online, starting up clean (PID 55)
+- Also fixed PM2 startup: previously crashed due to stray `--log-date-format` arg — resolved by direct start
+
 ### Task: Address Issue 1 + Fix sheepdog relapse
 - SmartGEP scraper stall: Fixed (permauth overlay dismissal)
 - Sheepdog TypeError: Fixed (TypeError guard + traceback logging)
