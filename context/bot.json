@@ -1,9 +1,9 @@
 {
-  "name": "arbos-orkes_ds",
+  "name": "arbos-orkes_ds2",
   "engine": "claude",
   "provider": "chutes",
   "model": "deepseek-v4-flash",
-  "features": ["experts"],
-  "expert_sources": ["local"],
+  "features": ["skills", "media", "worktree", "experts"],
+  "expert_sources": ["local", "global"],
   "exclude_experts": []
 }

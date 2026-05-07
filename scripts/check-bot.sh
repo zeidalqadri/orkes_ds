@@ -1,11 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
-BOT_NAME="arbos-orkes_ds"
-LAUNCH_SCRIPT="/home/the_bomb/orkes_ds/.arbos-launch.sh"
-WORK_DIR="/home/the_bomb/orkes_ds"
+BOT_NAME="arbos-orkes_ds2"
+LAUNCH_SCRIPT="/home/the_bomb/orkes_ds2/.arbos-launch.sh"
+WORK_DIR="/home/the_bomb/orkes_ds2"
 ENV_FILE="$WORK_DIR/.env"
-LOG="/tmp/check-bot.log"
+LOG="/tmp/check-bot-orkes-ds2.log"
 
 set -a
 source "$ENV_FILE" 2>/dev/null || { echo "$(date -u +%FT%T) ERROR: cannot source $ENV_FILE" >> "$LOG"; exit 1; }
@@ -19,7 +19,7 @@ if [ "$STATUS" -eq 0 ]; then
     cd "$WORK_DIR"
     pm2 start "$LAUNCH_SCRIPT" --name "$BOT_NAME" 2>&1 >> "$LOG"
     pm2 save 2>&1 >> "$LOG"
-    MSG="⚠️ arbos-orkes_ds was DOWN — auto-restarted at $(date -u +%d-%H:%M UTC)"
+    MSG="⚠️ arbos-orkes_ds2 was DOWN — auto-restarted at $(date -u +%d-%H:%M UTC)"
     curl -s -X POST "https://api.telegram.org/bot$TAU_BOT_TOKEN/sendMessage" \
         -d "chat_id=$TELEGRAM_OWNER_ID" \
         -d "text=$MSG" > /dev/null 2>&1
