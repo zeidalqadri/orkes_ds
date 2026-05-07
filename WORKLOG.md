@@ -64,7 +64,19 @@ Updated: 2026-05-07T12:15 UTC
 - SmartGEP SSO requires full browser JS context — HTTP-only bootstrap can't get cookies
 - Only affects Layer 2 fallback, not Layer 1 (Playwright)
 
-## 2026-05-07 — Memory + Consurvatory_bot verification
+## 2026-05-07 — VERIFIED: sheepdog fix stable, no relapse
+
+- Code fix already committed in 55d4741 (MemAvailable division bug + TypeError guard)
+- Monitoring confirmed: 0 errors, 0 restarts, healthy polls since 12:41 UTC
+- All 9 PM2 services online, 0 restarts
+- GOAL cleared — standing by for next direction
+
+## Completed (moved from Active Work)
+### Task: Address Issue 1 + Fix sheepdog relapse
+- SmartGEP scraper stall: Fixed (permauth overlay dismissal)
+- Sheepdog TypeError: Fixed (TypeError guard + traceback logging)
+- MemAvailable 0GB display: Fixed (extra /1024 removed)
+- Monitoring: VERIFIED CLEAN — no relapse detected after 30+ min
 - Investigated "0GB memory" alert — confirmed FALSE ALARM
   - Sheepdog correctly reads MemAvailable (21GB) from /proc/meminfo
   - PM2 shows 0MB per process due to cgroup v2 limitation (cosmetic only)
