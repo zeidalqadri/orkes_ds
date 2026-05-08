@@ -4,7 +4,7 @@ Updated: 2026-05-08T04:22 UTC
 ## Status: IDLE — all verified, housekeeping done
 
 ## Last Completed
-1. Verified bid import control visible on landing page ✅
+1. Verified bid import control on landing page ✅
 2. Verified Harga logo navigates to new chat ✅
 3. Investigated tender counts: 3,008 total, 782 with line items, ~265 available after closed filter
 4. SmartGEP confirmed as bottleneck: only 4% have line items (PDF-based BOQ)

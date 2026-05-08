@@ -1,118 +1,45 @@
 # Active Work
 Project: /home/the_bomb/orkes_ds2
-Task: Truth-check and fix remaining harga gaps
-Status: completed
-Updated: 2026-05-07T15:45 UTC
+Task: Verify bid import + logo nav + investigate tender counts
+Status: done
+Updated: 2026-05-08T04:20 UTC
 
-## What was done
-- Re-read all v3/v2 frontend code to verify gap analysis accuracy
-- Fixed placeholder: "Ask about a price…" → "Salaam. Apa mau?" (harga-v3.html:49)
-- Fixed typing indicator: stops at last stage instead of cycling infinitely (harga-v3.html:226)
-- Fixed v2 JS: added conversational_response display before price card in sendChat() (harga-v2.js:221-223 + .new variant)
-- Confirmed: send button already 44px ✓, conversational text already shown in v3 ✓
+## Investigation Results
 
-## Completed
+### Items 1 & 2 — Verified ✅
+1. **Bid Import on Landing Page**: The "↓ Import Tender from CREMA" button is visible on the welcome screen (harga-v3.html line 116-120), below example queries, above the chat area. Also duplicated in the bid panel (line 181).
+2. **Logo → New Chat**: Clicking `◆ harga` in the header (line 45) triggers `newChat()` which starts a fresh session without losing the last one.
 
-### Re-verified gaps
-- Greeting: "Salaam. Apa mau?" already correct in welcome + newChat()
-- Conversational text: v3 already shows it; v2 JS now fixed
-- Send button: 44px meets CREMA minimum
-- Typing stages: now stops at final stage
-- Wizard/canvas/provider features: intentionally absent in standalone deployment
+### Tender Count Deep Dive
+**Question**: "Do we really only have 265 tenders with line items available?"
+**Answer**:
+- 3,008 tenders total in `harga/tenders/tenders.db` (65MB)
+- 782 have line items (26%)
+- But the CREMA import preview filters out closed/cancelled → ~265 available for import
+- The 265 figure was correct, just with the closed filter applied
 
----
+**By source**:
+- government: 1,458 total, 595 with line items (40%)
+- eperolehan: 187 total, 93 with line items (49%)
+- smartgep: 743 total, 32 with line items (4%) ← the drag
+- unknown: 612 total, 54 with line items (8%)
+- petronas: 8 total, 8 with line items (100%)
 
-## Previous work (archived)
-[Earlier completed tasks remain below; see worklog history for full detail]
+**Root cause**: SmartGEP tenders are mostly PDF-based without extracted BOQ data. Only 4% have structured line items vs 40-49% for government/ePerolehan.
 
-## What was done
-- Investigated SmartGEP scraper stall (last ran May 4, 3d stale)
-- Found root cause: permauth daemon stuck on `<app-maintainance-message>` overlay on idplogin.gep.com — blocked Playwright clicks
-- Applied fix: JS overlay removal + `force=True` on login button clicks in `permauth.py`
-- Restarted permauth daemon → authenticated successfully (nsid, 26 cookies, smart.gep.com cookies)
-- Current scraper run (started 09:54) includes SmartGEP after ePerolehan finishes (~13:10 UTC)
-- Found secondary issue: sheepdog conductor loop error `'>' not supported between instances of 'str' and 'int'`
+### Housekeeping
+- Removed empty 0-byte `tenders.db` artifact from harga root dir (real DB is at `harga/tenders/tenders.db`)
+- All harga code committed (latest: b37b78f)
+- PM2: All processes online, harga HTTP 200
 
 ## Progress
-- [x] Verified Harga split from Yellowpages (done by ds2 agent)
-  - harga standalone on 3637, yellowpages on 3636
-  - Cloudflare tunnel routes harga.roowang.com → 3637
-  - yellowpages.zeidgeist.com → 3636
-- [x] Memory limits tuned: yellowpages 2G, harga 1G (was 4G each)
-- [x] Both services healthy (HTTP 200, 0 restarts)
-- [x] Verified all dogfood fixes intact:
-  - Chat input maxlength=2000
-  - AbortController + Cancel button (no hardcoded timeout)
-  - Loading indicators on all API calls
-  - Font: DM Sans + JetBrains Mono (not Space Grotesk)
-  - Single _dogfood_harga-v2.py (v2 target)
-- [x] Confirmed 21GB available memory — settings are sustainable
+- [x] Verify bid import control on landing page — visible ✅
+- [x] Verify logo navigates to new chat — working ✅
+- [x] Investigate 265 tender count — explained above
+- [x] Remove empty tenders.db artifact
+- [x] Update STATE.md, WORKLOG.md
 
-## Key findings
-- The Harga split was already fully implemented by the ds2 agent
-- Memory limits already tuned to 2G/1G (from original 4G)
-- Cloudflare tunnel config updated: harga.roowang.com → localhost:3637
-- All 5 dogfood issues from earlier audit already resolved
-- No remaining pending items for this task
-
-## Domain correction
-- ada.roowang.com (not ada.ruang.com) — Cloudflare Worker for UTP/Tronoh Mines frontend
-
-## Consurvatory_bot data check
-- Verified: bot IS streaming legit data
-- 3,008 tenders in main DB (65MB at tenders/tenders.db)
-- Sources: eperolehan (188), government (1380), petronas (16), smartgep (1378), unknown (46)
-- ePerolehan scraper running (1h ago), SmartGEP stalled (~1d)
-- Pipeline deals thin/stale (1 entry, last updated Mar 18)
-- "No tenders database" was transient path resolution issue — resolved
-
-## 2026-05-07 — FIX: sheepdog TypeError + permauth overlay on smart.gep.com
-
-### Fix 1: Sheepdog conductor loop TypeError
-- File: `orkes/sheepdog/sheepdog.py` line 1302
-- Error: `'>' not supported between instances of 'str' and 'int'` when comparing memory trend
-- Fix: Wrapped comparison in try/except TypeError → `h.clear()` to reset corrupted history
-- Status: Restarted (PID 47), online 0 restarts
-
-### Fix 2: Permauth SmartGEP SSO handoff
-- The `<app-maintainance-message>` overlay ALSO appears on `smart.gep.com` workspace page
-- Previous fix only dismissed it on `idplogin.gep.com` — overlay blocked Strategy C's Sourcing tab click
-- Fix: Extracted `_dismiss_overlay()` helper, called after each `page.goto()` in Strategy C
-- Result: Permauth SSO now succeeds — `nsid=nn5ks43x4dty`, cookies=26
-- Browser-based SmartGEP API calls (Layer 1) now functional
-
-### Remaining: HTTP bootstrap for smart.gep.com cookies still fails
-- SmartGEP SSO requires full browser JS context — HTTP-only bootstrap can't get cookies
-- Only affects Layer 2 fallback, not Layer 1 (Playwright)
-
-## 2026-05-07 — VERIFIED: sheepdog fix stable, no relapse
-
-- Code fix already committed in 55d4741 (MemAvailable division bug + TypeError guard)
-- Monitoring confirmed: 0 errors, 0 restarts, healthy polls since 12:41 UTC
-- All 9 PM2 services online, 0 restarts
-- GOAL cleared — standing by for next direction
-
-## Completed (moved from Active Work)
-### Task: Option 2 — Fix permauth HTTP refresh → browser fallback
-- Problem: Permauth HTTP cookie refresh (`_refresh_cookies_http()`) always fails for SmartGEP because SSO requires full browser JS context
-- After 3 consecutive failures (every 30min), permauth was restarting the entire Chromium browser — wasteful and disruptive
-- Fix: Modified `_refresh_loop` in `/home/the_bomb/orkes/yellowpages/scrapers/smartgep_engine_v2/permauth.py`:
-  - Layer 1: Try HTTP refresh (fast path, works for simple cookie renewal)
-  - Layer 2: On HTTP failure, fall back to Playwright `_refresh_page()` (browser-based, handles SSO)
-  - Browser restart only after 3 failures across refresh cycles (same as before, but now `_refresh_page()` resets counter)
-- Restarted permauth daemon — online, starting up clean (PID 55)
-- Also fixed PM2 startup: previously crashed due to stray `--log-date-format` arg — resolved by direct start
-
-### Task: Address Issue 1 + Fix sheepdog relapse
-- SmartGEP scraper stall: Fixed (permauth overlay dismissal)
-- Sheepdog TypeError: Fixed (TypeError guard + traceback logging)
-- MemAvailable 0GB display: Fixed (extra /1024 removed)
-- Monitoring: VERIFIED CLEAN — no relapse detected after 30+ min
-- Investigated "0GB memory" alert — confirmed FALSE ALARM
-  - Sheepdog correctly reads MemAvailable (21GB) from /proc/meminfo
-  - PM2 shows 0MB per process due to cgroup v2 limitation (cosmetic only)
-  - Swap at 2% — minimal pressure
-- Verified @Consurvatory_bot reads `tenders/tenders.db` correctly (3008 records)
-- All 9 PM2 services online, 0 restarts, HTTP 200 responses
-- Yellowpages stable at 2h uptime, 0 restarts
-- Known issues flagged: SmartGEP Dyna scraper stale (22d), pipeline thin (50d stale)
+## Completed
+- Bid import + logo nav verification (2026-05-08)
+- Tender count investigation (2026-05-08)
+- Housekeeping (2026-05-08)
