@@ -1,23 +1,20 @@
 # Arbos State
-Updated: 2026-05-08T17:00 UTC
+Updated: 2026-05-26T21:50 UTC
 
-## Status: RETUNE HARGASCOPE IN PROGRESS
+## Status: DONE — Cycle 1 COMPLETE (17/17). Awaiting human review.
 
-## Phase: act
+## Phase: act → review
 
-## Goal: Retune Harga scope from construction-only to BOQ-driven broad scope
+## Cycle 1 Progress
+- [x] C1.1-C1.17: ALL 17 milestones PASS
+- [x] C1.17: Cycle 1 Findings Report written
 
-Operator: "retune harga to not only be about specific area of industries or products. For clues as to what are the correct areas to focus on if any is to use the SmartGEP tender notices boq as reference."
+## Key Results
+- 9 findings (F001-F009) documented with effect sizes and p-values
+- Strongest signal: Zone → Entropy (η²=0.44, p_bonf=0.023)
+- 3 informative nulls (geometry-distribution, freq-entropy, PMI-zone)
+- 5 hypotheses pre-registered for Cycle 2
+- Report at: outputs/C1/cycle1_report.md
 
-### BOQ Data Analysis (698 line items, 618 unique)
-Categories found: IT/Electronics, Medical/Pharma, Sports/Rec, Office Supplies, Industrial/M&E, Safety/PPE, Chemicals, Furniture, Construction, Services, Automotive, Education/STEM
-
-### Action Plan
-1. DESIGN.md: Update product identity from "construction procurement" to BOQ-scoped
-2. _CATEGORY_KEYWORDS: Expand 6→12 categories covering all BOQ data
-3. Web search: Remove "construction" bias in search queries
-4. System prompt: Strengthen anti-self-limiting instruction
-5. Frontend: Fix "I focus on construction materials" error messages
-6. Verify with non-construction test queries
-
-### Last Completed: Deepthink 5-phase system test
+## Next Action
+STOP. Human review required before Cycle 2.
