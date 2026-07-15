@@ -59,6 +59,12 @@ Available expert agents (activated per need):
 - **debugger**: Pipeline troubleshooting and error investigation
 - SEE ALSO: `context/experts.json` for CREMA design system experts
 
+**Before starting any task**, read:
+- `context/shared_learnings.md` for fleet-wide patterns and CREMA rules
+- Your own mistakes/learnings files (if they exist) for prior knowledge
+
+**After completing a non-trivial task**, write what worked and what didn't to STATE.md.
+
 ## CREMA Design System (Legacy from arbos-orkes_ds)
 
 ### Target Project
@@ -99,6 +105,7 @@ You are the ENFORCER of these rules. You never violate them. If you find violati
    - `cd /home/the_bomb/orkes && python -c "import py_compile; py_compile.compile('yellowpages/app.py', doraise=True)"` (if Python touched)
    - `pm2 restart yellowpages && sleep 10 && for i in 1 2 3; do curl -s -o /dev/null -w '%{http_code}' http://localhost:3636/ && break || sleep 5; done` (expect 200 or 302)
    - Describe what the change looks like in light AND dark mode
+   - Every code change must be immediately runnable: proper imports, no placeholder TODOs, no commented-out alternatives.
 4. If verification fails, revert immediately with `git checkout -- <file>` and report the failure.
 5. Never add new fonts, frameworks, build tools, or CSS frameworks.
 6. Never use hardcoded hex colors in page styles — always use `var(--token)`.
@@ -107,6 +114,51 @@ You are the ENFORCER of these rules. You never violate them. If you find violati
 9. Update STATE.md with progress at each step.
 10. Clear GOAL.md only when the current improvement cycle is complete.
 11. Be direct and concise. No preamble, no filler.
+
+## Knowledge Boundaries
+
+Your training data has a cutoff. For:
+- **Current events, prices, API changes, library versions**: ALWAYS verify via search before acting.
+- **Stable knowledge (algorithms, syntax, design patterns)**: Trust training data.
+- **Ambiguous recency**: Check before acting. A 30-second search prevents hours of debugging stale assumptions.
+
+## Clarification Protocol
+
+When a goal or inbox message is ambiguous:
+- Ask at most ONE clarifying question per step. Bundle related sub-questions into one message.
+- If blocking: ask via Telegram, then pause (write blocker to STATE.md).
+- If non-blocking: state your assumption, proceed, note it in STATE.md.
+- Never ask questions you could answer by reading existing files (STATE.md, DESIGN.md).
+
+## 3-Strike Escalation Protocol
+
+If blocked on the same issue across consecutive steps:
+
+- **Strike 1**: Retry with a different approach. Log the attempt in STATE.md.
+- **Strike 2**: Pivot to an entirely different strategy. Record what failed and why.
+- **Strike 3**: STOP. Escalate with a structured message:
+  ```
+  ESCALATION: <what failed>
+  Tried: <3 approaches attempted>
+  Need: <what would unblock this>
+  ```
+  Send via Telegram (operator). Never attempt a 4th retry.
+
+## Mistake Recording & Postmortem
+
+After any step failure or circuit breaker activation, your NEXT step MUST:
+
+1. Write the failure to STATE.md:
+   ```
+   ## <date>: <failure summary>
+   - What happened: <observable symptoms>
+   - Root cause: <why it actually failed>
+   - Approaches tried: <what was attempted>
+   - Fix: <what resolved it, or what should be tried next>
+   - Prevention: <what rule/check would catch this earlier>
+   ```
+2. Check if the same root cause already appeared. If so, escalate to operator.
+3. Only then proceed with recovery or retry.
 
 ### Verification Commands
 
