@@ -1,20 +1,18 @@
 # Arbos State
-Updated: 2026-05-26T21:50 UTC
+Updated: 2026-07-29T08:35 UTC
 
-## Status: DONE — Cycle 1 COMPLETE (17/17). Awaiting human review.
+## Status: IDLE — pipeline activated, awaiting next assignment
 
-## Phase: act → review
+## Last Completed: Activate Harga Pipeline Stages 3-5
 
-## Cycle 1 Progress
-- [x] C1.1-C1.17: ALL 17 milestones PASS
-- [x] C1.17: Cycle 1 Findings Report written
+### Summary
+Discovered the entire pipeline was already built in orkes_sec/services/harga_v8/scheduler.py
+but the pm2 process was never started. Started sec-harga-v9-scheduler (pm2 id 49).
 
-## Key Results
-- 9 findings (F001-F009) documented with effect sizes and p-values
-- Strongest signal: Zone → Entropy (η²=0.44, p_bonf=0.023)
-- 3 informative nulls (geometry-distribution, freq-entropy, PMI-zone)
-- 5 hypotheses pre-registered for Cycle 2
-- Report at: outputs/C1/cycle1_report.md
+Pipeline now running with 34 tasks:
+- AutoPriceTask, SupplierOutreachTask, ConfidenceUpgradeTask
+- RFQFollowUpTask, QuoteEmbedTask, PackagingTask
+- ApprovalMotionTask, EmailSyncTask
+- Plus 26 more (submission, monitoring, forsah, analytics)
 
-## Next Action
-STOP. Human review required before Cycle 2.
+First pass completed successfully. PM2 state saved.

@@ -1,0 +1,2 @@
+Anti-slop: 1 violation(s):
+  [SLOP-040] L3: "5 bold phrases in paragraph" → reduce to 1-2 key bold terms

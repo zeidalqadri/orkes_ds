@@ -1,37 +1,66 @@
 # Arbos State
-Updated: 2026-05-26T02:30 UTC
+Updated: 2026-07-28T21:35 UTC
 
-## Status: IDLE — M3 complete
+## Status: READY — Harga CLI infrastructure fully prepared
 
-### M1 Summary
-- **src/parser/extract_letters.py**: Parses Tanzil XML → 327,793 letter instances
-- **tests/test_extract_letters.py**: 22/22 tests pass ✓
-- Fixed verse_index bug: Bismillah segments correctly use verse_index=0
-- Output: data/processed/letters.csv
-- milestones/M1.json: written and valid
+### Completed (Phase: PREP)
+✅ **Expert Fleet** — 5 experts configured in context/experts.json
+- cli-builder (opus) — implement commands
+- cli-tester (sonnet) — write & run tests
+- cli-reviewer (opus) — security & performance audit
+- cli-deployer (sonnet) — packaging & release
+- cli-conductor (sonnet) — task orchestration
 
-### M2 Summary
-- **src/parser/extract_diacritics.py**: 21 diacritic types extracted per letter
-- **tests/test_extract_diacritics.py**: 29/29 tests pass ✓
-- All 21 VR001 diacritic counts match exactly
-- has_shadda=23,016 (matches VR001)
-- ة never sukoon, all vocalized
-- is_bare=74,658 within range
-- Output: data/processed/letters_with_diacritics.csv
-- milestones/M2.json: written and valid
+✅ **Documentation** (4 files)
+- CLAUDE.md — architecture, verification tables, named mistakes
+- PROMPT.md — mission, constraints, expert activation
+- HARGA_CLI_README.md — command spec, data model, examples
+- DEVELOP.md — setup, workflow, patterns, testing, release
 
-### M3 Summary — Shadda Decomposition (NEW)
-- **src/parser/decompose_shadda.py**: Consonantal skeleton extraction
-  - 23,016 shadda instances classified structurally (no external letter lists)
-  - 18,596 true_doubling, 2,945 ال-assimilation, 1,475 noon-assimilation (idghaam)
-  - shadow_diacritic_1=sukoon, shadow_diacritic_2=vowel extracted from diacritics
-  - visual_count=1, sonic_count=2 for all shadda letters
-- **495 gap verified**: has_shadda=23,016 - primary_diacritic(shadda)=22,521 = 495 shadda+tanween co-occurrences. Tanween takes precedence in primary_diacritic; has_shadda remains True. All 495 still properly decomposed.
-- **tests/test_decompose_shadda.py**: 48/48 pass ✓
-- **tests/test_shadda.py**: 43/43 pass ✓
-- Output: data/processed/letters_with_shadda.csv
-- milestones/M3.json: written
+✅ **Project Structure** (14 files)
+- Source: __init__.py, __main__.py, errors.py, db.py, formatters.py, commands/*
+- Tests: conftest.py (fixtures), test_harga_cli_example.py (patterns)
+- Config: pyproject.toml (entry point, deps, coverage)
 
-### Setup
-- tala repo at /tmp/tala-stage/
-- Python 3.12, standard library only
+✅ **Verification**
+- SETUP_VERIFY.sh — readiness check (all pass)
+- PROJECT_CHECKLIST.md — sign-off checklist for team
+- py_compile — all modules compile successfully
+- CLI help — argument parsing works
+
+### Deliverables Summary
+```
+14 source files created:
+  - 9 Python modules (db, formatters, commands, errors, entry point)
+  - 2 test infrastructure files (conftest, examples)
+  - 3 documentation files (DEVELOP, checklist, verify script)
+
+Expert system ready to implement:
+  - db.py has 4 stubbed functions (query_tenders, query_bids, query_entities, set_entity_notification)
+  - commands/* have 4 stubbed handlers
+  - formatters.py has 3 stubbed formatters (JSON ✓, text TBD)
+  - __main__.py dispatch wired and ready
+
+12 implementation tasks identified for builders (db + commands)
+5+ test suites identified for testers
+Full test infrastructure in place (conftest.py with fixtures)
+```
+
+### Databases
+⚠ **Pending**: data/harga_v8.db and data/tenders.db must exist
+- Verify with: `ls data/harga_v8.db data/tenders.db`
+- Schema check: `sqlite3 data/harga_v8.db ".schema"`
+
+### Next
+**Operator: Assign tasks**
+1. Verify databases exist: `./SETUP_VERIFY.sh`
+2. Write goal to context/GOAL.md (e.g., "Implement tenders command")
+3. Conductor will decompose into tasks for builders/testers/reviewers
+4. Track progress in this STATE.md file
+
+**Suggested Priority**:
+- P1: Implement tenders command (data flow validation)
+- P2: Implement bids command (entity joins)
+- P3: Implement entities command (CRUD)
+- P4: Add text formatters (UX polish)
+- P5: Release prep (pip install, versioning)
