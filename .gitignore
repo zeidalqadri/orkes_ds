@@ -25,3 +25,4 @@ pricesheet_investigate.json
 data/
 plans/
 repos/
+permauth.py
