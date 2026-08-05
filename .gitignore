@@ -26,3 +26,12 @@ data/
 plans/
 repos/
 permauth.py
+
+# never commit secrets/runtime backups
+.env.bak*
+.env.enc*
+.arbos-launch.sh.bak*
+context/arbos.db*
+context/.goal_status
+context/crash_boot.log
+context/telegram_report.txt

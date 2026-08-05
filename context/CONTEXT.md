@@ -1,26 +1,25 @@
-# DeepSeek V4 Pro Config
+# DeepSeek V4 Flash Config
 
-## Applied (2026-04-30 — operator requested Pro)
+## Applied (2026-08-04 — operator requested Flash)
 
 ### Current model
-All agent loop steps use `deepseek/deepseek-v4-pro` (full reasoning).
+All agent loop steps use `deepseek/deepseek-v4-flash` (fast).
 
 ### Files configured
-- `orkes_ds/.env` — `OPENCODE_MODEL=deepseek/deepseek-v4-pro`, `OPENCODE_SMALL_MODEL=deepseek/deepseek-v4-pro`
-- `~/.config/opencode/opencode.json` — default `model` + `small_model` → pro
-- `~/.config/opencode/model_policy.json` — `primary_execution` + `lightweight_routing` → pro
-- `~/.opencode-bot/core/engine.py` — default fallback reads from env
+- `~/.config/opencode/opencode.json` — `"model": "deepseek/deepseek-v4-flash"`, `"small_model": "deepseek/deepseek-v4-flash"`
+- `~/.config/opencode/model_policy.json` — `primary_execution: "openrouter/owl-alpha"`, `lightweight_routing: "openrouter/owl-alpha"`. V4 Pro reserved for `deepfix` only.
+- `orkes_ds/.env` — OPENCODE_MODEL vars (model routing key)
 
 ### Pricing
 | Model | Input/M | Output/M | Speed |
 |-------|---------|----------|-------|
+| V4 Flash | ~$0.028 | ~$0.11 | Fast |
 | V4 Pro | ~$0.40 | ~$1.60 | Full reasoning |
-| V4 Flash | ~$0.028 | ~$0.11 | Fast, cheaper |
 
-### Toggle back to Flash
-1. Edit `orkes_ds/.env` → `OPENCODE_MODEL=deepseek/deepseek-v4-flash` (both vars)
-2. Edit `~/.config/opencode/opencode.json` → set `"model"` to `"deepseek/deepseek-v4-flash"`
-3. Edit `~/.config/opencode/model_policy.json` → set routes back to flash
+### Toggle to Pro
+1. Edit `~/.config/opencode/opencode.json` → set `"model"` to `"deepseek/deepseek-v4-pro"`
+2. Edit `~/.config/opencode/model_policy.json` → set routes to pro
+3. Edit `orkes_ds/.env` → `OPENCODE_MODEL=deepseek/deepseek-v4-pro`
 4. `touch .restart`
 
 ### Deepfix command

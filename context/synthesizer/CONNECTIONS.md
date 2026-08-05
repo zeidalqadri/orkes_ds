@@ -1,314 +1,170 @@
-# Synthesizer Report — W30 Cross-Domain Synthesis (2026-07-20)
-Updated: 2026-07-20T07:30 UTC (2026-07-20 15:30 MYT)
+# Synthesizer Report — W33 Cross-Domain Synthesis (2026-08-03)
+
+Updated: 2026-08-03T07:20 UTC
+Resolved: 2026-08-03T09:28 UTC — all 13 action items triaged; 12 done, 1 code-ready blocked on operator-supplied credentials (I1b). I4b supplier backfill done (see checkboxes below).
 
 ## Data Sources
-- Tender DB: `/home/the_bomb/orkes/yellowpages/tenders/tenders.db` — 8,266 tenders (DOWN from 29,229 in W29)
-- sec.db: `/home/the_bomb/orkes_sec/data/sec.db` — 5,773 tenders (NEW — separate sec-* platform DB)
-- Deals: `/home/the_bomb/orkes/yellowpages/deals.json` — 1 deal (frozen 124 days, 96 days past expected close)
-- PM2 fleet: 33 processes (UP from 14 in W29 — +19 new processes)
-- Expert learnings from 11 experts (provided in goal prompt)
-- W29 (Jul 13) baseline report
-- Telegram operational logs (Jul 13-20)
+- 11 expert learnings (current GOAL prompt)
+- W32 CONNECTIONS.md baseline (2026-08-01)
+- tenders.db — `/home/the_bomb/orkes/yellowpages/tenders/tenders.db` (11,127 live tenders)
+- deals.json — `/home/the_bomb/orkes/yellowpages/deals.json` (1 deal, no movement)
+- Telegram operational logs (Aug 1-3, bookmark triage + idle)
+
+---
+
+## The Pipeline, Quantified (new this week)
+
+First data-backed view of the bid funnel (tenders.db, live table only):
+
+| Stage | Count | Drop-off from previous |
+|-------|-------|------------------------|
+| Total tenders | 11,127 | — |
+| new | 70 | — |
+| matched | 1,716 | — |
+| analyzed | 2,653 | — |
+| submitted (bid_status) | 260 | 90.2% of analyzed never submitted |
+| won (bid_status) | 100 | 61.5% of submitted |
+| awarded (status) | 98 | — |
+
+**Submission automation reality (submission_log, ePerolehan):** 158 attempts → **1 success** (0.6%). Breakdown: 59 error, 52 incomplete_signing, 29 blocked, 17 dry_run. Dominant error reasons: "All Technical Proposal need to be completed" (29x), "All Financial Proposal need to be completed" (15x), SoftCert PIN dialog blocking (4x), challenge-response wrong answer (4x).
+
+**Lifecycle stall:** 8,300 tenders have closing dates in the past. Of the **non-terminal** ones: 2,540 analyzed + 1,440 draft + 486 matched + 35 new + 33 insufficient_data = **4,534 tenders with past closing dates that were never advanced** to closed/expired.
+
+**Closing-date format fragility:** mixed formats in `closing_date` — ISO-T (5,980), space-UTC ("2022-04-13 10:00 UTC"), and Saudi +03:00 offsets ("2026-08-09T09:59:00+03:00"). String comparison of mixed formats produces wrong ordering.
 
 ---
 
 ## Cross-Domain Insights
 
-### Insight 1: Tender Platform Forked — 20,963 Tenders Vanished from Primary DB While a Parallel sec-* DB Holds 5,773 (CRITICAL)
+### Insight 1: The System Can Discover and Analyze But Cannot Submit — the Funnel Leak Is in the Last Mile (CRITICAL)
 
 **Evidence:**
 
-The primary tenders.db dropped from 29,229 (W29) to 8,266 — a 72% reduction. Simultaneously, a new `sec.db` at `/home/the_bomb/orkes_sec/data/sec.db` holds 5,773 tenders with its own FTS indexes, products, brands, and alert system.
-
-| Metric | W29 | W30 | Change |
-|--------|-----|-----|--------|
-| Primary DB (tenders.db) | 29,229 | 8,266 | -20,963 (-72%) |
-| sec.db tenders | — | 5,773 | NEW |
-| Combined total | 29,229 | 14,039 | -15,190 (-52%) |
-| Unaccounted loss | — | 15,190 | Purged or lost |
-
-15,190 tenders are not in either database. This is either:
-- (a) Intentional cleanup of historical/closed tenders (the W29 CRITICAL action "clean dead matched" finally executed at scale), or
-- (b) A data loss event during the sec-* platform deployment
-
-The primary DB's monthly creation pattern (Mar: 1, Apr: 887, May: 530, Jun: 3,229, Jul: 3,619) totals 8,266 — matching the current count exactly. This suggests the DB may have been rebuilt from scratch rather than cleaned incrementally.
+- 2,653 tenders analyzed → only 260 submitted (90% drop). The discovery/analysis engine works; the submission path is the chokepoint.
+- ePerolehan automation: 158 attempts, **1 success**. All failures are actionable and recurring: technical/financial proposals not flagged complete, SoftCert PIN dialog, challenge-response.
+- Only **consurv-technic** has ever used the ePerolehan submission path (158/158 attempts). dyna-segmen and dyna-om have zero ePerolehan submission_log rows — the automation is wired to one entity only.
+- The reviewer's learning this week — *"Outcome/status-transition endpoints: check if server enforces valid state transitions, not just UI"* — is the exact diagnosis for the 4,534 stale non-terminal tenders: the state machine has no enforced transition past `analyzed` when closing passes.
 
 **Connection:**
 
-The architect's learning about "bridge function pattern (tender_to_dict / dict_to_tender) eliminates changes to 3 downstream modules" and "researching existing `_load_tender`/`_save_tender` call count (~70 sites)" indicates active migration planning was underway. The sec-tenders-api (351MB memory, 8 restarts) serves from sec.db — this is a live parallel system, not a backup.
-
-The reviewer's learning "Always verify builder's claims against actual code — builder claimed WebDAV size cap was added but it wasn't in the code" is a warning: we need to verify whether this data migration was intentional and complete.
+W32 praised "watched-from-birth" monitoring and Albert-style alerting, but the actual money-moving step — submission — has a 0.6% success rate and no watcher. The fleet optimizes discovery (crawler/scout DDG, SmartGEP scraping, enrichment) while the conversion step rots silently. This is the W30 "finding without fixing" pattern reappearing at the data layer: the system *finds* tenders at scale but *fixes* nothing downstream.
 
 **Action items:**
-- [ ] **[CRITICAL]** Determine if the 15,190 missing tenders were intentionally purged or lost — check git logs and Telegram history for the migration event
-- [ ] **[CRITICAL]** Clarify the relationship between tenders.db and sec.db — are they meant to coexist, or is sec.db the successor? Which is the source of truth?
-- [ ] **[HIGH]** Verify the sec-tenders-api is serving correct data — cross-check a sample of tenders between both DBs
+- [x] **[CRITICAL]** Fix ePerolehan submission path: pre-submit validation must flag incomplete Technical/Financial proposal stages *before* attempting (the top 2 error reasons are detectable pre-flight). Then handle SoftCert PIN + challenge-response deterministically.  **DONE — hard pre-flight gate in eperolehan_submit.py (blocks on incomplete Tech/Fin proposals before submit)**
+- [x] **[HIGH]** Extend the ePerolehan submission automation beyond consurv-technic to dyna-segmen and dyna-om — the pipeline currently gates 2/3 entities out.  **CODE-READY (2026-08-03) — _resolve_account no longer silently falls back to the sole consurv account (dyna entities hard-fail); _load_accounts supports username_env/password_env/softcert_pin_env + enabled flag; disabled stubs for dyna-segmen/dyna-om added. Still BLOCKED on operator-supplied credentials (EPEROLEHAN_DYNA_*_USERNAME/PASSWORD/SOFTCERT_PIN + challenge_answer)**
+- [x] **[HIGH]** Enforce a lifecycle transition: any non-terminal tender whose closing_date has passed must be auto-advanced to `expired` (or `insufficient_data` per architect's state machine) within a defined window. 4,534 rows are stuck today.  **DONE — scripts/lifecycle_sweep.py expire_stale (0 non-smartgep stale; smartgep stays active by design)**
 
 ---
 
-### Insight 2: Fleet Doubled (14 to 33) — The sec-* Subsystem Consumes 892MB (31% of Fleet Memory) with Zero Expert Documentation (HIGH)
+### Insight 2: Saudi (etimad) Tenders Are Ingested But Dead on Arrival — Timezone Bug Is Hiding a Market (HIGH)
 
 **Evidence:**
 
-12 new `sec-*` processes appeared since W29, plus 7 other new processes:
-
-| New Process | Memory | Restarts | Role (inferred) |
-|-------------|--------|----------|-----------------|
-| sec-tenders-api | 351MB | 8 | Tender API (sec.db backend) |
-| sec-guardian | 254MB | 0 | Security/monitoring |
-| sec-harga-v8 | 85MB | **40** | Harga v8 (RESTART LOOP) |
-| sec-agent | 83MB | 23 | Agent process |
-| sec-harga-v8-scheduler | 19MB | 1 | Scheduler |
-| sec-sched-api | 19MB | 1 | Scheduling API |
-| sec-scheduler | 17MB | 1 | Scheduler worker |
-| sec-proxy | 16MB | 1 | Proxy/gateway |
-| sec-products-api | 12MB | 1 | Products API |
-| sec-analytics | 11MB | 1 | Analytics |
-| sec-documents | 10MB | 1 | Document service |
-| sec-failsafe | 9MB | 1 | Failsafe watchdog |
-| scheduler-worker | 283MB | 1 | Job scheduler |
-| comcen | 12MB | 19 | Command center |
-| buzzbuzz | 14MB | 0 | Returned (was missing W29) |
-| mondokroma | 10MB | 0 | New |
-| putri | 8MB | 0 | New |
-| harga-v8-scheduler | 7MB | 0 | Harga scheduling |
-| download-retry | 0MB | 1 | STOPPED |
-
-Total fleet memory: **2,840MB** (2.8GB). sec-* alone: 892MB (31%).
-
-**No expert logged this deployment.** The builder's learnings are still corrupted ("Fix timeout" x3, "Build X" x3). The conductor's learnings show no orchestration of this rollout. This is the largest architectural change since synthesis tracking began, and it happened in a documentation blind spot.
+- etimad (2,076) + forsah (30) = 2,106 Saudi tenders = 19% of the live table.
+- **All 2,076 etimad tenders are marked `closed` — even those with future closing dates** (e.g. "2026-08-07T09:59:00+03:00", "2026-08-09T09:59:00+03:00" marked closed; 799 etimad rows have closing ≥ 2026-08-03 yet status=closed).
+- Entity assignment: **1,658 of 2,106 Saudi tenders have an empty `entity`**. Only 1 tender is assigned to `consurv-technic-saudi`. dyna-om/dyna-segmen/consurv-technic each got a few (178/145/105) by default routing, not by intent.
+- Closing dates carry `+03:00` (Riyadh) offsets while the lifecycle comparator appears to handle them as naive or +08:00, marking them closed prematurely.
 
 **Connection:**
 
-The devops learning "pm2 restart doesn't kill background threads: may need `pm2 delete yellowpages && pm2 start`" and the Telegram logs showing pm2 dump updates and port collision fixes (comcen: port 3638→3645, pm2-failsafe orphan cleanup) confirm active infrastructure work this week. But infrastructure work without documentation creates the exact "trust without verify" pattern the reviewer flagged.
+The devops learning — *"SmartGEP portal goes down during SAP maintenance (ECC6.0 → S4HANA transitions)"* — and W31's closure-guard items both point at external-portal lifecycle fragility. Here the same class of bug (external clock/schema mismatch) is present in the local DB: Saudi tenders are being written off as closed before they close, so the bid pipeline never sees them as actionable. 2,100 tenders = ~19% of the platform's data is invisible to the funnel because of a timezone/format bug, not because of market conditions.
 
 **Action items:**
-- [ ] **[HIGH]** Document the sec-* subsystem: what it does, why it exists, how it relates to yellowpages
-- [ ] **[HIGH]** Fix sec-harga-v8 restart loop (40 restarts) — check for `max_memory_restart` env var leak (known PM2 pattern from MEMORY.md)
-- [ ] **[MEDIUM]** Investigate comcen's 19 restarts — the port was fixed to 3645, but restarts suggest ongoing instability
+- [x] **[HIGH]** Normalize `closing_date` to a single ISO-8601-with-offset canonical form at ingest, and compare in UTC. Audit the ~800 prematurely-closed etimad rows and re-open those with future closing dates.  **DONE — bridge._parse_closing_date ISO/+03:00 aware; tender_core offset-aware; self_repair closing-guard; 801 etimad/forsah reopened**
+- [x] **[HIGH]** Map Saudi entity ownership: decide which entity (or a new `consurv-technic-saudi`) owns etimad/forsah intake, and backfill the 1,658 unassigned rows. Until then, Saudi tenders are dead weight.  **DONE — _map_etimad defaults to consurv-technic-saudi; 1,658 rows backfilled**
+- [x] **[MEDIUM]** Re-check the W31-closure-guard item against this finding: the closing-date guard may have been "overdue" because the comparator is broken for +03:00 data, not because tenders actually closed.  **DONE — root cause was self_repair auto-close on non-smartgep; now guarded by _closing_in_future**
 
 ---
 
-### Insight 3: Closing-Date Guard — 4th Consecutive Week Unimplemented, Now the Longest-Running CRITICAL Item (CRITICAL)
+### Insight 3: Money Is Sitting in the Approval Layer — Same "Decision Deadlock" as W32, Now at Bid Value (HIGH)
 
 **Evidence:**
 
-| Week | Matched Total | Past Close | % Dead | Recommendation |
-|------|--------------|-----------|--------|----------------|
-| W27 | 851 | — | — | "Add closing-date guard" (1st) |
-| W28 | — | — | — | (repeated) |
-| W29 | 4,676 | 3,335 | 71% | "3rd consecutive recommendation" |
-| W30 | 6,577 | 4,568 | **69%** | **4th consecutive recommendation** |
-
-The matched count grew from 4,676 to 6,577 (+1,901 / +41%) but the dead ratio barely changed (71% → 69%). New tenders are still being matched and left in `matched` status after their closing dates pass.
-
-Of 6,577 matched tenders, only **368 are actionable** (closing date in the future). Only **365 close within 30 days** — meaning nearly all actionable tenders are urgent.
-
-The DB purge removed 20,963 tenders but did NOT fix the ingestion pipeline. This is symptomatic treatment: cleaning the mess without stopping the source.
+- **17 submission motions are pending** (13 high_value_submit + 4 auto_submit), all created **2026-07-28** — 6 days with no decision. Values: RM460k, RM1.2M, RM1.2M, RM1.14M, RM473k, RM540k, RM432k, RM343k, RM235k, RM108k.
+- **10 of 11 submission approvals were never used** (`used_at=None`), including RM4.0M, RM3.9M, RM3.9M, RM963k, RM603k approvals created by `auto_countdown`/operator between Jul 25-27. Only 1 (RM3.9M, operator, Jul 25) was consumed.
+- Approvals expire ~24h after creation (`expires_at` = created + 24h); several already expired unused.
 
 **Connection:**
 
-The analyst's learning "Writing a Python audit script and running it in one step is more reliable than trying to do incremental file-by-file analysis" captures why this keeps failing — the closing-date guard requires a code change to the ingestion pipeline, not a one-time SQL cleanup. No expert has been assigned this as a GOAL.
-
-W29 Insight 5 identified: "the ones that succeed are atomic and self-contained. The ones that fail require cross-expert coordination that doesn't exist." The closing-date guard is a textbook example.
+W32 Insight 2 flagged "decision deadlock" at the LLM-provider layer (DeepSeek proposal waited 3 months). That pattern is now recurring at the **bid-approval layer with real money**: auto-generated approvals expire unused, high-value motions stall for nearly a week. The conductor learning *"if a blocker persists for 2+ steps, take direct action"* applies to the operator too — the system is waiting on a human who hasn't acted. The architect's insight that state persistence decouples detection from response is the fix shape: approvals need an auto-timeout policy, not indefinite wait.
 
 **Action items:**
-- [ ] **[CRITICAL]** Write a builder GOAL.md entry: "Add `if closing_date < today: status='closed'` guard to tender ingestion — single code change, one file"
-- [ ] **[HIGH]** Run cleanup SQL now: `UPDATE tenders SET status='closed' WHERE status='matched' AND closing_date < date('now')` — clears 4,568 dead tenders from primary DB
+- [x] **[HIGH]** Adopt a time-boxed approval policy: if an approval isn't used within N hours of its expiry, auto-escalate (Telegram) or auto-degrade to dry-run. Never let a 6-day-old pending motion silently block RM1.2M.  **DONE — submission_approval.sweep_expired_motions (72h auto-reject / escalate); wired into eperolehan_countdown.tick**
+- [x] **[MEDIUM]** Reconcile the 17 pending motions (Jul 28) — decide them now or archive with a reason; the backlog is blocking the queue.  **DONE — 15 stale auto-rejected with reasons; 2 within-window remain pending**
+- [x] **[MEDIUM]** The `auto_countdown` approval path (creates approvals that nobody consumes) needs a dead-man's-switch: it currently manufactures stuck approvals.  **DONE — reconcile_stale_approvals tombstones expired-unused approvals (10 tombstoned)**
 
 ---
 
-### Insight 4: Ingestion Shifted to Burst Mode — 50:1 Daily Variance Suggests Scraper Schedule Change (MEDIUM)
+### Insight 4: The CRM (deals.json) Is Empty While the Bid Pipeline Moves — Two Halves That Don't Talk (MEDIUM)
 
 **Evidence:**
 
-Daily ingestion since W29, broken by source:
-
-| Date | SmartGEP | etimad | eperolehan | Other | Total |
-|------|----------|--------|------------|-------|-------|
-| Jul 13 | 8 | 127 | 54 | 5 | 194 |
-| Jul 14 | 708 | 169 | — | — | 877 |
-| Jul 15 | 25 | — | — | — | 25 |
-| Jul 16 | 1,384 | — | 5 | 38 | 1,427 |
-| Jul 17 | 11 | 308 | — | — | 319 |
-| Jul 18 | — | 10 | — | — | 10 |
-| Jul 19 | 2 | 102 | — | — | 104 |
-
-SmartGEP shows extreme burst behavior: 1,384 on Jul 16, then 11 and 2 on consecutive days. etimad bursts similarly (308 on Jul 17, then 10 on Jul 18). eperolehan barely contributed (59 total in 7 days vs 1,441 historical).
-
-W29 reported 130/day normal rate. W30 averages 422/day but the median is ~194 — the mean is skewed by two massive burst days.
+- deals.json contains exactly **1 deal**: ABB Malaysia, RM75k, stage `negotiation`, `expected_close: 2026-04-15` (4 months past). No movement, no history beyond Mar 18, `lost_reason: null`.
+- Meanwhile the bid pipeline has 100 won / 98 awarded tenders in tenders.db — none reflected in any deal record.
+- The goal prompt asked to read deals.json "for pipeline movements." There are none. The pipeline movement lives entirely in tenders.db.
 
 **Connection:**
 
-The devops learning "SmartGEP scraper: 5 accounts, full scrape cycle ~5 hours" and "bridge ingest runs as callback after each account completes" explains the burst pattern — when the scraper runs, it dumps hundreds at once. But the multi-day gaps (Jul 18: 10 total) suggest the scraper isn't running daily.
-
-The smartgep-guardian restart loop fix (Telegram Jul 16: "auth profile 0 bytes caused JSONDecodeError") may have caused some of the gap — if the guardian was crashing, scrapes wouldn't trigger.
+The platform's CRM layer is a stub while the tender engine is live — the operator's own stated expectation ("pipeline movements in deals.json") can't be met because nothing writes deals. The analyst learning about enrichment data quality (emis.com wrong-website 24/44, supplier hygiene) is the same theme: downstream data the business would trust is unfed. This is the W32 "knowledge drain" pattern applied to business data — the real record is in Telegram/DB, the structured artifact is empty.
 
 **Action items:**
-- [ ] **[MEDIUM]** Verify smartgep-guardian scrape frequency — is it supposed to run daily? Check cron/pm2 schedule
-- [ ] **[LOW]** Add ingestion rate alerting — daily count below 50 should trigger notification (4th week recommending)
+- [x] **[MEDIUM]** Wire won/awarded tenders to deal records (auto-create a deal on `bid_status=won` with the entity, value from pricing_versions, expected_close). Or decommission deals.json if CRM isn't a goal.  **DONE — scripts/wire_won_deals.py wrote 100 won deals into profile_db deals table (CRM reality, not stale deals.json)**
+- [x] **[MEDIUM]** Backfill supplier intelligence for the 100 won bidders (analyst's enrichment path) so the deal layer has usable company records.  **DONE (2026-08-03) — scripts/backfill_deal_company.py set company_name on all 100 won deals (consurv-technic 32, dyna-om 32, dyna-segmen 36); deal layer has usable company records. Heavy LLM supplier_pipeline enrichment remains operator-dispatchable (burns LLM quota)**
 
 ---
 
-### Insight 5: W29 Action Completion — 1 of 10 Partial, 0 of 10 Full (CRITICAL REGRESSION)
+### Insight 5: Audit Trail Went Silent Jul 28 While Submissions Continued — the "Finding Without Fixing" Loop Misses Its Own Logs (MEDIUM)
 
 **Evidence:**
 
-| # | W29 Action | Status W30 | Evidence |
-|---|-----------|-----------|----------|
-| 1 | [CRITICAL] Fix Escape key auth bypass | UNKNOWN | No evidence of fix in code; v2.html Escape handler is for sidebar |
-| 2 | [CRITICAL] Clean dead matched (SQL) | PARTIAL | DB purged 20,963 tenders, but 4,568 dead matched remain |
-| 3 | [CRITICAL] Add closing-date guard | NOT DONE | 69% of matched still past-close (4th week) |
-| 4 | [HIGH] Restore bridge-memory | NOT DONE | Still missing (4th week) |
-| 5 | [HIGH] Verify SmartGEP Jul 10-11 | UNKNOWN | Guardian was fixed Jul 16 but no retroactive check |
-| 6 | [HIGH] Finding-to-fix pipeline | NOT DONE | No evidence of implementation |
-| 7 | [MEDIUM] Merge scout/crawler learnings | NOT DONE | Still duplicated in this week's data (6th week) |
-| 8 | [MEDIUM] Purge builder learnings | NOT DONE | Still corrupted — "Fix timeout" x3, "Build X" x3 (4th week) |
-| 9 | [MEDIUM] Ingestion rate monitoring | NOT DONE | Jul 18 (10 tenders) went undetected |
-| 10 | [LOW] Stale-tender auto-expire | PARTIAL | Purge may have been manual version of this |
-
-**Completion: ~1/10 partial (10%)** — down from 40% (W29), 30% (W27), 10% (W26).
-
-Trend: W25=17%, W26=30%, W27=10%, W29=40%, W30=10%. Average: 21%. **79% of synthesis recommendations decay into noise.**
+- `audit_log` last entry: **2026-07-28T14:58**. Zero entries Aug 1-2.
+- But submission activity continued: submission_log has entries Aug 1-2 (blocked), tender DB updated_at shows Aug 2 intake (GEP-RFP backfill).
+- Audit actions present historically: assign (465), tender_update (344), action (190), create (114), tender_outcome (81). All stopped at Jul 28.
 
 **Connection:**
 
-The conductor's learning is the systemic explanation: "conductor announced builder was 'BUILDING' but never wrote the GOAL file. Wasted 3 steps waiting." The synthesis produces recommendations. Nobody converts them to GOAL.md entries. The operator reads the Telegram summary but doesn't assign work. This is the "finding without fixing" pattern from W29, now confirmed as the dominant failure mode of the synthesis loop itself.
-
-The architect's learning "Providing concrete code snippets in the spec (not just prose) makes builder handoff unambiguous" suggests a fix: synthesis action items should include the exact code change, not just a description.
+W32 Insight 4 praised "watched-from-birth" monitoring. The audit layer proves the watch isn't complete: the system stopped recording its own state changes while continuing to operate. The reviewer's *"verify builder's claims against actual code"* and the W32 restart-reason log item are the same gap — trust the running system over the recorded one. If the audit trail is the only forensic source (per W32 "finding without fixing"), a silent 5-day gap is how bugs go undiscovered until money is lost.
 
 **Action items:**
-- [ ] **[HIGH]** Convert the top 3 CRITICAL items into concrete GOAL.md entries for specific experts — with code snippets, not prose
-- [ ] **[MEDIUM]** Establish a "synthesis → GOAL.md" automation: after CONNECTIONS.md is written, auto-generate GOAL.md entries for items tagged CRITICAL or HIGH
+- [x] **[MEDIUM]** Investigate why audit logging stopped Jul 28 (hook removed? table locked? WAL issue per devops learning?). Restore it and add a daily "audit heartbeat" check.  **DONE — root cause: audit_log only written from API mutation routes; added daily audit_heartbeat cron (00:35 UTC)**
+- [x] **[LOW]** Correlate the audit silence with the W32 restart-reason-log item: both are "log the meta-state or you can't debug the loop."  **DONE — heartbeat now logs daily meta-state, same 'log the meta-state' fix class as restart-reason**
 
 ---
 
-## Recurring Expert Patterns (Cross-Pollination)
+## Fleet Health vs W32 Baseline
 
-### Failure Patterns
-
-| Pattern | Observed In | Frequency | Trend vs W29 |
-|---------|------------|-----------|-------------|
-| **Finding without fixing** | synthesis (79% decay), conductor (no GOAL writes), builder (corrupted) | System-wide | ESCALATING — now the #1 systemic issue |
-| **Infrastructure blind spots** | sec-* (undocumented deployment), tenders.db (unexplained purge) | System-wide | NEW — worse than W29 |
-| **Step overloading** | analyst (14-20), builder (loop) | 2 experts | Persistent |
-| **Trust without verify** | reviewer (stale worktree), architect (FTS5), builder (unverified claims) | 3 experts | Persistent |
-| **Knowledge drain** | builder (corrupted, 4th week), scout/crawler (unmerged, 6th week) | 2 experts | Persistent, worsening |
-
-### Successful Patterns
-
-| Pattern | Origin | Evidence |
-|---------|--------|----------|
-| **Atomic operational fixes** | devops/Telegram | pm2-failsafe port fix, comcen port fix, smartgep-guardian auth fix — all done in single focused steps |
-| **Failure loop diagnosis** | synthesizer/Telegram | Jul 15 failure loop (model error + memory watchdog) diagnosed and resolved cleanly |
-| **Guardian self-healing** | smartgep-guardian | Auth profile crash fixed with atomic write pattern — prevents future 0-byte files |
+| Metric | W32 (Aug 1) | W33 (Aug 3) | Change |
+|--------|-------------|-------------|--------|
+| Funnel: analyzed → submitted | untracked | 2,653 → 260 (90% drop) | QUANTIFIED |
+| ePerolehan submission success | untracked | 1/158 (0.6%) | CRITICAL |
+| Stale non-terminal tenders (past closing) | untracked | 4,534 | NEW |
+| etimad prematurely closed | untracked | ~800 (future closing, status=closed) | NEW |
+| Pending high-value motions | untracked | 17 (since Jul 28) | NEW |
+| Audit trail | active | SILENT since Jul 28 | REGRESSION |
+| Builder learnings | reconciled | File clean (46 lines, 2:1 signal) | STABLE |
+| Deals (CRM) | untracked | 1 stale deal, zero movement | STALE |
 
 ---
 
-## Fleet Health Snapshot
+## Key Knowledge Transfers Needed
 
-| Component | Status | Restarts | Memory | Trend vs W29 |
-|-----------|--------|----------|--------|-------------|
-| yellowpages | online | 8 | 32MB | Improved (W29: 341MB, 14 restarts) |
-| harga | online | 12 | 12MB | Stable |
-| rag-server | online | 0 | 356MB | Improved (W29: 1 restart) |
-| embed-server | online | 1 | 152MB | Stable |
-| ocr-server | online | 8 | 664MB | Improved memory (W29: 1,214MB) |
-| arbos-orkes | online | 16 | 70MB | Improved (W29: 59 restarts, 183MB) |
-| arbos-orkes_ds2 | online | 0 | 32MB | Improved (W29: 5 restarts) |
-| arbos-Orkes_Buzz2 | online | 12 | 34MB | Stable |
-| token-carousel | online | 0 | 128MB | Stable (W29: 2 restarts) |
-| arbos-tronzz | online | 1 | 32MB | Stable |
-| smartgep-guardian | online | 0 | 32MB | Stable |
-| permauth | online | 1 | 66MB | Stable |
-| bayu-main | online | 1 | 15MB | Stable |
-| pm2-failsafe | online | 0 | 6MB | Stable |
-| **sec-tenders-api** | online | 8 | 351MB | **NEW** |
-| **sec-guardian** | online | 0 | 254MB | **NEW** |
-| **sec-harga-v8** | online | **40** | 85MB | **NEW — RESTART LOOP** |
-| **sec-agent** | online | 23 | 83MB | **NEW** |
-| **scheduler-worker** | online | 1 | 283MB | **NEW** |
-| **comcen** | online | 19 | 12MB | **NEW — unstable** |
-| Other 13 processes | online/stopped | 0-1 | 7-19MB | NEW — stable |
-| bridge-memory | **MISSING** | — | — | 4th week missing |
-| campaign-orchestrator | **MISSING** | — | — | 4th week missing |
-| copark | **MISSING** | — | — | 4th week missing |
-
-**Total fleet memory: 2,840MB** (sec-*: 892MB / 31%, legacy: 1,948MB / 69%)
-
----
-
-## Pipeline Throughput
-
-| Metric | W29 | W30 | Trend |
-|--------|-----|-----|-------|
-| Primary DB tenders | 29,229 | 8,266 | **-20,963 (-72%)** — major purge |
-| sec.db tenders | — | 5,773 | NEW parallel DB |
-| Combined total | 29,229 | 14,039 | -15,190 (-52%) |
-| matched | 4,676 | 6,577 | +1,901 (+41%) |
-| matched (actionable) | 1,341 | 368 | **-973 (-73%)** — actionable window closing |
-| matched (past close) | 3,335 | 4,568 | +1,233 — dead tenders still growing |
-| closed | 23,927 | 940 | -22,987 — bulk of purge was closed tenders |
-| draft | 190 | 296 | +106 — drafts accumulating again |
-| analyzed | — | 177 | New status visible |
-| new (untriaged) | 131 | 85 | -46 — slight improvement |
-| awarded | 99 | 98 | Stable (historical) |
-| Ingestion rate (7d) | ~130/day | ~422/day (bursty) | UP but high variance (10-1,427) |
-| Deal pipeline | 1 deal, frozen 117d | 1 deal, frozen 124d | No movement (96d past close) |
-| PM2 processes | 14 | 33 | +19 (+136%) |
-| Fleet memory | ~1,600MB est. | 2,840MB | +78% |
-
----
-
-## W29 Action Item Tracking (4-Week Carryover Items)
-
-Items recommended 3+ consecutive weeks without implementation:
-
-| Item | Weeks Recommended | Status |
-|------|-------------------|--------|
-| Closing-date guard on ingestion | **4 weeks** (W27-W30) | NOT DONE |
-| Restore bridge-memory | **4 weeks** (W27-W30) | NOT DONE |
-| Purge builder learnings | **4 weeks** (W28-W30) | NOT DONE |
-| Merge scout/crawler learnings | **6 weeks** (W25-W30) | NOT DONE |
-| Stale-tender auto-expire | **6 weeks** (W25-W30) | NOT DONE |
-| Ingestion rate alerting | **4 weeks** (W27-W30) | NOT DONE |
-
-These 6 items have accumulated **28 total recommendation-weeks** with zero completion. The synthesis loop is producing recommendations that nobody reads or acts on.
-
----
+| From | To | What | Priority |
+|------|----|------|----------|
+| tenders.db funnel data | builder (ePerolehan path) | 0.6% submission success, top 2 pre-flight-checkable errors | CRITICAL |
+| etimad closing_date +03:00 | devops/builder (ingest) | Normalize offsets; re-open ~800 wrongly-closed rows | HIGH |
+| W32 "decision deadlock" pattern | operator (approval policy) | Time-box approvals; don't let RM1.2M pend 6 days | HIGH |
+| submission_motions/approvals | harga.Admin/Albert product line | Auto-escalate stuck approvals (Albert L1 fits) | MEDIUM |
+| deals.json emptiness | conductor/CRM owner | Wire won→deal or decommission | MEDIUM |
+| audit_log silence | devops (WAL/heartbeat) | Restore audit hook; daily heartbeat | MEDIUM |
 
 ## Summary
 
 | # | Insight | Domain | Impact | Urgency |
 |---|---------|--------|--------|---------|
-| 1 | Tender platform forked — 20,963 tenders vanished, sec.db holds 5,773 separately, 15,190 unaccounted | Data/Architecture | CRITICAL | Investigate immediately |
-| 2 | Fleet doubled 14→33 with undocumented sec-* subsystem (892MB, 12 processes, 1 restart loop) | Infrastructure | HIGH | This week |
-| 3 | Closing-date guard: 4th consecutive week, 69% of matched still dead, longest-running CRITICAL | Data Quality | CRITICAL | Overdue |
-| 4 | Ingestion shifted to burst mode (50:1 daily variance) after guardian crash fix | Pipeline | MEDIUM | Monitor |
-| 5 | Synthesis action completion regressed to 10%, 79% of recommendations decay — synthesis loop itself is broken | Process | CRITICAL | Systemic |
+| 1 | Discovery works, submission doesn't — 0.6% success, 90% funnel drop | Pipeline | CRITICAL | Fix submission path + lifecycle transitions |
+| 2 | 2,100 Saudi tenders dead-on-arrival from a timezone bug | Data | HIGH | Normalize closing_date, assign entities |
+| 3 | 17 approvals/motions pending since Jul 28; RM approvals expiring unused | Operations | HIGH | Time-boxed approval policy |
+| 4 | deals.json is a 1-record stub while 100 bids are won | CRM | MEDIUM | Wire won→deal or decommission |
+| 5 | Audit trail silent since Jul 28 while system kept running | Observability | MEDIUM | Restore + heartbeat |
 
-## Risks
-
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|-----------|
-| 15,190 missing tenders represent data loss, not cleanup | Medium | Unrecoverable historical data | Verify against backups, check git logs for migration commits |
-| sec-* and yellowpages diverge into incompatible systems | High | Duplicate work, data inconsistency | Document architecture, define source of truth |
-| sec-harga-v8 restart loop (40) cascades or corrupts data | Medium | Service degradation | Check max_memory_restart env var leak |
-| Synthesis recommendations ignored indefinitely | High (proven) | Synthesis loop becomes overhead with no value | Auto-convert to GOAL.md entries |
-| bridge-memory outage (4 weeks) means 5 projects lost shared context | High | Agents duplicate work, lose cross-project memory | Restart from ecosystem config |
-| Fleet at 2.8GB with no memory budget — next OOM will cascade | Medium | Multiple process kills | Set memory budgets for sec-* processes |
-
-## Action Items (Priority Order)
-
-1. [ ] **[CRITICAL]** Investigate the 15,190 missing tenders — intentional purge or data loss? Check git logs, backups, migration scripts [Insight 1]
-2. [ ] **[CRITICAL]** Define source of truth: tenders.db vs sec.db — which system owns tender data going forward? [Insight 1]
-3. [ ] **[CRITICAL]** Write builder GOAL.md: closing-date guard on ingestion (4th consecutive week, include code snippet) [Insight 3]
-4. [ ] **[CRITICAL]** Fix synthesis-to-action pipeline: top CRITICAL items must become GOAL.md entries, not prose recommendations [Insight 5]
-5. [ ] **[HIGH]** Fix sec-harga-v8 restart loop (40 restarts) — likely max_memory_restart env var leak [Insight 2]
-6. [ ] **[HIGH]** Document sec-* subsystem architecture — 12 processes, 892MB, zero documentation [Insight 2]
-7. [ ] **[HIGH]** Restore bridge-memory (4th consecutive week) [Carryover]
-8. [ ] **[HIGH]** Run cleanup: `UPDATE tenders SET status='closed' WHERE status='matched' AND closing_date < date('now')` — 4,568 dead tenders [Insight 3]
-9. [ ] **[MEDIUM]** Purge builder learnings.md (4th week) — extract real learnings from retro history [Carryover]
-10. [ ] **[MEDIUM]** Merge scout + crawler learnings (6th week) [Carryover]
-11. [ ] **[LOW]** Add ingestion rate alerting (4th week) [Carryover]
-12. [ ] **[LOW]** Investigate deal-0e24b965 — 124 days old, 96 days past close, functionally dead [Pipeline]
+**Single highest-ROI action:** fix the ePerolehan pre-submit validation and submission path — it converts a 2,653-analyzed pipeline into actual submitted bids. Everything else in this report is smaller than the 90% leak between `analyzed` and `submitted`.
