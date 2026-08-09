@@ -3,26 +3,41 @@
 Fleet-wide knowledge base for the orkes_ds2 (Harga CLI) bot. All experts read this before starting any task.
 Append new entries under the relevant section. Do not duplicate — check first.
 
+**Source precedence**: operator directives → `PROMPT.md` →
+`context/HARGA_CLI_REFERENCE.md` → live schema/source inspection → this file. When
+sources disagree, do not implement from memory; record the conflict and verify the
+live platform before making a change.
+
 ---
 
 ## Harga Ecosystem & Databases
 
-Source: cli-builder, cli-tester, cli-conductor
+Source: `context/HARGA_CLI_REFERENCE.md` (reconciled 2026-08-09)
 
 **Databases**:
-- `harga_v8.db` — bids table, assignments, entities, audit_log (primary operational DB)
-- `tenders.db` — tender feed intake, deduplicated tender records
+- `harga_v8.db` — primary operational database; use the `v8_*` tables below.
+- `price_memory.db` — FTS-backed historical pricing records.
+- `supplier_index.db` — supplier intelligence and embeddings.
 - Query: always use parameterized queries (? placeholders) to prevent SQL injection
 
 **Key tables** (harga_v8.db):
-- `bids` — id, tender_id, entity_id, status, deadline, amount, created_at
-- `entities` — id, name, category, notification_channel (Telegram chat_id for alerts)
-- `audit_log` — user_id, action, timestamp, details (all Albert admin actions logged here)
+- `entities` — slug, name, label, notification_channel, team_leads, branding
+- `v8_bids` — id, title, reference, status, entity_slug, items, levers,
+  confirmed_prices, source_tender_id, tender_context, workflow_phase, assigned_to,
+  outcome, outcome_history
+- `v8_assignments` — id, bid_id, assignee, task_type, status, deadline
+- `v8_submissions` — id, bid_id, entity_slug, submitted_by, method, portal_ref
+- `v8_audit_log` — id, ts, user_id, action, resource_type, resource_id, entity_slug
+- `v8_tender_assignments` — tender_id, user_id, entity_slug
 
 **CLI design**:
-- Entry point: `tools/harga_cli/__main__.py` with argparse
-- Default output: JSON (machine-readable, stable schema)
-- Add `--text` flag for human-readable formatted output
+- Working source belongs in this repository's `cli/` directory. The legacy target
+  path `/home/the_bomb/orkes/harga/harga_cli.py` is a platform reference, not a
+  second executable to maintain.
+- Use `argparse`; add no CLI framework dependency.
+- Preserve a stable machine-readable mode, but favour dense terminal tables for
+  interactive use. The JSON-default versus terminal-default contract remains open;
+  resolve it before creating a public CLI entry point.
 - Exit codes: 0 success, 1 DB error, 2 user error (invalid args)
 - Commands must be idempotent (safe to run multiple times)
 
@@ -42,10 +57,29 @@ Source: cli-builder, cli-tester, cli-conductor
 - Pattern: query data → get rows, run count → get total, return both
 
 **Output Formatting**
-- Default: JSON with `{"rows": [...], "total": N, "limit": L, "offset": O}`
-- Optional: `--text` flag for human-readable table (simple print, no tabulate dep)
+- Use stable JSON fields for machine-readable output, including null fields.
+- Use compact ANSI-aware tables for interactive output; no filler prose.
+- Choose and document one public default plus an explicit format flag before release.
 - JSON keys are stable snake_case (tender_id, not tenderId)
-- Null fields included in JSON (don't omit them)
+
+## Shared-learning Review (2026-08-09)
+
+- **Adopt — evidence gate**: the supplied synthesizer warning duplicates the existing
+  verification rule below. Cross-artifact claims must cite a file read in the current
+  step; otherwise label them unverified and take no destructive action.
+- **Adopt — completion gate**: after a deliverable or terminal block, write the
+  result once, set the goal state, and stop. Do not loop on near-identical “what next”
+  messages without new operator input.
+- **Adopt — report quality**: use observed facts, exact paths, concrete status, and
+  named next actions. Do not substitute generic quality language for evidence.
+- **Defer — multi-agent audit pattern**: phased parallel review is reserved for a
+  bounded, independently divisible audit with explicit operator approval. It is not
+  a default workflow for Harga CLI changes.
+- **Reject — malformed synthesizer excerpt**: the supplied `LETE`/retro text has no
+  verifiable source or CLI action. Do not promote it into operating guidance.
+- **Corrected**: the prior shared baseline named stale tables, an obsolete entry
+  point, and `--text` output assumptions. Historical example tests are not a source
+  of truth and also mention paused Forsah/eTimad workflows.
 
 **Exit Codes**
 - 0 = success
@@ -133,3 +167,86 @@ Source: @rvaniaaaa self-improving agent loop triage (`outbox/bookmarks/208458921
 | P5 | Compound-effect / provenance chain tracking | `~/.claude/skills/_discovery/skill_discovery_log.md` | ✓ |
 
 **Rule**: kill early, invest late. A candidate that fails the 3-point gate (novel / actionable / minimal-deps) dies before generation. Anything requiring edits to run is a draft, not a deliverable. Every operator-approved publish appends a provenance row.
+
+## Codex 0.146 + DeepSeek models refresh — fixed via static catalog | 2026-08-06
+
+- **Symptom**: `codex exec` aborted every step: `failed to refresh available models: missing
+  field 'models'` (rc=1, 5 retries ~55s), loop fell back to claude→proxy. Trigger: stale
+  `~/.codex/models_cache.json` (fetched_at > TTL) → codex refetches `GET {base_url}/models`.
+- **Root cause**: codex 0.146 expects `{"models":[{slug,display_name,...}]}` (its own cache
+  schema); DeepSeek returns OpenAI shape `{"object":"list","data":[...]}` → decode fails.
+  `wire_api="chat"` is REMOVED in 0.146 (responses-only).
+- **Fix**: static catalog `~/.codex/models_catalog.json` (entries cloned from
+  `models_cache.json`, slugs incl. bare `deepseek-v4-flash`/`deepseek-v4-pro` so metadata
+  lookup resolves) + top-level `model_catalog_json = "~/.codex/models_catalog.json"` in
+  `~/.codex/config.toml`. With a catalog, refresh failure is non-fatal AND metadata resolves.
+- **Prevention**: if a provider's /models shape isn't OpenAI-standard for codex, ship a
+  catalog instead of debugging the refresh; verify with `codex exec -m <id> "say OK"`.
+- DeepSeek v4 supports the responses API (codex 0.146 default) — no shim needed for chat.
+
+## Host Reconfiguration (2026-08-06)
+
+Source: arbos-orkes_ds2 (reconfig-plan.md)
+
+- **Memory is the binding constraint** on this single 30GB box running ~30 pm2 processes.
+  Swap at 99%, OOM killer active, service restart counts climbing. Relieve RAM before
+  optimizing anything else.
+- **Biggest levers** (descending): ollama qwen3.5:9b (9.2GB) → embed-server (1.9GB) →
+  ocr-server (1.6GB) → idle opencode sessions (~1.0GB). ~13GB reclaimable total.
+- **ollama model mismatch**: .env says `qwen3:8b` but `qwen3.5:9b` is loaded. Pin to
+  qwen3:8b for 0.5-2GB savings; test sec-enrich output quality before committing.
+- **OCR is always-on, never used**: ocr-server loads a 3B VLM on GPU1 (6.4GB VRAM) but
+  GPU utilization is 0%. Convert to on-demand lifecycle via pm2 start/stop in
+  text_extract.py; pytesseract Tier 2 fallback covers cold-start gap.
+- **embed-server CPU-only by choice**: `CUDA_VISIBLE_DEVICES=""` despite GPU1 having
+  3.4GB free. Move to GPU1 (`CUDA_VISIBLE_DEVICES=1`) to free ~466% CPU.
+- **glorycloud exists but unused**: configured in orkes_sec/.env (GLORYCLOUD_*),
+  pingable at 44ms, SSH not configured. Before migration: investigate hardware specs,
+  install services, benchmark latency.
+- **Orkes_Buzz2 flapping at 129 restarts**: exit code 42, chutes API 401, max_restarts=999.
+  Cap at 5 or switch provider to deepseek. Exit code 42 → .arbos-launch.sh exited with
+  that code (not OOM 137); likely chutes billing exhaustion.
+- **Mission drift**: PROMPT.md still says "build harga-cli" — built. Actual role is ops/
+  triage for orkes_sec production. Update PROMPT.md to reflect ops identity.
+- **System design pattern**: this is a capacity-planning problem. Treat the box as a
+  fixed-capacity cluster: identify over-provisioned services, right-size or offload,
+  leave headroom for spikes. Full plan: ~/orkes/reconfig-plan.md.
+
+## 2026-08-06 — DeepSeek price-hike derisk
+- All arbos fleet bots currently route direct-api deepseek-v4-flash via provider_state fallback; opencode sessions go through OpenCode Zen reseller (partially insulated).
+- LLM.md O1/O2/O3 (batching/single-shot) still unimplemented — verified no batch in tender_matcher.py, 40K chunking in passes. Biggest lever before any price change.
+- Ledger (llm_ledger.jsonl + price_ledger.jsonl) has cost data but zero aggregation/alert tooling — spend visibility is the cheapest first derisk.
+- Provider flip is one env var (`PROVIDER=`) + persisted provider_state.json — keep reseller/local paths alive; derisk = options, not replacement.
+- **Spend/balance alert shipped (2026-08-06)**: `scripts/llm_spend_alert.py` in
+  orkes/yellowpages aggregates both ledgers -> per-project/model cost, checks
+  DeepSeek balance via /user/balance; cron daily 06:30 + every 6h. First run caught
+  REAL low balance ($3.72 vs $5 threshold) -> Telegram alert fired, cooldown works.
+- **Buzz2 flip corrected in reconfig-plan §3.1**: chutes -> zen/openrouter (NOT
+  deepseek) per derisk P0.1 — don't add new direct-DS consumers before the hike.
+
+## 2026-08-09 — Upstream Arbos compatibility gate
+
+- `unarbos/arbos` `v0.1.47` is a strategic successor, not a drop-in update for
+  the customized Python/PM2 fleet: it is Go `1.26.4`, stores state per project
+  in `.arbos/sessions.db`, and keeps user configuration under `~/.config/arbos`.
+- It includes web/TUI, Telegram, scheduler/outbox, MCP, and native OpenAI/
+  Anthropic/Google adapters, but no Claude CLI subprocess compatibility was
+  found. Validate auth and cost parity before any migration from the current
+  Claude/Codex CLI router.
+- Never launch it against a live project's Telegram identity during evaluation:
+  its own source documents one poller per bot token. Use a separate bot and
+  isolated PM2 pilot; preserve the current Python process as rollback.
+- This host is capacity constrained (40 online PM2 processes, 11 GiB swap used
+  at assessment). Measure pilot RSS and restart behavior before adding a
+  persistent web/browser surface.
+## 2026-08-09 — `andrew-btt/arbos` compatibility
+
+- `andrew-btt/arbos` at `30dedaaa` is a standalone Python Ralph loop for Claude/OpenRouter and Telegram, not a compatible upgrade path for the shared `~/.arbos/core` controller.
+- Do not run it alongside an existing Arbos process using the same Telegram bot: concurrent long polling can conflict. Any trial requires isolated state, credentials, PM2 name, and bot identity.
+
+## 2026-08-10 — harga-cli post-restart checkpoint
+
+- harga-cli is end-to-end functional and stable: syntax clean, 33/33 pytest pass, all Tier 1–3 subcommand groups (ent/bids/prices/tenders/audit/assign/status) present with --json/--table. Treat it as baseline-healthy; small evidence-backed changes only, never a rewrite.
+- `status` dashboard is the single observability surface a fresh agent should run first — it reports PM2 health, all four DB sizes, pipeline counts, recent audit, swap, and disk in one invocation.
+- Restart loop root cause class here was Codex model-config (`deepseek-v4-flash` unsupported with ChatGPT account in the router), NOT an app defect. When a pm2 arbos step fails with model 400s, check the LLM router config before touching the codebase.
+- Reference Tier-3 `db sizes`/`scheduler run-once`/`sync` are deliberately unexposed — `status` already covers DB sizes, and scheduler/sync are operational, out of the read-terminal persona's value band.
