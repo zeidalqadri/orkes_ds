@@ -1,1 +1,0 @@
-{"msg_id": 4129, "text": "hargai.roowang dropped \u2014 ingress removed from ~/.cloudflared/config.json (never had DNS, nothing was live; backup kept). Tunnel restarted + pm2 save. Post-restart: harga.roowang.com /vX /v9, harga.work /vX = 200; hargai.zeidgeist.com kept (302). harga.work/vX remains the coverage for ex-SmartGEP."}
