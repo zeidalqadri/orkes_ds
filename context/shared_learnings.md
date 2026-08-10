@@ -3,6 +3,41 @@
 Fleet-wide knowledge base for the orkes_ds2 (Harga CLI) bot. All experts read this before starting any task.
 Append new entries under the relevant section. Do not duplicate — check first.
 
+## 2026-08-10: Konsos remediation complete
+
+All 14 items across 5 phases delivered. Key patterns worth retaining:
+
+1. **Git-init before mutating unversioned code.** konsos had no rollback — wrapping it
+   in git + .gitignore before any edits made every fix reversible. Apply this to any
+   future remediation on unversioned directories.
+
+2. **systemd health-check lies.** The "process = running + healthy" assumption fails
+   when a zombie worker holds the socket but serves nothing. Health endpoints must
+   exercise a live code path (not just accept TCP). market-whisper's /health now
+   returns a dynamic JSON payload; trading-bot's /health reads live `_running` state
+   and returns HTTP 503 when the bot isn't initialized.
+
+3. **DEBUG=true in production → silent freeze.** uvicorn `reload=True` spawns a
+   watchdog worker; if it dies, the parent holds the socket forever serving 0 bytes.
+   Gate reload on a separate `RELOAD` env var, not DEBUG.
+
+4. **Retry with backoff beats return-on-failure.** trading-bot's `run()` used to
+   call `initialize()` once and `return` on failure → dead process that looked alive.
+   Now retries at 15→30→60→...→300s. When the downstream comes back, the bot
+   self-heals — no restart needed.
+
+5. **Backup DBs before schema changes.** Additive migration (new `last_error` column)
+   was safe, but backing up first is a replicable habit. RUNBOOK.md documents the
+   backup command.
+
+6. **Secrets in deploy scripts.** `deploy.sh` had a hardcoded plaintext SSH password.
+   Scrubbed, moved to env var. Even on non-public hosts, secrets in scripts get
+   copied, backed up, and leaked. Never hardcode credentials.
+
+7. **Runbook as code.** RUNBOOK.md is versioned in the same git repo as the code it
+   operates on. Recovery procedures live next to the code they recover — not in chat
+   history, not in a separate doc. Commit the runbook.
+
 **Source precedence**: operator directives → `PROMPT.md` →
 `context/HARGA_CLI_REFERENCE.md` → live schema/source inspection → this file. When
 sources disagree, do not implement from memory; record the conflict and verify the
@@ -250,3 +285,27 @@ Source: arbos-orkes_ds2 (reconfig-plan.md)
 - `status` dashboard is the single observability surface a fresh agent should run first — it reports PM2 health, all four DB sizes, pipeline counts, recent audit, swap, and disk in one invocation.
 - Restart loop root cause class here was Codex model-config (`deepseek-v4-flash` unsupported with ChatGPT account in the router), NOT an app defect. When a pm2 arbos step fails with model 400s, check the LLM router config before touching the codebase.
 - Reference Tier-3 `db sizes`/`scheduler run-once`/`sync` are deliberately unexposed — `status` already covers DB sizes, and scheduler/sync are operational, out of the read-terminal persona's value band.
+
+## 2026-08-10 — Persona adoption (better-evol-ai #1) done
+
+- Operator picked the persona-adoption path. The source issue (mineIsBig/better-evol-ai#1) IS a Bitcoin trading engine (S_0); per the standing directive we imported only its *methodology*, not the market specifics.
+- Imported: programmable-not-monolithic shift, execute→measure→reflect→improve loop, walk-forward rigor, no-placeholders-for-core-logic, structured self-report.
+- Explicitly excluded: CoinGlass/Hyperliquid/Bittensor data sources and prop-firm hard risk rules.
+- Lesson: when adopting an external persona, separate *method* from *domain* first — port the reusable rigor, gate the domain-specific surface behind the standing-directive check before touching PROMPT.md.
+
+## 2026-08-10 — konsos implementation gaps (PLAN analysis, no code change)
+Live host /home/the_bomb/konsos/ = market-whisper (:8080) + trading-bot (:8001). NOT a git repo.
+- market-whisper :8080 frozen (HTTP 000/0 bytes): DEBUG=true uvicorn reload in prod → reloader worker died, child ZOMBIE (p1243), parent holds FD. Restart=always can't help.
+- Signals stale since 2026-04-28 (42,896 rows; 42,629 in Feb only). market-whisper has NO self-driven signal generator — purely request-driven (POST /signal); background_jobs only does outcome/weight/snapshot. So stall = external caller stopped.
+- Learning loop corrupt (bug): 94% outcomes = timeout; _determine_correct_direction marks timeout as loss→correct=opposite → 56,269 votes wrong, only 68 correct; all provider accuracies ~0 → all weights clamp to 0.3 floor (openai=1.0 w/ 0 votes). votes creation: 45.4% LLM failures (OpenAI 429).
+- Hardcoded CF AI-gateway token+account-id committed in llm_ensemble.py (secret leak).
+- trading-bot trades.db: 0 trades/0 orders/0 daily; is_running=1 mode=paper stale since Feb 9. trades table has NO sl/tp col → check_paper_exits can NEVER trigger paper TP/SL close (reads trade.get('sl')). No timeout fallback → paper trades never close. Other dead code: monitoring/metrics never imported, PositionSizer.validate_size, CircuitBreaker.check_daily_drawdown, ByBit.cancel_order/get_order_history never called.
+- research/* = proposed self-driven v2 (SignalComputer, meta_gate, 3 strategy bots) targeting /root/konsos (different host); never deployed here.
+
+## 2026-08-10 — konsos remediation (ACT, 4 phases, persistent/reliable/replicable)
+- Phase 1 freeze fix: DEBUG=true -> false; reload now gated by RELOAD=true only. Service heals: /health 200 in <1ms, single clean process, full /signal pipeline works. Root cause was NOT a self-driven pipeline gap (research/ v2 does that) but a dead process.
+- Phase 2 trading-bot: root cause of "healthy but dead" = TradingBot.run() exits forever if initialize() returns False (downstream unreachable), while run_api() keeps /health up and a stale DB row (is_running=1, updated_at Feb) masks it. Fixed: retry with 15->300s backoff; /health reads live _running + persists last_error + returns 503 when uninitialized. Real blocker today: ByBit testnet egress UNREACHABLE from host (curl + get_server_time time out ~30s) — external, blocks initialize. Paper+testnet so no real-money risk.
+- Lesson (observability): a responsive /health does NOT mean the app works when the loop and the web server are decoupled coroutines. Surface live-loop state + last_error, not a stale DB row.
+- Lesson (reliability): initialize()-or-die silently kills an unattended loop. Always retry dependencies with capped backoff and report "retrying" persistently.
+- Lesson (replicability): deploy scripts must not hardcode credentials (found a plaintext SSH password in trading-bot/deploy/deploy.sh) and must match the live host layout (User=root,/root -> User=the_bomb,/home/the_bomb/konsos). Env-port the credential; render the unit at deploy time.
+- Note: fixed session had systemd control auth flakiness; final trading-bot restart to load 2 incremental edits is operator/root-gated. LLM keys in market-whisper .env partly invalid (401/429) — operator-side rotation.
